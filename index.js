@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
 const cors = require('cors');
+require('dotenv')
 
-
+const PORT = process.env.PORT || 3000
 const app = express();
 
 mongoose
@@ -27,6 +28,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal server error" });
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log("Server started on port 3000");
 });
