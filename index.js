@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
+const cors = require('cors');
+
 
 const app = express();
 
@@ -15,6 +17,8 @@ mongoose
   });
 
 app.use(express.json());
+
+app.use(cors())
 
 app.use("/auth", authRoutes);
 

@@ -7,8 +7,9 @@ const config = require("../config/config");
 const Company = require("../models/company");
 const Mediator = require('../models/mediator');
 const authMiddleware = require("../middleware/authMiddleware");
-
+const { appendFile } = require("fs");
 const router = express.Router();
+
 
 // Create a storage engine for Multer
 const storage = multer.diskStorage({
