@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 
-const userSchema = new mongoose.Schema({
+const companySchema = new mongoose.Schema({
   
   companyName: { type: String, required: true },
   email: { type: String, unique: true, required: true },
@@ -12,6 +12,6 @@ const userSchema = new mongoose.Schema({
 
 
 
-const Company = mongoose.model("company", userSchema);
+const Company = mongoose.model("company", companySchema);
 
 module.exports = Company;
