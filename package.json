@@ -1,11 +1,11 @@
 {
   "name": "authentication",
   "version": "1.0.0",
-  "description": "JWT Authentication & Authorization",
+  "description": "Direct Mediation Services",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./app.js"
+    "dev": "nodemon ./index.js"
   },
   "keywords": [
     "node.js",

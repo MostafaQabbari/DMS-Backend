@@ -142,6 +142,7 @@ router.get("/me", authMiddleware, (req, res, next) => {
 // Mediator form submission route
 router.post('/add-mediator', authMiddleware, async (req, res, next) => {
   try {
+    console.log(req.user)
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
 
@@ -158,13 +159,18 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user.id });
+    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id});
+    
     await mediator.save();
+    
 
     res.status(201).json({ message: 'Mediator added successfully!' });
   } catch (error) {
     next(error);
   }
+
+
+
 });
 
 module.exports = router;

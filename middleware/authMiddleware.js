@@ -56,24 +56,3 @@ module.exports = authMiddleware;
 //   });
 // }
 
-// // Mediator form submission route
-// router.post('/mediator', authenticateToken, async (req, res, next) => {
-//   try {
-//     const { firstName, lastName, email, password, phoneNumber, model } = req.body;
-
-//     // Validate input fields
-//     if (!firstName || !lastName || !email || !password || !phoneNumber || !model) {
-//       return res.status(400).json({ message: 'All fields are required!' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-//     const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, model });
-//     await mediator.save();
-
-//     res.status(201).json({ message: 'Mediator added successfully!' });
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// module.exports = router;
