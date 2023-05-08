@@ -60,7 +60,7 @@ router.post("/signup", (req, res, next) => {
 
       await user.save();
 
-      const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+      const token = jwt.sign({ id: user._id}, config.jwtSecret, { expiresIn: "1h" });
 
       res.status(201).json({ token });
     } catch (error) {
