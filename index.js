@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
+
+const smsRouts = require("./routes/sendSMS.js")
 const cors = require('cors');
 require('dotenv')
 
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use(cors())
 
 app.use("/auth", authRoutes);
+app.use(smsRouts);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
