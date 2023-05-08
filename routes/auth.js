@@ -35,7 +35,7 @@ const upload = multer({
   },
 }).single("companyLogo");
 
-router.post("/signup", (req, res, next) => {
+router.post("/company-signup", (req, res, next) => {
   upload(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ message: err });
@@ -48,6 +48,14 @@ router.post("/signup", (req, res, next) => {
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
+
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+      // Check if the password meets the minimum requirements
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+      }
+
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -149,8 +157,13 @@ router.get("/user-info", authMiddleware, (req, res, next) => {
 
 // Mediator form submission route
 router.post('/add-mediator', authMiddleware, async (req, res, next) => {
+
+  if (req.userRole !== "company") {
+    return res.status(401).json({ message: "Unauthorized only a company account can add Mediator" });
+  }
+  
   try {
-    console.log(req.user)
+    
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
 
@@ -166,6 +179,13 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ message: 'All fields are required!' });
     }
     
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    // Check if the password meets the minimum requirements
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id});
     
