@@ -6,8 +6,16 @@ const mediatorSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   phoneNumber: { type: String, required: true },
-  companyId: { type: String, required: true }
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+  }
   
 });
+
+mediatorSchema.virtual('company',{
+  ref: 'company',
+  localField: 'compadnyId',
+  foreignField: '_id'
+})
 
 module.exports = mongoose.model('Mediator', mediatorSchema);

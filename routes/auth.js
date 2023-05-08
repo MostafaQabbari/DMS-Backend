@@ -60,7 +60,9 @@ router.post("/signup", (req, res, next) => {
 
       await user.save();
 
-      const token = jwt.sign({ id: user._id}, config.jwtSecret, { expiresIn: "1h" });
+      // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+      const token = jwt.sign({ id: user._id, role: "company" }, config.jwtSecret, { expiresIn: "1h" });
+
 
       res.status(201).json({ token });
     } catch (error) {
@@ -92,7 +94,8 @@ router.post("/company-login", async (req, res, next) => {
     
     
 
-    const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+    // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, role: "company" }, config.jwtSecret, { expiresIn: "1h" });
 
     res.status(200).json({ token });
   } catch (error) {
@@ -123,7 +126,8 @@ router.post("/mediator-login", async (req, res, next) => {
     
     
 
-    const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+    // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, role: "mediator" }, config.jwtSecret, { expiresIn: "1h" });
 
     res.status(200).json({ token });
   } catch (error) {
@@ -133,15 +137,20 @@ router.post("/mediator-login", async (req, res, next) => {
 
 
 
-router.get("/me", authMiddleware, (req, res, next) => {
-  res.status(200).json({ user: req.user });
+router.get("/user-info", authMiddleware, (req, res, next) => {
+
+  res.status(200).json({ user: req.user, role: req.userRole});
+ 
 });
+
+
 
 
 
 // Mediator form submission route
 router.post('/add-mediator', authMiddleware, async (req, res, next) => {
   try {
+    console.log(req.user)
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
 
@@ -158,13 +167,18 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user.id });
+    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id});
+    
     await mediator.save();
+    
 
     res.status(201).json({ message: 'Mediator added successfully!' });
   } catch (error) {
     next(error);
   }
+
+
+
 });
 
 module.exports = router;
