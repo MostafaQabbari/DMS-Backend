@@ -10,12 +10,13 @@ const verifyTwillio = async (req, res, next) => {
 
     const phoneNumber = twillioNumber;
     x.messages.create({
-        body: 'test tanni ya 3ammm ',
+        body: `Your Client ${req.user.companyName} added his twillio `,
         from: phoneNumber,
         to: '+201553499532'
     }).then(message => {
+
      
-        res.json({message : "data added succesfully"} , {messageID :message.sid});
+      console.log({message : "data added succesfully" , messageID :message.sid});
         next();
 
     }
