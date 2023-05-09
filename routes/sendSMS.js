@@ -4,21 +4,42 @@ const config = require("../config/config");
 const company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
 
+const verifyTwillio = require("../middleware/twillioVerify")
+
 
 
 /* 1st - will add company sid,token,number to the DB after validation by sending sms */
 
-router.post("/addTwillioDetails" ,authMiddleware, async (req , res)=>{
+router.post("/addTwillio", authMiddleware, verifyTwillio, async (req, res) => {
 
-    const {sid , token , number} = req.body
+  if (req.userRole !== "company") {
+    return res.status(401).json({ message: "Unauthorized only a company account can add Mediator" });
+  }
 
-    res.json("xxx")
+
+  try {
+    const userID = req.user._id
+    const { twillioSID, twillioToken, twillioNumber } = req.body;
+    await company.findByIdAndUpdate(userID, { twillioSID, twillioToken, twillioNumber })
+
+    res.json(req.user)
+
+
+  }
+  catch (err) {
+
+    res.json({err :"this error after 2 middlewares and try to add data "})
+  }
+
+
+
+
 
 })
 
 
 
-module.exports= router
+module.exports = router
 
 
 /* 2nd - will use function which take data from DB and send the SMS */
