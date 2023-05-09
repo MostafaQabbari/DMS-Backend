@@ -2,12 +2,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
+const caseRoutes = require("./routes/case");
+const companyRoutes = require("./routes/company");
 
 const smsRouts = require("./routes/sendSMS.js")
 const cors = require('cors');
 require('dotenv')
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3007
 const app = express();
 
 mongoose
@@ -24,6 +26,8 @@ app.use(express.json());
 app.use(cors())
 
 app.use("/auth", authRoutes);
+app.use("/", caseRoutes);
+app.use("/", companyRoutes);
 app.use(smsRouts);
 
 app.use((err, req, res, next) => {
@@ -31,9 +35,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal server error" });
 });
 
-
-
-
+app.listen(PORT, () => {
+  console.log("Server started on port 3001");
+});
 
 
 app.listen(PORT, () => {
