@@ -3,8 +3,11 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
+const verifyTwillio = require("../middleware/twillioVerify");
+const CryptoJS = require("crypto-js");
 
-const verifyTwillio = require("../middleware/twillioVerify")
+
+
 
 
 
@@ -19,16 +22,22 @@ router.post("/addTwillio", authMiddleware, verifyTwillio, async (req, res) => {
 
   try {
     const userID = req.user._id
-    const { twillioSID, twillioToken, twillioNumber } = req.body;
-    await company.findByIdAndUpdate(userID, { twillioSID, twillioToken, twillioNumber })
 
-    res.json(req.user)
+    var cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify(req.body), 'secret key 123').toString();
+
+    await company.findByIdAndUpdate(userID, { "twillioData": cryptedTwilioData })
+
+
+    //   var bytes  = CryptoJS.AES.decrypt(req.user.twillioData, 'secret key 123');
+    //  var decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+
+    res.json({ "message": " data added to DB with Encryption " })
 
 
   }
   catch (err) {
 
-    res.json({err :"this error after 2 middlewares and try to add data "})
+    res.json({ err: "this error after 2 middlewares and try to add data " })
   }
 
 

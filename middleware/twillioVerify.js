@@ -1,10 +1,15 @@
 
 
+
+
 const verifyTwillio = async (req, res, next) => {
+   
+
 
 
 
     const { twillioSID, twillioToken, twillioNumber } = req.body;
+
 
     const x = require('twilio')(twillioSID, twillioToken);
 
@@ -15,7 +20,7 @@ const verifyTwillio = async (req, res, next) => {
         to: '+201553499532'
     }).then(message => {
 
-     
+
       console.log({message : "data added succesfully" , messageID :message.sid});
         next();
 
@@ -25,7 +30,7 @@ const verifyTwillio = async (req, res, next) => {
     });
 
 
-
+   
 
 
 }

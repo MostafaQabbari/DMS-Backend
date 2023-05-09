@@ -7,10 +7,8 @@ const companySchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   companyLogo: { type: String },
-  
-  twillioSID: { type: String },
-  twillioToken: { type: String },
-  twillioNumber: { type: String },
+
+  twillioData:{type:String}
 
 
 });
