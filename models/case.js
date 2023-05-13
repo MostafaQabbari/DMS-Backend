@@ -6,6 +6,7 @@ const caseSchema = new Schema({
   client1ContactDetails:{
     firstName: { type: String },
     surName: { type: String},
+    email: { type: String },
     phoneNumber: { type: String },
     dateOfMAIM: { type: String },
     location: { type: String },
