@@ -4,6 +4,7 @@
 
 module.exports = {
   jwtSecret: "mysecretkey",
+  baseUrl:"https://dms5.onrender.com"
   // refreshTokenSecret: "myrefreshsecretkey",
   // generateRefreshToken
 };

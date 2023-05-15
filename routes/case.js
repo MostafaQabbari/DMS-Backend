@@ -7,7 +7,7 @@ const Company = require("../models/company");
 const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer")
 const twillioMiddleware = require('../middleware/getDataFromPromise');
-
+const config = require("../config/config");
 
 
 
@@ -90,7 +90,7 @@ router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res
         })
       clientNumber = phoneNumber;
       messageBodyData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyData.formLink = `${"basicURL"}${req.url}/${newCase[0]._id}`;
+      messageBodyData.formLink = `${config.baseUrl}${req.url}/${newCase[0]._id}`;
       messageBodyData.companyName = req.user.companyName;
       sendingSMS(twillioInfo, clientNumber, messageBodyData)
       res.json({ message: " company has added client " })
@@ -105,7 +105,7 @@ router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res
 
       clientNumber = phoneNumber;
       messageBodyData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyData.formLink = `${"basicURL"}${req.url}/${newCase[0]._id}`;
+      messageBodyData.formLink = `${config.baseUrl}${req.url}/${newCase[0]._id}`;
       messageBodyData.companyName = mediatorCompanyData.companyId.companyName
       sendingSMS(twillioInfo, clientNumber, messageBodyData)
       res.json({ message: " mediator has added client " })
@@ -139,7 +139,7 @@ router.post('/createCaseMaiil', authMiddleware, async (req, res, next) => {
         })
         clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-        messageBodyinfo.formUrl = `${"basicURL"}${req.url}/${newCase[0]._id}`;
+        messageBodyinfo.formUrl = `${config.baseUrl}${req.url}/${newCase[0]._id}`;
         companyData.companyName = req.user.companyName;
         companyData.email = req.user.email;
         sendMail(companyData, clientData, messageBodyinfo)
