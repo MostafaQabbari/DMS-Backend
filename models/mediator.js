@@ -7,12 +7,20 @@ const mediatorSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   phoneNumber: { type: String, required: true },
+  refreshToken: {
+    type: String,
+    default: null,
+  },
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref:"company"
   },
   
-});
+},
+{
+  timestamps: true,
+}
+);
 
 // mediatorSchema.virtual('companies',{
 //   ref: 'company',

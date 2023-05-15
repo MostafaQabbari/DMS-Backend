@@ -7,7 +7,7 @@ const config = require("../config/config");
 const Company = require("../models/company");
 const Mediator = require('../models/mediator');
 const authMiddleware = require("../middleware/authMiddleware");
-const { appendFile } = require("fs");
+// const { appendFile } = require("fs");
 const router = express.Router();
 
 
@@ -68,11 +68,12 @@ router.post("/company-signup", (req, res, next) => {
 
       await user.save();
 
-      // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
-      const token = jwt.sign({ id: user._id, role: "company" }, config.jwtSecret, { expiresIn: "1h" });
+      const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "15m" });
+      const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+      // Store refresh token in database
+       await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-
-      res.status(201).json({ token });
+      res.status(201).json({  accessToken , refreshToken });
     } catch (error) {
       next(error);
     }
@@ -101,11 +102,13 @@ router.post("/company-login", async (req, res, next) => {
     }
     
     
+    const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    
+    // Store refresh token in database
+    await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-    // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
-    const token = jwt.sign({ id: user._id, role: "company" }, config.jwtSecret, { expiresIn: "1h" });
-
-    res.status(200).json({ token });
+    res.status(201).json({  accessToken , refreshToken });
   } catch (error) {
     next(error);
   }
@@ -133,11 +136,12 @@ router.post("/mediator-login", async (req, res, next) => {
     }
     
     
+    const  accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ id: user._id, role: "mediator" , type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    // Store refresh token in database
+    await Mediator.findByIdAndUpdate(user._id, { refreshToken });
 
-    // const token = jwt.sign({ id: user._id }, config.jwtSecret, { expiresIn: "1h" });
-    const token = jwt.sign({ id: user._id, role: "mediator" }, config.jwtSecret, { expiresIn: "1h" });
-
-    res.status(200).json({ token });
+    res.status(201).json({  accessToken , refreshToken });
   } catch (error) {
     next(error);
   }
@@ -200,5 +204,35 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
 
 });
+
+
+
+
+router.post("/refresh-token", async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const decoded = jwt.verify(refreshToken, config.jwtSecret);
+
+    let user = await Company.findById(decoded.id);
+    if (!user) {
+      user = await Mediator.findById(decoded.id);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+    }
+
+    if (user.refreshToken !== refreshToken) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "1h" });
+
+    res.status(200).json({ accessToken });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
 
 module.exports = router;
