@@ -156,7 +156,7 @@ router.post('/createCaseMaiil', authMiddleware, async (req, res, next) => {
 
       clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-        messageBodyinfo.formUrl = `${"basicURL"}${req.url}/${newCase[0]._id}`;
+        messageBodyinfo.formUrl = `${""}${req.url}/${newCase[0]._id}`;
 
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
