@@ -88,6 +88,12 @@ router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res
           client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
+
+      const companyId = req.user._id;
+
+      // Update the company's cases array with the new case ID
+      await Company.findByIdAndUpdate(companyId._id, { $push: { cases: newCase._id } });
+
       clientNumber = phoneNumber;
       messageBodyData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
       messageBodyData.formLink = `${config.baseUrl}/addClient1/${newCase[0]._id}`;
@@ -97,11 +103,16 @@ router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res
     }
     else if (req.userRole == 'mediator') {
       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId')
+
       let newCase = await Case.insertMany(
         {
           client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
+
+
+       // Update the company's cases array with the new case ID
+      await Company.findByIdAndUpdate(mediatorCompanyData.companyId, { $push: { cases: newCase._id } });
 
       clientNumber = phoneNumber;
       messageBodyData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
@@ -137,6 +148,12 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
           client1ContactDetails: { firstName, surName, phoneNumber,email, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
+        
+        const companyId = req.user._id;
+
+        // Update the company's cases array with the new case ID
+        await Company.findByIdAndUpdate(companyId._id, { $push: { cases: newCase._id } });
+
         clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
         messageBodyinfo.formUrl = `${config.baseUrl}/addClient1/${newCase[0]._id}`;
@@ -153,6 +170,9 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
           client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
+
+         // Update the company's cases array with the new case ID
+        await Company.findByIdAndUpdate(mediatorCompanyData.companyId, { $push: { cases: newCase._id } });
 
       clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;

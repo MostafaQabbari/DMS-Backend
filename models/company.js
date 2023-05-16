@@ -7,13 +7,13 @@ const companySchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   companyLogo: { type: String },
-  refreshToken: {
-    type: String,
-    default: null,
-  },
 
-  twillioData:{type:String}
+  refreshToken: {type: String,default: null,},
 
+  twillioData:{type:String},
+ 
+  mediators: [{ type: mongoose.Schema.Types.ObjectId, ref: "Mediator" }],
+  cases: [{ type: mongoose.Schema.Types.ObjectId, ref: "Case" }],
 
 },
   {
