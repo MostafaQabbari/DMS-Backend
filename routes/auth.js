@@ -195,6 +195,11 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
     
     await mediator.save();
     
+    const companyId = req.user._id;
+
+    // Update the company's mediators array with the new mediator ID
+    await Company.findByIdAndUpdate(companyId, { $push: { mediators: mediator._id } });
+    
 
     res.status(201).json({ message: 'Mediator added successfully!' });
   } catch (error) {
