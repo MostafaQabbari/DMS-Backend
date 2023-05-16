@@ -4,6 +4,7 @@ const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
 const caseRoutes = require("./routes/case");
 const companyRoutes = require("./routes/company");
+const client1Form = require("./routes/clinet1data");
 
 const smsRouts = require("./routes/sendSMS.js")
 const cors = require('cors');
@@ -29,7 +30,7 @@ app.use("/auth", authRoutes);
 app.use("/", caseRoutes);
 app.use("/", companyRoutes);
 app.use(smsRouts);
-
+app.use(client1Form)
 
 
 

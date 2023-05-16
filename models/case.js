@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const client1data = require('./client1prototype')
 const caseSchema = new Schema({
 
   client1ContactDetails:{
@@ -20,7 +20,12 @@ const caseSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref:"company"
     }
-  }
+  },
+  
+  client1data,
+  Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
+  client1AddedData:{type:Boolean , default:false},
+
 
 
 });
