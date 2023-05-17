@@ -46,8 +46,8 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   let transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "abdosamir2022.2022@gmail.com", 
-      pass: "dffswebwucuxpayy", 
+      user: config.companyEmail, 
+      pass: config.appPassWord, 
     },
   });
 
