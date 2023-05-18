@@ -5,6 +5,8 @@ const authRoutes = require("./routes/auth");
 const caseRoutes = require("./routes/case");
 const companyRoutes = require("./routes/company");
 const client1Form = require("./routes/clinet1data");
+const pdfConvertor = require("./routes/pdfConvertor");
+
 
 const smsRouts = require("./routes/sendSMS.js")
 const cors = require('cors');
@@ -29,6 +31,7 @@ app.use(cors())
 app.use("/auth", authRoutes);
 app.use("/", caseRoutes);
 app.use("/", companyRoutes);
+app.use("/", pdfConvertor);
 app.use(smsRouts);
 app.use(client1Form)
 
