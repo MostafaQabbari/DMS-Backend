@@ -45,9 +45,14 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
 
   let transporter = nodemailer.createTransport({
     service: "gmail",
+    port: 587,
+    secure: false, // Use TLS
     auth: {
       user: config.companyEmail, 
       pass: config.appPassWord, 
+    },
+    tls: {
+      ciphers: 'SSLv3',
     },
   });
 
