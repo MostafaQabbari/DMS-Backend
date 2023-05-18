@@ -230,7 +230,7 @@ router.post("/refresh-token", async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "1h" });
+    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "15m" });
 
     res.status(200).json({ accessToken });
   } catch (error) {
