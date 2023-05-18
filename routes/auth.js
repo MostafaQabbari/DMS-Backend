@@ -339,6 +339,7 @@ function sendResetPasswordEmail(email, resetToken) {
     <a href="http://example.com/reset-password?token=${resetToken}">Reset Password</a>`,
   };
 
+  
   // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
