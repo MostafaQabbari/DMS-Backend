@@ -5,8 +5,8 @@
 module.exports = {
   jwtSecret: "mysecretkey",
   baseUrl:"https://dms5.onrender.com",
-  companyEmail:"abdosamir2022.2022@gmail.com",
-  appPassWord:"dffswebwucuxpayy"
+  companyEmail:"abdo.samir.7719@gmail.com",
+  appPassWord:"bxhjghkbwnwumrzt"
   // refreshTokenSecret: "myrefreshsecretkey",
   // generateRefreshToken
 };
