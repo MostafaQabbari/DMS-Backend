@@ -80,12 +80,12 @@ router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res
   let messageBodyData = {};
   twillioInfo = req.twillioInfo;
   try {
-    const { firstName, surName, phoneNumber, dateOfMAIM, location } = req.body;
+    const { firstName, surName, phoneNumber,email, dateOfMAIM, location } = req.body;
 
     if (req.userRole == 'company') {
       let newCase = await Case.insertMany(
         {
-          client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
+          client1ContactDetails: { firstName, surName, phoneNumber,email, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
 

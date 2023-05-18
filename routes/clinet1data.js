@@ -49,7 +49,7 @@ const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {
 
 }
 
-router.post("/addClient1/:id", async (req, res) => {
+router.patch("/addClient1/:id", async (req, res) => {
 
 
     try {
