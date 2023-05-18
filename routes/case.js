@@ -62,16 +62,16 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
 
     to: clientData.email ,
     subject: "Applying To MIAM Form",
-    html: `<body>
-    <div style="background-color: coral; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-    <h1>Hello ${clientData.clientName}  </h1>
+    html: `
+    <div>
+    <h1>Dear ${clientData.clientName}  </h1>
     <h2> Follow the next Link to Apply to your form </h2>
-    <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+    <a href='${messageBodyinfo.formUrl}'>Click here </a>
     <h3>Best Regards</h3>
     <h3>${companyData.companyName}</h3>
     <h3>${companyData.email}</h3>
     </div>
-    </body>`,
+     `,
 
   });
 
