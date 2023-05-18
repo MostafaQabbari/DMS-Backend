@@ -29,7 +29,9 @@ const sendingSMS = function (twillioInfo, clientNumber, messageBodyData) {
     console.log({ message: "form message sent succesfully", messageID: message.sid });
     next();
   }
-  )
+  ).catch((err) => {
+    res.json({message : err.message});
+});
 
 }
 
