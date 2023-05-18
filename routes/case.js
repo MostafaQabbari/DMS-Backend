@@ -44,10 +44,14 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   */
 
   let transporter = nodemailer.createTransport({
-    //service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use TLS
+    service: 'smtp.office365.com',
+    host: 'smtp.office365.com',
+    port: 587,
+    starttls: {
+        enable: true
+    },
+    secureConnection: true,
+
     auth: {
       user: config.companyEmail,
       pass: config.appPassWord,
