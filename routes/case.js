@@ -59,9 +59,7 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
       user: config.companyEmail,
       pass: config.appPassWord,
     },
-    // tls: {
-    //   ciphers: 'SSLv3',
-    // },
+ 
   }) 
 
 

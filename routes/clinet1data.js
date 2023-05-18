@@ -11,25 +11,29 @@ const config = require("../config/config");
 
 const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {
 
-    /*
-  
-     compData ={companyName , email}
-     clientData = {fname ,surName}
-     messageBodyinfo = {formUrl}
-  
-    */
-
     let transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: config.companyEmail,
-            pass: config.appPassWord,
+        service: 'gmail',
+        port: 587,
+        starttls: {
+            enable: true
         },
-    });
+        starttls: {
+          enable: true
+      },
+    
+        secureConnection: false,
+    
+        auth: {
+          user: config.companyEmail,
+          pass: config.appPassWord,
+        },
+     
+      }) 
+    
 
 
     let info = transporter.sendMail({
-
+        from: config.companyEmail,
         to: compData.email,
         subject: `MIAM 1 has been applied by ${clientData.fname} ${clientData.surName}`,
         html: `<body>
