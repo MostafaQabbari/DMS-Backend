@@ -59,7 +59,7 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
     // tls: {
     //   ciphers: 'SSLv3',
     // },
-  });
+  }) 
 
 
   let info =  transporter.sendMail({
@@ -96,6 +96,16 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
     // </div>
     //  `,
 
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+      res.json("email didnt send")
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
   });
 
 }
