@@ -2,6 +2,8 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const path = require("path");
 const config = require("../config/config");
 const Company = require("../models/company");
@@ -211,8 +213,6 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 });
 
 
-
-
 router.post("/refresh-token", async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -237,6 +237,132 @@ router.post("/refresh-token", async (req, res, next) => {
     next(error);
   }
 });
+
+
+
+router.post("/forgot-password", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    // Generate a password reset token
+    const resetTokenData = generateResetToken();
+
+    // Find the user by email
+    const user = await Company.findOne({email});
+    if (!user) {
+      user = await Mediator.findone({email});
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+    }
+
+
+    // Save the reset token and expiry time to the company or mediator documents
+    user.resetToken = resetTokenData.token;
+    user.resetTokenExpiry = resetTokenData.expiresAt;
+    await user.save();
+
+    // Send the reset password email to the user (e.g., using Nodemailer)
+    sendResetPasswordEmail(user.email, resetToken);
+
+    res.status(200).json({ message: "Password reset email sent"  });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+router.post("/reset-password", async (req, res, next) => {
+  try {
+    const { email, resetToken, newPassword } = req.body;
+
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    // Check if the password meets the minimum requirements
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    }
+
+    // Find the user by email and reset token
+    const user = await Company.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) {
+      user = await Mediator.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
+      if (!user) {
+        return res.status(401).json({ message: "Invalid reset token" });
+      }
+    }
+
+
+    // Update the user's password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await user.save();
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
+
+
+
+
+
+// Create a transporter for sending emails
+const transporter = nodemailer.createTransport({
+  service: "Gmail", // e.g., "Gmail", "SendGrid", "Outlook"
+  auth: {
+    user: "abdosamir2022.2022@gmail.com", // your email address
+    pass: "dffswebwucuxpayy", // your email password or API key
+  },
+});
+
+
+
+
+// Send the reset password email to the user
+function sendResetPasswordEmail(email, resetToken) {
+  const mailOptions = {
+    from: "abdosamir2022.2022@gmail.com", // your email address
+    to: "mkabary8@gmail.com", // recipient's email address
+    subject: "Password Reset Request",
+    text: `You have requested to reset your password. Please click the link below to reset your password:
+    http://example.com/reset-password?token=${resetToken}`,
+    html: `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
+    <a href="http://example.com/reset-password?token=${resetToken}">Reset Password</a>`,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending password reset email:", error);
+    } else {
+      console.log("Password reset email sent:", info.response);
+    }
+  });
+}
+
+
+
+
+// Function to generate a reset token with expiry
+function generateResetToken() {
+  const resetToken = crypto.randomBytes(20).toString("hex"); // Generate a random token
+  const expiryTime = Date.now() + 900000; // Set token expiry to 15 minutes from now
+
+  return {
+    token: resetToken,
+    expiresAt: new Date(expiryTime),
+  };
+}
+
 
 
 
