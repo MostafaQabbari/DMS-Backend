@@ -30,7 +30,8 @@ const sendingSMS = function (twillioInfo, clientNumber, messageBodyData) {
     next();
   }
   ).catch((err) => {
-    res.json({message : err.message});
+
+    console.log(err.message)
 });
 
 }
