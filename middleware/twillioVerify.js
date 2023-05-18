@@ -15,7 +15,7 @@ const verifyTwillio = async (req, res, next) => {
         next();
     }
     ).catch((err) => {
-        res.json({message : "something wrong please check your data"});
+        res.json({message : err.message});
     });
 }
 

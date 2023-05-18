@@ -229,12 +229,5 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
 
 
 
-router.get('/test', async (req, res) => {
-  sendMail()
-  const x = await mediator.find({ _id: '6454e93139652cb9b2f1de65' }).populate('companyId')
-  console.log(x[0].companyId.companyName)
-
-  res.json(x)
-})
 
 module.exports = router;
