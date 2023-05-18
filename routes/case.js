@@ -62,16 +62,35 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
 
     to: clientData.email ,
     subject: "Applying To MIAM Form",
-    html: `
-    <div>
-    <h1>Dear ${clientData.clientName}  </h1>
-    <h2> Follow the next Link to Apply to your form </h2>
-    <a href='${messageBodyinfo.formUrl}'>Click here </a>
-    <h3>Best Regards</h3>
-    <h3>${companyData.companyName}</h3>
-    <h3>${companyData.email}</h3>
-    </div>
-     `,
+    html:`<p>
+    Dear  ${clientData.clientName} </br>
+    </br>
+    Thank you for enquiring about YouCanPayLess.com doing a document to check to see if your service provider has breached contract enabling you to assert your legal right to reduce payments.
+    </br></br>
+    Please find attached PDF explaining the type of document we require to do the necessary legal check to see if you are legally allowed to stop or reduce payments.
+    </br></br>
+    Please Note
+    It will take us at least two weeks to do the legal document check after you email us your document.
+    </br></br>
+    We will email me you a legal protection letter if we believe you have the legal right to reduce your payments.
+    </br></br>
+    Kind regards
+    </br></br>
+    YouCanPayLess.com Founder
+    </br></br>
+    YCPL Founder
+    </p>`,
+
+    // html: `
+    // <div>
+    // <h1>Dear ${clientData.clientName}  </h1>
+    // <h2> Follow the next Link to Apply to your form </h2>
+    // <a href='${messageBodyinfo.formUrl}'>Click here </a>
+    // <h3>Best Regards</h3>
+    // <h3>${companyData.companyName}</h3>
+    // <h3>${companyData.email}</h3>
+    // </div>
+    //  `,
 
   });
 
