@@ -34,7 +34,7 @@ const sendingSMS = function (twillioInfo, clientNumber, messageBodyData) {
 }
 
 const sendMail = function (companyData,clientData,messageBodyinfo) {
-  
+
   /*
 
    companyData ={companyName , email}
@@ -46,15 +46,15 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   let transporter = nodemailer.createTransport({
     //service: "gmail",
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // Use TLS
+    port: 465,
+    secure: true, // Use TLS
     auth: {
-      user: config.companyEmail, 
-      pass: config.appPassWord, 
+      user: config.companyEmail,
+      pass: config.appPassWord,
     },
-    tls: {
-      ciphers: 'SSLv3',
-    },
+    // tls: {
+    //   ciphers: 'SSLv3',
+    // },
   });
 
 
@@ -71,7 +71,7 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
     <h3>${companyData.companyName}</h3>
     <h3>${companyData.email}</h3>
     </div>
-    </body>`, 
+    </body>`,
 
   });
 
@@ -154,7 +154,7 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
           client1ContactDetails: { firstName, surName, phoneNumber,email, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
-        
+
         const companyId = req.user._id;
 
         // Update the company's cases array with the new case ID
