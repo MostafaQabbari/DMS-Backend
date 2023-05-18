@@ -9,6 +9,8 @@ const companySchema = new mongoose.Schema({
   companyLogo: { type: String },
 
   refreshToken: {type: String,default: null,},
+  resetToken: { type: String, default: null },
+  resetTokenExpiry: { type: Date, default: null },
 
   twillioData:{type:String},
  
