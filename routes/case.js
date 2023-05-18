@@ -44,13 +44,16 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   */
 
   let transporter = nodemailer.createTransport({
-    service: 'smtp.office365.com',
-    host: 'smtp.office365.com',
+    service: 'gmail',
     port: 587,
     starttls: {
         enable: true
     },
-    secureConnection: true,
+    starttls: {
+      enable: true
+  },
+
+    secureConnection: false,
 
     auth: {
       user: config.companyEmail,
@@ -63,27 +66,17 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
 
 
   let info =  transporter.sendMail({
-
+    from: config.companyEmail,
     to: clientData.email ,
     subject: "Applying To MIAM Form",
-    html:`<p>
-    Dear  ${clientData.clientName} </br>
-    </br>
-    Thank you for enquiring about YouCanPayLess.com doing a document to check to see if your service provider has breached contract enabling you to assert your legal right to reduce payments.
-    </br></br>
-    Please find attached PDF explaining the type of document we require to do the necessary legal check to see if you are legally allowed to stop or reduce payments.
-    </br></br>
-    Please Note
-    It will take us at least two weeks to do the legal document check after you email us your document.
-    </br></br>
-    We will email me you a legal protection letter if we believe you have the legal right to reduce your payments.
-    </br></br>
-    Kind regards
-    </br></br>
-    YouCanPayLess.com Founder
-    </br></br>
-    YCPL Founder
-    </p>`,
+    html:` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    // <h1>Dear ${clientData.clientName}  </h1>
+    // <h2> Follow the next Link to Apply to your form </h2>
+    // <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+    // <h3>Best Regards</h3>
+    // <h3>${companyData.companyName}</h3>
+    // <h3>${companyData.email}</h3>
+    // </div>`,
 
     // html: `
     // <div>
@@ -102,7 +95,7 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   transporter.sendMail(info, (error, info) => {
     if (error) {
       console.log('Error occurred while sending email:', error.message);
-      res.json("email didnt send")
+      
     } else {
       console.log('Email sent successfully:', info.messageId);
     }
