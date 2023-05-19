@@ -1,12 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
 const Case = require('../models/case');
-const mediator = require('../models/mediator');
-const Company = require("../models/company");
-const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer")
-const twillioMiddleware = require('../middleware/getDataFromPromise');
 const config = require("../config/config");
 
 const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {

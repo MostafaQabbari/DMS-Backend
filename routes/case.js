@@ -4,9 +4,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const Case = require('../models/case');
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
-const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer")
-const twillioMiddleware = require('../middleware/getDataFromPromise');
+const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
 
 
@@ -106,7 +105,7 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
 
 
 
-router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res, next) => {
+router.post('/createCaseSMS', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
   let twillioInfo;
   let clientNumber;

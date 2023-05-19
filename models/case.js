@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const client1data = require('./client1prototype')
+const client1data = require('../interface/client1prototype')
 const caseSchema = new Schema({
 
   client1ContactDetails:{
