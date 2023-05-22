@@ -16,7 +16,7 @@ const CryptoJS = require("crypto-js");
 
 */
 
-router.post("/addTwillio", authMiddleware, verifyTwillio , async (req, res) => {
+router.patch("/addTwillio", authMiddleware, verifyTwillio , async (req, res) => {
   if (req.userRole !== "company") {
     return res.status(401).json({ message: "Unauthorized only a company account can configure twillio account" });
   }

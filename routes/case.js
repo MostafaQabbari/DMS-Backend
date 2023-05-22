@@ -164,7 +164,7 @@ router.post('/createCaseSMS', authMiddleware, decryptTwillioData, async (req, re
 });
 
 
-router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
+router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
 
   let companyData={};
