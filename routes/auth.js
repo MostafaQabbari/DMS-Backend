@@ -229,7 +229,7 @@ router.post("/refresh-token", async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "1h" });
+    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "15m" });
 
     res.status(200).json({ accessToken });
   } catch (error) {
@@ -247,9 +247,9 @@ router.post("/forgot-password", async (req, res, next) => {
     const resetTokenData = generateResetToken();
 
     // Find the user by email
-    const user = await Company.findOne({email});
+    let user = await Company.findOne({email});
     if (!user) {
-      user = await Mediator.findone({email});
+      user = await Mediator.findOne({email});
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -262,9 +262,9 @@ router.post("/forgot-password", async (req, res, next) => {
     await user.save();
 
     // Send the reset password email to the user (e.g., using Nodemailer)
-    sendResetPasswordEmail(user.email, resetToken);
+    sendResetPasswordEmail(user.email, resetTokenData.token);
 
-    res.status(200).json({ message: "Password reset email sent"  });
+    res.status(200).json({ message: "Password reset email sent" , resetTokenData });
   } catch (error) {
     next(error);
   }
@@ -285,7 +285,7 @@ router.post("/reset-password", async (req, res, next) => {
     }
 
     // Find the user by email and reset token
-    const user = await Company.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
+    let user = await Company.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
     if (!user) {
       user = await Mediator.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
       if (!user) {
@@ -342,14 +342,14 @@ function sendResetPasswordEmail(email, resetToken) {
 
   const mailOptions = {
     from: config.companyEmail, // your email address
-    to: "mkabary8@gmail.com", // recipient's email address
-    subject: "Password Reset Request",
+    to: email, // recipient's email address
     text: `You have requested to reset your password. Please click the link below to reset your password:
-    http://example.com/reset-password?token=${resetToken}`,
+    https://dms5.onrender.com/auth/reset-password?token=${resetToken}`,
     html: `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
-    <a href="http://example.com/reset-password?token=${resetToken}">Reset Password</a>`,
+    <a href="https://dms5.onrender.com/auth/reset-password?token=${resetToken}">Reset Password</a>`,
   };
 
+  
   // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
