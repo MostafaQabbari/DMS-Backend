@@ -341,18 +341,12 @@ const transporter = nodemailer.createTransport({
 function sendResetPasswordEmail(email, resetToken) {
 
   const mailOptions = {
-<<<<<<< HEAD
-    from: "abdosamir2022.2022@gmail.com", // your email address
-    to: email, // recipient's email address
-=======
     from: config.companyEmail, // your email address
-    to: "mkabary8@gmail.com", // recipient's email address
->>>>>>> 4c5479eb6d88b9930404d8312d7780eb65644110
-    subject: "Password Reset Request",
+    to: email, // recipient's email address
     text: `You have requested to reset your password. Please click the link below to reset your password:
-    http://example.com/reset-password?token=${resetToken}`,
+    https://dms5.onrender.com/auth/reset-password?token=${resetToken}`,
     html: `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
-    <a href="http://example.com/reset-password?token=${resetToken}">Reset Password</a>`,
+    <a href="https://dms5.onrender.com/auth/reset-password?token=${resetToken}">Reset Password</a>`,
   };
 
   
