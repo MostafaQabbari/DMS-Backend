@@ -6,11 +6,10 @@ const caseRoutes = require("./routes/case");
 const companyRoutes = require("./routes/company");
 const client1Form = require("./routes/clinet1data");
 const pdfConvertor = require("./routes/pdfConvertor");
-
-
-const smsRouts = require("./routes/sendSMS.js")
+const configureTwillio = require("./routes/configureTwillio")
 const cors = require('cors');
 require('dotenv')
+
 
 const PORT = process.env.PORT || 3007
 const app = express();
@@ -32,7 +31,7 @@ app.use("/auth", authRoutes);
 app.use("/", caseRoutes);
 app.use("/", companyRoutes);
 app.use("/", pdfConvertor);
-app.use(smsRouts);
+app.use(configureTwillio);
 app.use(client1Form)
 
 

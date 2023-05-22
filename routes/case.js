@@ -4,9 +4,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const Case = require('../models/case');
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
-const CryptoJS = require("crypto-js");
 const nodemailer = require("nodemailer")
-const twillioMiddleware = require('../middleware/getDataFromPromise');
+const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
 
 
@@ -29,12 +28,15 @@ const sendingSMS = function (twillioInfo, clientNumber, messageBodyData) {
     console.log({ message: "form message sent succesfully", messageID: message.sid });
     next();
   }
-  )
+  ).catch((err) => {
+
+    console.log(err.message)
+});
 
 }
 
 const sendMail = function (companyData,clientData,messageBodyinfo) {
-  
+
   /*
 
    companyData ={companyName , email}
@@ -44,48 +46,78 @@ const sendMail = function (companyData,clientData,messageBodyinfo) {
   */
 
   let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "abdosamir2022.2022@gmail.com", 
-      pass: "dffswebwucuxpayy", 
+    service: 'gmail',
+    port: 587,
+    starttls: {
+        enable: true
     },
-  });
+    starttls: {
+      enable: true
+  },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+ 
+  }) 
 
 
   let info =  transporter.sendMail({
-
+    from: config.companyEmail,
     to: clientData.email ,
     subject: "Applying To MIAM Form",
-    html: `<body>
-    <div style="background-color: coral; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-    <h1>Hello ${clientData.clientName}  </h1>
-    <h2> Follow the next Link to Apply to your form </h2>
-    <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-    <h3>Best Regards</h3>
-    <h3>${companyData.companyName}</h3>
-    <h3>${companyData.email}</h3>
-    </div>
-    </body>`, 
+    html:` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    // <h1>Dear ${clientData.clientName}  </h1>
+    // <h2> Follow the next Link to Apply to your form </h2>
+    // <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+    // <h3>Best Regards</h3>
+    // <h3>${companyData.companyName}</h3>
+    // <h3>${companyData.email}</h3>
+    // </div>`,
 
+    // html: `
+    // <div>
+    // <h1>Dear ${clientData.clientName}  </h1>
+    // <h2> Follow the next Link to Apply to your form </h2>
+    // <a href='${messageBodyinfo.formUrl}'>Click here </a>
+    // <h3>Best Regards</h3>
+    // <h3>${companyData.companyName}</h3>
+    // <h3>${companyData.email}</h3>
+    // </div>
+    //  `,
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+      
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
   });
 
 }
 
 
 
-router.post('/createCaseSMS', authMiddleware, twillioMiddleware, async (req, res, next) => {
+router.post('/createCaseSMS', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
   let twillioInfo;
   let clientNumber;
   let messageBodyData = {};
   twillioInfo = req.twillioInfo;
   try {
-    const { firstName, surName, phoneNumber, dateOfMAIM, location } = req.body;
+    const { firstName, surName, phoneNumber,email, dateOfMAIM, location } = req.body;
 
     if (req.userRole == 'company') {
       let newCase = await Case.insertMany(
         {
-          client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
+          client1ContactDetails: { firstName, surName, phoneNumber,email, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
 
@@ -148,7 +180,7 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
           client1ContactDetails: { firstName, surName, phoneNumber,email, dateOfMAIM, location },
           connectionData: { companyID: req.user._id }
         })
-        
+
         const companyId = req.user._id;
 
         // Update the company's cases array with the new case ID
@@ -199,12 +231,5 @@ router.post('/createCaseMail', authMiddleware, async (req, res, next) => {
 
 
 
-router.get('/test', async (req, res) => {
-  sendMail()
-  const x = await mediator.find({ _id: '6454e93139652cb9b2f1de65' }).populate('companyId')
-  console.log(x[0].companyId.companyName)
-
-  res.json(x)
-})
 
 module.exports = router;

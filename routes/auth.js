@@ -12,7 +12,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 // const { appendFile } = require("fs");
 const router = express.Router();
 
-
 // Create a storage engine for Multer
 const storage = multer.diskStorage({
   destination: "./uploads/logos",
@@ -317,21 +316,38 @@ router.post("/reset-password", async (req, res, next) => {
 
 // Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
-  service: "Gmail", // e.g., "Gmail", "SendGrid", "Outlook"
-  auth: {
-    user: "abdosamir2022.2022@gmail.com", // your email address
-    pass: "dffswebwucuxpayy", // your email password or API key
+  service: 'gmail',
+  port: 587,
+  starttls: {
+      enable: true
   },
-});
+  starttls: {
+    enable: true
+},
+
+  secureConnection: false,
+
+  auth: {
+    user: config.companyEmail,
+    pass: config.appPassWord,
+  },
+
+}) 
 
 
 
 
 // Send the reset password email to the user
 function sendResetPasswordEmail(email, resetToken) {
+
   const mailOptions = {
+<<<<<<< HEAD
     from: "abdosamir2022.2022@gmail.com", // your email address
     to: email, // recipient's email address
+=======
+    from: config.companyEmail, // your email address
+    to: "mkabary8@gmail.com", // recipient's email address
+>>>>>>> 4c5479eb6d88b9930404d8312d7780eb65644110
     subject: "Password Reset Request",
     text: `You have requested to reset your password. Please click the link below to reset your password:
     http://example.com/reset-password?token=${resetToken}`,

@@ -1,17 +1,20 @@
 const CryptoJS = require("crypto-js");
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
-const getTwillioData = async function (user, role) {
 
-  if (role == 'company') {
-    console.log(user.twillioData)
+// at first we get data from twillio and decrypt it
+
+const getDataFromTwillio = async function (user, role) {
+
+  if (role == 'company' && user.twillioData ) {
+    // console.log(user.twillioData)
     const Data = CryptoJS.AES.decrypt(user.twillioData, 'ourTwillioEncyptionKey');
     const decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8))
     return decryptedData[0]
 
 
   }
-  else if (role == 'mediator') {
+  else if (role == 'mediator' && user.twillioData) {
     const mediatorCompanyData = await mediator.findById(user._id).populate('companyId');
     const Data = CryptoJS.AES.decrypt(mediatorCompanyData.companyId.twillioData, 'ourTwillioEncyptionKey');
     const decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8));
@@ -19,14 +22,16 @@ const getTwillioData = async function (user, role) {
 
   }
   else {
-    res.json({ message: "couldn't get twilio data " })
+    console.log({ message: "something wrong with twilio data " })
   }
 }
 
 
+// this function take the decrypted data and solve the promise issue
 
-function twillioMiddleware(req, res, next) {
-  let ReqDataTwillio = getTwillioData(req.user, req.userRole);
+function decryptTwillioData(req, res, next) {
+
+  let ReqDataTwillio = getDataFromTwillio(req.user, req.userRole);
 
   const myPromise = new Promise((resolve, reject) => {
        resolve(ReqDataTwillio);
@@ -44,4 +49,4 @@ function twillioMiddleware(req, res, next) {
 }
 
 
-module.exports= twillioMiddleware
+module.exports = decryptTwillioData
