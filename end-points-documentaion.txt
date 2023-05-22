@@ -36,7 +36,9 @@ Case Routes
 
 /creatCase
   Method: post
-  Required: { firstName, surName, phoneNumber,email,dateOfMAIM,location }
+  Required: 
+    {mediatorMail , firstName, surName, phoneNumber,email,dateOfMAIM,location }   if comp
+  { firstName, surName, phoneNumber,email,dateOfMAIM,location }                    if med
 
 /sendMIAM1email
   Method: post
