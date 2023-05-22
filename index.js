@@ -7,6 +7,7 @@ const companyRoutes = require("./routes/company");
 const client1Form = require("./routes/clinet1data");
 const pdfConvertor = require("./routes/pdfConvertor");
 const configureTwillio = require("./routes/configureTwillio")
+const getMediators = require("./routes/getMediators")
 const cors = require('cors');
 require('dotenv')
 
@@ -33,8 +34,7 @@ app.use("/", companyRoutes);
 app.use("/", pdfConvertor);
 app.use(configureTwillio);
 app.use(client1Form)
-
-
+app.use(getMediators)
 
 
 
