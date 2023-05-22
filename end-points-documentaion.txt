@@ -310,3 +310,9 @@ Case Routes
 /addTwillio
   method :patch
   required :{ twillioSID, twillioToken, twillioNumber } 
+
+
+  /*********************/
+
+  /getMediators
+   method : get
