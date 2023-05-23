@@ -19,7 +19,7 @@ router.get("/getMediators" ,authMiddleware,async (req,res)=>{
     }
     console.log(response)
 
-    res.json("ascascascascascascsdcascascascascc")
+    res.json(response)
 })
 
 
