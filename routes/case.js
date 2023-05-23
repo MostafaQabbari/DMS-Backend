@@ -119,7 +119,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const { mediatorMail, firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
-     
+
 
       let newCase = await Case.insertMany(
         {
@@ -138,7 +138,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.email = req.user.email;
       sendMail(companyData, clientData, messageBodyinfo)
       console.log(newCase[0]._id)
-     console.log(Themediator.cases)
+      console.log(Themediator.cases)
       res.json({ message: " company has added client " })
     }
 
@@ -148,7 +148,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       let newCase = await Case.insertMany(
         {
-          client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
+          client1ContactDetails: { firstName, surName, phoneNumber, email , dateOfMAIM, location },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
 
@@ -165,7 +165,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
-
+      console.log(newCase[0])
       res.json({ message: " mediator has added client " })
     }
 
@@ -179,7 +179,6 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 });
 
 
-
 router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
   /*
@@ -188,28 +187,25 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
     messageBodyData = {clientName ,companyName, formLink   }
   */
 
-  let twillioInfo;
   let clientNumber;
   let messageBodyData = {};
-  twillioInfo = req.twillioInfo;
+
+  let twillioInfo = req.twillioInfo;
 
   try {
     const { caseID } = req.body;
+    const selectedCase = await Case.findById(caseID);
+    const client1ContactDetails =selectedCase.client1ContactDetails
+    const compData =  await Case.findById(caseID).populate('connectionData.companyID');
+    
+    clientNumber= client1ContactDetails.phoneNumber;
+    messageBodyData.companyName = compData.connectionData.companyID.companyName
+    messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
+    messageBodyData.formLink=`${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+    sendingSMS(twillioInfo, clientNumber, messageBodyData)
 
-    if (req.userRole == 'company') {
+    res.json({ message: "MIAM 1 link has been sent " })
 
-
-      res.json({ message: " MIAM 1 link has been sent to the client " })
-    }
-    else if (req.userRole == 'mediator') {
-
-
-      res.json({ message: " MIAM 1 link has been sent to the client " })
-    }
-
-    else {
-      res.json({ 'message': "error in the role of token" })
-    }
   } catch (err) {
     res.json({ message: "error with the end point" })
   }
@@ -217,7 +213,35 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
 });
 
 
+router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
 
+  let clientData={};
+  let companyData={};
+  let messageBodyinfo = {};
+
+  try {
+    const { caseID } = req.body;
+    const selectedCase = await Case.findById(caseID);
+    const client1ContactDetails =selectedCase.client1ContactDetails
+    const compData =  await Case.findById(caseID).populate('connectionData.companyID');
+   // console.log(client1ContactDetails)
+    
+    clientData.clientName= `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
+    clientData.email = client1ContactDetails.email
+   // console.log(clientData.email)
+    companyData.companyName = compData.connectionData.companyID.companyName
+    companyData.email = compData.connectionData.companyID.email
+    messageBodyinfo.formUrl=`${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+
+     sendMail(companyData, clientData, messageBodyinfo)
+
+    res.json({ message: "MIAM 1 link has been sent " })
+
+  } catch (err) {
+    res.json({ message: "error with the end point" })
+  }
+
+});
 
 
 
