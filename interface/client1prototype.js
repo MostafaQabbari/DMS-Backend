@@ -83,7 +83,7 @@ module.exports = client1data = [{
             whoIsinTheConflict: { type: String },
             FirstName: { type: String },
             SurName: { type: String },
-            BirthDate: { type: String },
+            BirthDate: { type: Date },
             Email: { type: String },
             PhoneNumber: { type: String },
             DoYouKnowhisaddress: {
@@ -115,7 +115,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -132,7 +132,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -149,7 +149,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -166,7 +166,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -183,7 +183,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -201,7 +201,7 @@ module.exports = client1data = [{
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
