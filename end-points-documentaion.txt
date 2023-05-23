@@ -42,11 +42,11 @@ Case Routes
 
 /sendMIAM1email
   Method: post
-  Required: {  }
+  Required: { caseID }
 
 /sendMIAM1sms
   Method: post
-  Required: { }
+  Required: {caseID }
 
 /addClient1/:id
   Method: patch
