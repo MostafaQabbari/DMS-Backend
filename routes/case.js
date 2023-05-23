@@ -148,7 +148,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       let newCase = await Case.insertMany(
         {
-          client1ContactDetails: { firstName, surName, phoneNumber, dateOfMAIM, location },
+          client1ContactDetails: { firstName, surName, phoneNumber, email , dateOfMAIM, location },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
 
@@ -165,7 +165,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
-console.log(newCase[0])
+      console.log(newCase[0])
       res.json({ message: " mediator has added client " })
     }
 
@@ -224,14 +224,16 @@ router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
     const selectedCase = await Case.findById(caseID);
     const client1ContactDetails =selectedCase.client1ContactDetails
     const compData =  await Case.findById(caseID).populate('connectionData.companyID');
+   // console.log(client1ContactDetails)
     
     clientData.clientName= `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
     clientData.email = client1ContactDetails.email
+   // console.log(clientData.email)
     companyData.companyName = compData.connectionData.companyID.companyName
     companyData.email = compData.connectionData.companyID.email
     messageBodyinfo.formUrl=`${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
 
-     sendMail(clientData, companyData, messageBodyinfo)
+     sendMail(companyData, clientData, messageBodyinfo)
 
     res.json({ message: "MIAM 1 link has been sent " })
 
