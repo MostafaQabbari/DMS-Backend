@@ -11,7 +11,7 @@ const caseSchema = new Schema({
     surName: { type: String},
     email: { type: String },
     phoneNumber: { type: String },
-    dateOfMAIM: { type: String },
+    dateOfMAIM: { type: Date},
     location: { type: String },
   },
   connectionData:{
