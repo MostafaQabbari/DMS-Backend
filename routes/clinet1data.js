@@ -4,16 +4,11 @@ const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 
-<<<<<<< HEAD
 const fs = require("fs");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
-const path = require('path');
 
-const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {
-=======
 const sendMailForMIAM2 = function ( mediatorData ,clientData, messageBodyinfo ) {
->>>>>>> c1296f53ec66bf6e71e59e2a96d639470acfc5db
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -65,16 +60,8 @@ router.patch("/addClient1/:id", async (req, res) => {
         let client1data = req.body
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
 
-<<<<<<< HEAD
         await createMIAM1Upload(client1data , Reference);
 
-        const CompanyData = await Case.findById(req.params.id).populate('connectionData.companyID');
-        const companyEmail = CompanyData.connectionData.companyID.email;
-        let compData = {}, clientData = {}, messageBodyinfo = {};
-        compData.companyName = CompanyData.connectionData.companyID.companyName;
-        // will replace this by companyEmail
-        compData.email = "abdo.samir.7719@gmail.com"
-=======
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
      
         let mediatorData = {}, clientData = {}, messageBodyinfo = {};
@@ -84,7 +71,6 @@ router.patch("/addClient1/:id", async (req, res) => {
         // will replace this by medEmail
         const medEmail = medData.connectionData.mediatorID.email;
         mediatorData.email = "abdosamir023023@gmail.com"
->>>>>>> c1296f53ec66bf6e71e59e2a96d639470acfc5db
 
         if (currentCase.client1AddedData) {
 
