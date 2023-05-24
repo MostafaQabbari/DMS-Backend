@@ -119,26 +119,32 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const { mediatorMail, firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
+      if (Themediator) {
+        let newCase = await Case.insertMany(
+          {
+            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+            connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
+          });
+
+        // Update the company's cases array with the new case ID
+        await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
+        await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
+
+        clientData.email = email;
+        clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
+        messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+        companyData.companyName = req.user.companyName;
+        companyData.email = req.user.email;
+        sendMail(companyData, clientData, messageBodyinfo)
+
+      }
+      else{
+        res.json({"message" : "please add the mediator first"})
+      }
 
 
-      let newCase = await Case.insertMany(
-        {
-          client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-          connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
-        });
-
-      // Update the company's cases array with the new case ID
-      await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
-      await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
-
-      clientData.email = email;
-      clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
-      companyData.companyName = req.user.companyName;
-      companyData.email = req.user.email;
-      sendMail(companyData, clientData, messageBodyinfo)
-      console.log(newCase[0]._id)
-      console.log(Themediator.cases)
+      // console.log(newCase[0]._id)
+      // console.log(Themediator.cases)
       res.json({ message: " company has added client " })
     }
 
@@ -148,7 +154,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       let newCase = await Case.insertMany(
         {
-          client1ContactDetails: { firstName, surName, phoneNumber, email , dateOfMAIM, location },
+          client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
 
@@ -161,7 +167,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       clientData.email = email;
       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
       messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
-      console.log("xx")
+
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
@@ -173,7 +179,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       res.json({ 'message': "error in the role of token" })
     }
   } catch (err) {
-    res.json({ message: "error with the end point" })
+    res.json({ message: err.message })
   }
 
 });
@@ -195,13 +201,13 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
   try {
     const { caseID } = req.body;
     const selectedCase = await Case.findById(caseID);
-    const client1ContactDetails =selectedCase.client1ContactDetails
-    const compData =  await Case.findById(caseID).populate('connectionData.companyID');
-    
-    clientNumber= client1ContactDetails.phoneNumber;
+    const client1ContactDetails = selectedCase.client1ContactDetails
+    const compData = await Case.findById(caseID).populate('connectionData.companyID');
+
+    clientNumber = client1ContactDetails.phoneNumber;
     messageBodyData.companyName = compData.connectionData.companyID.companyName
     messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
-    messageBodyData.formLink=`${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+    messageBodyData.formLink = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
     sendingSMS(twillioInfo, clientNumber, messageBodyData)
 
     res.json({ message: "MIAM 1 link has been sent " })
@@ -215,25 +221,25 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
 
 router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
 
-  let clientData={};
-  let companyData={};
+  let clientData = {};
+  let companyData = {};
   let messageBodyinfo = {};
 
   try {
     const { caseID } = req.body;
     const selectedCase = await Case.findById(caseID);
-    const client1ContactDetails =selectedCase.client1ContactDetails
-    const compData =  await Case.findById(caseID).populate('connectionData.companyID');
-   // console.log(client1ContactDetails)
-    
-    clientData.clientName= `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
+    const client1ContactDetails = selectedCase.client1ContactDetails
+    const compData = await Case.findById(caseID).populate('connectionData.companyID');
+    // console.log(client1ContactDetails)
+
+    clientData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
     clientData.email = client1ContactDetails.email
-   // console.log(clientData.email)
+    // console.log(clientData.email)
     companyData.companyName = compData.connectionData.companyID.companyName
     companyData.email = compData.connectionData.companyID.email
-    messageBodyinfo.formUrl=`${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+    messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
 
-     sendMail(companyData, clientData, messageBodyinfo)
+    sendMail(companyData, clientData, messageBodyinfo)
 
     res.json({ message: "MIAM 1 link has been sent " })
 
