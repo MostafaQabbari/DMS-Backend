@@ -1,4 +1,56 @@
-module.exports = client1data = [{
+Auth routes : 
+             
+/auth/company-signup
+  Method: post
+  Required:  { companyName, email, password }
+
+/auth/company-login
+  Method: post
+  Required:  {  email, password }
+
+/auth/mediator-login
+  Method: post
+  Required:  { email, password }
+
+/auth/user-info
+  Method: get
+
+/auth/add-mediator
+  Method: post
+  Required:  { firstName, lastName, email, password, phoneNumber }
+
+/auth/refresh-token
+  Method: post
+  Required:  { refreshToken }
+
+/auth/forgot-password
+  Method: post
+  Required:  { email }
+
+/auth/reset-password
+  Method: post
+  Required:{ email, resetToken, newPassword }
+
+***************************************************************
+Case Routes
+
+/creatCase
+  Method: post
+  Required: 
+    {mediatorMail , firstName, surName, phoneNumber,email,dateOfMAIM,location }   if comp
+  { firstName, surName, phoneNumber,email,dateOfMAIM,location }                    if med
+
+/sendMIAM1email
+  Method: post
+  Required: { caseID }
+
+/sendMIAM1sms
+  Method: post
+  Required: {caseID }
+
+/addClient1/:id
+  Method: patch
+  Required:  [{
  
         personalInfo: {
             firstName: { type: String },
@@ -251,3 +303,16 @@ module.exports = client1data = [{
 
     }
 ]
+
+
+
+/*****************************************/
+/addTwillio
+  method :patch
+  required :{ twillioSID, twillioToken, twillioNumber } 
+
+
+  /*********************/
+
+      /getMediators
+   method : get
