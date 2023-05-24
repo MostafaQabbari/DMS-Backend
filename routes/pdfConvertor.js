@@ -38,8 +38,8 @@ router.post('/submit-form', async (req, res) => {
     // Save the PDF file to a specified location
     fs.writeFileSync(filePath, pdfBytes);
 
-    // Save the file path and other metadata to MongoDB
-    await saveToMongoDB(filePath, name, email, message);
+    // // Save the file path and other metadata to MongoDB
+    // await saveToMongoDB(filePath, name, email, message);
 
     // Send a response with the file download link
     res.json({ downloadLink: `/download/${fileName}` });
@@ -56,7 +56,7 @@ router.get('/download/:fileName', (req, res) => {
     const fileName = req.params.fileName;
 
     // Define the file path
-    const filePath = path.join(__dirname, 'pdfs', fileName);
+    const filePath = path.join(__dirname, '../uploads/pdfs', fileName);
 
     // Send the file as a response
     res.sendFile(filePath);
@@ -66,10 +66,10 @@ router.get('/download/:fileName', (req, res) => {
   }
 });
 
-// Function to save the PDF metadata to MongoDB
-async function saveToMongoDB(filePath, name, email, message) {
-  // Implement MongoDB saving logic here
-}
+// // Function to save the PDF metadata to MongoDB
+// async function saveToMongoDB(filePath, name, email, message) {
+//   // Implement MongoDB saving logic here
+// }
 
 
 module.exports = router;
