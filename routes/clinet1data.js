@@ -4,12 +4,16 @@ const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 
+<<<<<<< HEAD
 const fs = require("fs");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
 const path = require('path');
 
 const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {
+=======
+const sendMailForMIAM2 = function ( mediatorData ,clientData, messageBodyinfo ) {
+>>>>>>> c1296f53ec66bf6e71e59e2a96d639470acfc5db
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -34,11 +38,11 @@ const sendMailForMIAM2 = function (compData, clientData, messageBodyinfo) {
 
     let info = transporter.sendMail({
         from: config.companyEmail,
-        to: compData.email,
+        to: mediatorData.email,
         subject: `MIAM 1 has been applied by ${clientData.fname} ${clientData.surName}`,
         html: `<body>
       <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-      <h1>Hello ${compData.companyName} 's Teams  </h1>
+      <h1>Hello ${mediatorData.name} 's Teams  </h1>
       <h3>MIAM 1 has been applied by ${clientData.fname} ${clientData.surName} and that's your link to apply your MIAM 2 </h3>
       <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
       <h4> MIAM 1 is attached as a pdf file </h4>
@@ -61,6 +65,7 @@ router.patch("/addClient1/:id", async (req, res) => {
         let client1data = req.body
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
 
+<<<<<<< HEAD
         await createMIAM1Upload(client1data , Reference);
 
         const CompanyData = await Case.findById(req.params.id).populate('connectionData.companyID');
@@ -69,6 +74,17 @@ router.patch("/addClient1/:id", async (req, res) => {
         compData.companyName = CompanyData.connectionData.companyID.companyName;
         // will replace this by companyEmail
         compData.email = "abdo.samir.7719@gmail.com"
+=======
+        const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+     
+        let mediatorData = {}, clientData = {}, messageBodyinfo = {};
+
+        mediatorData.name =`${medData.connectionData.mediatorID.firstName} ${ medData.connectionData.mediatorID.lastName}`;
+
+        // will replace this by medEmail
+        const medEmail = medData.connectionData.mediatorID.email;
+        mediatorData.email = "abdosamir023023@gmail.com"
+>>>>>>> c1296f53ec66bf6e71e59e2a96d639470acfc5db
 
         if (currentCase.client1AddedData) {
 
@@ -77,10 +93,11 @@ router.patch("/addClient1/:id", async (req, res) => {
             clientData.fname = updatedCase.client1data[0].personalInfo.firstName;
             clientData.surName = updatedCase.client1data[0].personalInfo.surName;
 
+          
+            messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_2}/${updatedCase._id}`;
+            
             console.log(updatedCase)
-            messageBodyinfo.formUrl = `${config.baseUrl}/MIAM2/${updatedCase._id}`;
-
-            sendMailForMIAM2(compData,clientData,messageBodyinfo)
+            sendMailForMIAM2(mediatorData,clientData,messageBodyinfo)
             res.json(updatedCase)
 
         }
