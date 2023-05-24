@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const client1data = require('../interface/client1prototype')
+const client1data = require('../interface/client1prototype');
+const MIAM2mediator = require('../interface/MIAM2Medaitor');
+
 const caseSchema = new Schema({
 
+  Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
   client1ContactDetails:{
     firstName: { type: String },
     surName: { type: String},
@@ -23,8 +26,9 @@ const caseSchema = new Schema({
   },
   
   client1data,
-  Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
   client1AddedData:{type:Boolean , default:false},
+  MIAM2mediator,
+  MIAM2AddedData:{type:Boolean , default:false},
 
 
 
