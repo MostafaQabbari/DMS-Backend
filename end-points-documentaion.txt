@@ -50,7 +50,7 @@ Case Routes
 
 /addClient1/:id
   Method: patch
-  Required: [{
+  Required:  [{
  
         personalInfo: {
             firstName: { type: String },
@@ -135,7 +135,7 @@ Case Routes
             whoIsinTheConflict: { type: String },
             FirstName: { type: String },
             SurName: { type: String },
-            BirthDate: { type: String },
+            BirthDate: { type: Date },
             Email: { type: String },
             PhoneNumber: { type: String },
             DoYouKnowhisaddress: {
@@ -167,7 +167,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -184,7 +184,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -201,7 +201,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -218,7 +218,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -235,7 +235,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
@@ -253,7 +253,7 @@ Case Routes
                     surName: { type: String },
                     gender: { type: String },
                     livingWithWho: { type: String },
-                    DateOfBirth: { type: String },
+                    DateOfBirth: { type: Date },
                     haveAnySpecialNeeds: {
                         answer: { type: Boolean },
                         related: {
