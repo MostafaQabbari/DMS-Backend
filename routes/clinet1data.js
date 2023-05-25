@@ -61,7 +61,7 @@ router.patch("/addClient1/:id", async (req, res) => {
         let client1data = req.body
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
 
-        await createMIAM1Upload(client1data , Reference);
+        // await createMIAM1Upload(client1data , Reference);
 
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
      
@@ -73,7 +73,7 @@ router.patch("/addClient1/:id", async (req, res) => {
         const medEmail = medData.connectionData.mediatorID.email;
         mediatorData.email = "abdosamir023023@gmail.com"
 
-        if (currentCase.client1AddedData) {
+        if (!currentCase.client1AddedData) {
 
             let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
 
