@@ -56,12 +56,14 @@ router.patch("/addClient1/:id", async (req, res) => {
 
 
     try {
-      console.log("yy")
+     
         let currentCase = await Case.findById(req.params.id);
         console.log("xxx")
         let client1data = req.body
-        console.log({"body" :req.body})
-        console.log({"clinet1data" :client1data})
+
+        console.log(req.body)
+        console.log("yy")
+        console.log(client1data)
         let Reference = `${client1data.personalInfo.surName}& ${client1data.Client2Details.SurName}`;
         console.log(Reference)
 
@@ -80,9 +82,9 @@ router.patch("/addClient1/:id", async (req, res) => {
         mediatorData.email = "abdosamir023023@gmail.com"
 
         // if (currentCase.client1AddedData) {
-
+   console.log("before adding to db")
         let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
-
+        console.log("after adding to db")
             clientData.fname = updatedCase.client1data[0].personalInfo.firstName;
             clientData.surName = updatedCase.client1data[0].personalInfo.surName;
 
