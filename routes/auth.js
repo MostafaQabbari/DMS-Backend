@@ -69,7 +69,7 @@ router.post("/company-signup", (req, res, next) => {
 
       await user.save();
 
-      const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "15m" });
+      const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
       const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
       // Store refresh token in database
        await Company.findByIdAndUpdate(user._id, { refreshToken });
@@ -103,7 +103,7 @@ router.post("/company-login", async (req, res, next) => {
     }
     
     
-    const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "15m" });
+    const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
     const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
     
     // Store refresh token in database
@@ -137,7 +137,7 @@ router.post("/mediator-login", async (req, res, next) => {
     }
     
     
-    const  accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "15m" });
+    const  accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
     const refreshToken = jwt.sign({ id: user._id, role: "mediator" , type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
     // Store refresh token in database
     await Mediator.findByIdAndUpdate(user._id, { refreshToken });
@@ -229,7 +229,7 @@ router.post("/refresh-token", async (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "15m" });
+    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "7d" });
 
     res.status(200).json({ accessToken });
   } catch (error) {
