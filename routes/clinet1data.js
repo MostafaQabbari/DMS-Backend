@@ -4,6 +4,10 @@ const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 
+const fs = require("fs");
+const { google } = require("googleapis");
+const { PDFDocument } = require("pdf-lib");
+
 const sendMailForMIAM2 = function ( mediatorData ,clientData, messageBodyinfo ) {
 
     let transporter = nodemailer.createTransport({
@@ -56,6 +60,8 @@ router.patch("/addClient1/:id", async (req, res) => {
         let client1data = req.body
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
 
+        await createMIAM1Upload(client1data , Reference);
+
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
      
         let mediatorData = {}, clientData = {}, messageBodyinfo = {};
@@ -66,7 +72,7 @@ router.patch("/addClient1/:id", async (req, res) => {
         const medEmail = medData.connectionData.mediatorID.email;
         mediatorData.email = "abdosamir023023@gmail.com"
 
-        if (!currentCase.client1AddedData) {
+        if (currentCase.client1AddedData) {
 
             let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
 
@@ -86,11 +92,75 @@ router.patch("/addClient1/:id", async (req, res) => {
 
         }
     } catch (err) {
-        res.json({ "message": "error with adding client1 data" })
+        res.json(err.message)
     }
 
 
 })
+
+
+
+async function createMIAM1Upload(client1data, folderName) {
+  try {
+    // Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+
+    // Add a new page to the document
+    const page = pdfDoc.addPage();
+
+    // Set the font and font size
+    const font = await pdfDoc.embedFont('Helvetica');
+    page.setFont(font);
+    page.setFontSize(12);
+
+    // Add client data to the PDF document
+    page.drawText(`First name: ${client1data.personalInfo.firstName}`, { x: 50, y: 1000 });
+    page.drawText(`Sur name: ${client1data.personalInfo.surName}`, { x: 50, y: 950 });
+    page.drawText(`Birthday: ${client1data.personalInfo.dateOfBirth}`, { x: 50, y: 900 });
+    page.drawText(`Phone: ${client1data.personalInfo.phoneNumber}`, { x: 50, y: 850 });
+    page.drawText(`email: ${client1data.personalInfo.email}`, { x: 50, y: 800 });
+   
+   
+    // Save the PDF document to a buffer
+    const pdfBytes = await pdfDoc.save();
+
+    // Create a new Google Drive client
+    const auth = new google.auth.GoogleAuth({
+      // Add your Google Drive API credentials and scopes here
+      keyFile: "../DMS-Backend/config/client_secret_719235602447-85v86uo3esfvgvfi80039284r68mi720.apps.googleusercontent.com.json", // Path to your JSON credentials file
+      scopes: ["https://www.googleapis.com/auth/drive"], // Scopes required for accessing Google Drive
+    });
+
+
+    const drive = google.drive({ version: "v3", auth });
+console.log(drive)
+    // Get the folder ID using the reference object (folder name)
+    const response = await drive.files.list({
+      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
+    });
+    const folderId = response.data.files[0].id;
+
+    // Upload the PDF to Google Drive folder
+    const fileMetadata = {
+      name: `"MIAM-1'${Date.now()}'.pdf"`,
+      parents: [folderId],
+    };
+    const media = {
+      mimeType: "application/pdf",
+      body: fs.createReadStream(pdfBytes),
+    };
+    await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+    console.log("PDF created and uploaded successfully");
+  } catch (error) {
+    console.error("Error creating PDF and uploading to Google Drive:", error);
+  }
+}
+
 
 
 
