@@ -59,8 +59,12 @@ router.patch("/addClient1/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let client1data = req.body
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
+        console.log(client1data)
+        console.log(Reference)
 
         await createMIAM1Upload(client1data , Reference);
+
+        console.log("miam1 uploaded")
 
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
      
@@ -74,7 +78,7 @@ router.patch("/addClient1/:id", async (req, res) => {
 
         // if (currentCase.client1AddedData) {
 
-            let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
+        let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
 
             clientData.fname = updatedCase.client1data[0].personalInfo.firstName;
             clientData.surName = updatedCase.client1data[0].personalInfo.surName;
