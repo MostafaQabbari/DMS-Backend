@@ -59,10 +59,10 @@ router.patch("/addClient1/:id", async (req, res) => {
       console.log("yy")
         let currentCase = await Case.findById(req.params.id);
         console.log("xxx")
-        let client1data = req.body[0]
-        console.log(req.boy)
-        console.log(client1data)
-        let Reference = `${req.body[0].personalInfo.surName}& ${req.body[0].Client2Details.SurName}`;
+        let client1data = req.body
+        console.log({"body" :req.body})
+        console.log({"clinet1data" :client1data})
+        let Reference = `${client1data.personalInfo.surName}& ${client1data.Client2Details.SurName}`;
         console.log(Reference)
 
         await createMIAM1Upload(client1data , Reference);
