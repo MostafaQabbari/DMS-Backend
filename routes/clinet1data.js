@@ -59,7 +59,7 @@ router.patch("/addClient1/:id", async (req, res) => {
       console.log("yy")
         let currentCase = await Case.findById(req.params.id);
         console.log("xxx")
-        let client1data = req.body
+        let client1data = req.body[0]
         console.log(req.boy)
         console.log(client1data)
         let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
