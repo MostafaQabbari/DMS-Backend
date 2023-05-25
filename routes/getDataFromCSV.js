@@ -10,12 +10,13 @@ const mediator = require('../models/mediator');
 router.post('/getDataFromCSV', (req, res) => {
     const filePath = 'uploads/csvToTest.csv'; // Update with the path to your CSV file
   console.log(filePath)
-  const results = [];
+  const results = new Array(4);
 
   fs.createReadStream(filePath)
     .pipe(csv())
     .on('data', (data) => {
       // Process each row of the CSV data
+      console.log(data)
       results.push(data);
 
     })
