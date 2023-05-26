@@ -1,4 +1,4 @@
-module.exports = client1data = [{
+ client1data = [{
  
         personalInfo: {
             firstName: { type: String },
