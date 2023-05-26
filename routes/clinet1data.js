@@ -75,7 +75,7 @@ router.patch("/addClient1/:id", async (req, res) => {
     mediatorData.email = "abdosamir023023@gmail.com"
 
 
-    if (currentCase.client1AddedData) {
+    if (!currentCase.client1AddedData) {
      await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true} )
      const  updatedCase = await Case.findById(req.params.id);
 
