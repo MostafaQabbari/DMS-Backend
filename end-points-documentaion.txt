@@ -31,6 +31,8 @@ Auth routes :
   Method: post
   Required:{ email, resetToken, newPassword }
 
+
+
 ***************************************************************
 Case Routes
 
@@ -314,5 +316,9 @@ Case Routes
 
   /*********************/
 
-      /getMediators
-   method : get
+    /getMediators
+    method : get
+
+
+    /companies
+    Method: get
