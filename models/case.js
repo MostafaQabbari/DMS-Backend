@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const client1data = require('../interface/client1prototype');
+
 const MIAM2mediator = require('../interface/MIAM2Medaitor');
 
 const caseSchema = new Schema({
@@ -25,7 +25,7 @@ const caseSchema = new Schema({
     }
   },
   
-  client1data,
+  client1data:{type:String},
   client1AddedData:{type:Boolean , default:false},
   MIAM2mediator,
   MIAM2AddedData:{type:Boolean , default:false},
