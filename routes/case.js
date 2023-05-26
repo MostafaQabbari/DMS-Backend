@@ -150,7 +150,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       // console.log(newCase[0]._id)
       // console.log(Themediator.cases)
-      res.json({ message: " company has added client " })
+      res.json({ caseID: newCase[0]._id })
     }
 
     else if (req.userRole == 'mediator') {
@@ -177,7 +177,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
      // console.log(newCase[0])
-      res.json({ message: " mediator has added client " })
+      res.json({  caseID: newCase[0]._id })
     }
 
     else {
