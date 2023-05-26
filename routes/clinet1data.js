@@ -83,7 +83,7 @@ router.patch("/addClient1/:id", async (req, res) => {
         mediatorData.email = "abdosamir023023@gmail.com"
 
         // if (currentCase.client1AddedData) {
-   console.log("before adding to db")
+      console.log("before adding to db")
         let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
         console.log("after adding to db")
         if (!currentCase.client1AddedData) {
@@ -100,11 +100,11 @@ router.patch("/addClient1/:id", async (req, res) => {
             sendMailForMIAM2(mediatorData,clientData,messageBodyinfo)
             res.json(updatedCase.client1data[0])
 
-        //}
-       // else {
-           // res.json({ "message": "this from has been applied before" })
+        }
+       else {
+           res.json({ "message": "this from has been applied before" })
 
-       // }
+       }
     } catch (err) {
         res.json(err.message)
     }
