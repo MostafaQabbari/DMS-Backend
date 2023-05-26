@@ -125,8 +125,8 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         console.log("body" ,req.body);
      
       let newCaseID ;
-      if (Themediator) {
-        
+      // if (Themediator) {
+
         console.log("mMail",mediatorMail)
         let newCase = await Case.insertMany(
           {
@@ -146,10 +146,10 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         companyData.email = req.user.email;
         sendMail(companyData, clientData, messageBodyinfo)
 
-      }
-      else{
-        res.json({"message" : "please add the mediator first"})
-      }
+      // }
+      // else{
+      //   res.json({"message" : "please add the mediator first"})
+      // }
 
       res.json({ caseID: newCaseID })
     }
