@@ -120,12 +120,14 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
 
-        console.log("mMail",mediatorMail)
-        console.log("theMed",Themediator);
+        
+        //console.log("theMed",Themediator);
         console.log("body" ,req.body);
      
       let newCaseID ;
       if (Themediator) {
+        
+        console.log("mMail",mediatorMail)
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
