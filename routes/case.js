@@ -118,19 +118,21 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
     if (req.userRole == 'company') {
       const { mediatorMail, firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const Themediator = await mediator.findOne({ email: mediatorMail });
-      // console.log({mediatorMail})
-      // console.log({Themediator});
-      // console.log({req:req.body});
-     
       const companyId = req.user._id;
+
+      //  console.log({mediatorMail})
+      //  console.log({Themediator});
+      //  console.log({req:req.body});
+     
+      let newCaseID ;
       if (Themediator) {
-        console.log("Xxx")
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
             connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
           });
-
+          console.log(newCase)
+          newCaseID = newCase[0]._id
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
@@ -147,10 +149,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         res.json({"message" : "please add the mediator first"})
       }
 
-
-      // console.log(newCase[0]._id)
-      // console.log(Themediator.cases)
-      res.json({ caseID: newCase[0]._id })
+      res.json({ caseID: newCaseID })
     }
 
     else if (req.userRole == 'mediator') {
