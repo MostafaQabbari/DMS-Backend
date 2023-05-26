@@ -57,11 +57,20 @@ router.patch("/addClient1/:id", async (req, res) => {
 
 
     try {
+     
         let currentCase = await Case.findById(req.params.id);
+        console.log("xxx")
         let client1data = req.body
-        let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
+
+        console.log(req.body)
+        console.log("yy")
+        console.log(client1data)
+        let Reference = `${client1data.personalInfo.surName}& ${client1data.Client2Details.SurName}`;
+        console.log(Reference)
 
         // await createMIAM1Upload(client1data , Reference);
+
+        console.log("miam1 uploaded")
 
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
      
@@ -73,6 +82,10 @@ router.patch("/addClient1/:id", async (req, res) => {
         const medEmail = medData.connectionData.mediatorID.email;
         mediatorData.email = "abdosamir023023@gmail.com"
 
+        // if (currentCase.client1AddedData) {
+   console.log("before adding to db")
+        let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
+        console.log("after adding to db")
         if (!currentCase.client1AddedData) {
 
             let updatedCase = await Case.findByIdAndUpdate(req.params.id, { client1data, Reference, client1AddedData: true })
@@ -85,13 +98,13 @@ router.patch("/addClient1/:id", async (req, res) => {
             
             console.log(updatedCase)
             sendMailForMIAM2(mediatorData,clientData,messageBodyinfo)
-            res.json(updatedCase)
+            res.json(updatedCase.client1data[0])
 
-        }
-        else {
-            res.json({ "message": "this from has been applied before" })
+        //}
+       // else {
+           // res.json({ "message": "this from has been applied before" })
 
-        }
+       // }
     } catch (err) {
         res.json(err.message)
     }

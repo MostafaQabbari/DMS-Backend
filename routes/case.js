@@ -118,9 +118,9 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
     if (req.userRole == 'company') {
       const { mediatorMail, firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const Themediator = await mediator.findOne({ email: mediatorMail });
-      console.log({mediatorMail})
-      console.log({Themediator});
-      console.log({req:req.body});
+      // console.log({mediatorMail})
+      // console.log({Themediator});
+      // console.log({req:req.body});
      
       const companyId = req.user._id;
       if (Themediator) {
