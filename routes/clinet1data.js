@@ -174,7 +174,7 @@ async function createMIAM1Upload(client1data, folderName) {
     });
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, 'mkabary8@gmail.com');
+    shareWithPersonalAccount(folderId, 'mkabary8@gmail.com');//email of the mediator that want to access the case folder from his account 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {
