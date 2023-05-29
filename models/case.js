@@ -31,7 +31,11 @@ const caseSchema = new Schema({
 
 
 
-});
+},
+{
+  timestamps: true,
+}
+);
 
 const Case = mongoose.model("Case", caseSchema);
 

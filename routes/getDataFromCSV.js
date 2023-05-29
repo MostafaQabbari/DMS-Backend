@@ -7,35 +7,41 @@ const multer = require('multer')
 const Case = require('../models/case');
 const mediator = require('../models/mediator');
 
+const CSVdata  = require('../interface/CSVdata')
+
 router.post('/getDataFromCSV', (req, res) => {
-    const filePath = 'uploads/csvToTest.csv'; // Update with the path to your CSV file
+  const filePath = 'uploads/csvToTest.csv'; // Update with the path to your CSV file
   console.log(filePath)
-  const results =  Array.apply(null, Array(3));
+  const results = []
 
   fs.createReadStream(filePath)
     .pipe(csv())
     .on('data', (data) => {
       // Process each row of the CSV data
-      console.log(data)
-      results.push(data)
-  
+
+      if (results.length < 1) {
+        // console.log(data)
+       const x = CSVdata(data)
+        results.push(x)
+      }
+
+
 
     })
     .on('end', () => {
-     let x = results.map(function(y,data){ return data});
-      res.json(x);
+      res.json(results);
     })
     .on('error', (err) => {
       console.error('Error reading CSV file:', err);
       res.status(500).send('Error reading CSV file');
     });
- 
 
 
-  });
-  
 
-   
+});
+
+
+
 
 module.exports = router
 
