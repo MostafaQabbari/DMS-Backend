@@ -46,6 +46,78 @@ router.post('/getDataFromAirtable', (req, res) => {
  * apiKey: 'keySEWVOJ1gOsDSSP'
  * base : 'efQFIQirYoTu5B' 
  * tableID = 'tblkEfKYHH6sjHiNK';
+ *  view: 'viwLuC08eiToGUL3I', // 'VIEW1_ID' 
+ * view: 'viwKS3v3jJv8tu1TY', // 'VIEW2_ID' 
+ */
+
+  const base = new Airtable({ apiKey: 'keySEWVOJ1gOsDSSP' }).base('appefQFIQirYoTu5B');
+
+  const tableName = 'tblkEfKYHH6sjHiNK';
+
+  const view1Records = [];
+  const V1ids=[]
+  const view2Records = [];
+
+  base(tableName)
+    .select({
+      view: 'viwLuC08eiToGUL3I', // 'VIEW1_ID' 
+      maxRecords: 4
+    })
+    .eachPage((records, fetchNextPage) => {
+
+      records.forEach(record => {
+
+        let x = record.fields['RecordID']
+        V1ids.push(x)
+       // console.log(";;;;;" ,x)
+        view1Records.push(record);
+        if (record.fields['RecordID (from Ex Partner)']) {
+          base(tableName)
+
+            .find((record.fields['RecordID (from Ex Partner)']), (err, recordC2) => {
+
+              view2Records.push(recordC2.fields['RecordID'])
+
+              console.log("v2 from v1 record partner", view2Records)
+
+            })
+        } else {
+          view2Records.push("this one not found")
+        }
+
+        console.log("v1 recordID",V1ids)
+
+
+      });
+
+      fetchNextPage();
+    }, err => {
+      if (err) {
+        console.error('Error:', err);
+        return;
+      }
+
+      //console.log("id from cases", view1Records[1].fields['RecordID (from Cases (C1 Link))'])
+      //console.log("id of c1 ", view1Records[1].fields['RecordID'])
+
+      res.json(view1Records[1].fields['RecordID (from Ex Partner)'])
+    });
+
+
+
+
+
+
+});
+
+router.post('/getDataFromAirtable2', (req, res) => {
+
+  /**
+ * apiKey: 'keySEWVOJ1gOsDSSP'
+ * base : 'efQFIQirYoTu5B' 
+ * tableID = 'tblkEfKYHH6sjHiNK';
+ *  view: 'viwLuC08eiToGUL3I', // 'VIEW1_ID' 
+ * view: 'viwKS3v3jJv8tu1TY', // 'VIEW2_ID' 
  */
 
   const base = new Airtable({ apiKey: 'keySEWVOJ1gOsDSSP' }).base('appefQFIQirYoTu5B');
@@ -58,12 +130,23 @@ router.post('/getDataFromAirtable', (req, res) => {
   base(tableName)
     .select({
       view: 'viwLuC08eiToGUL3I', // 'VIEW1_ID' 
-      maxRecords: 20
+      maxRecords: 2
     })
     .eachPage((records, fetchNextPage) => {
 
       records.forEach(record => {
         view1Records.push(record);
+        // if (record) {
+        //   base(tableName)
+        //   .select({
+        //     view: 'viwKS3v3jJv8tu1TY', // 'VIEW1_ID' 
+        //   }).find((record.fields['RecordID (from Cases (C1 Link))']), (err, recordC2) => {
+        //       console.log("c2 record", recordC2.fields)
+        //     })
+        // }else{
+        //   console.log("error record nt found")
+        // }
+
       });
 
       fetchNextPage();
@@ -72,22 +155,8 @@ router.post('/getDataFromAirtable', (req, res) => {
         console.error('Error:', err);
         return;
       }
-      
 
-      // console.log(view1Records[0].fields['RecordID (from Cases (C1 Link))'])
-      console.log('View 1 records fetched successfully.');
-      // get C2 record
-      base(tableName).find(view1Records[0].fields['RecordID (from Cases (C1 Link))'], (err, record) => {
-        if (err) {
-          console.error('Error:', err);
-          return;
-        }
-      
-        // Record C2 retrieved successfully
-       
-        console.log('Retrieved record:', record.fields);
-      });
-
+      console.log(view1Records[0].fields['RecordID (from Cases (C1 Link))'])
       res.json(view1Records[0].fields)
     });
 
@@ -97,8 +166,6 @@ router.post('/getDataFromAirtable', (req, res) => {
 
 
 });
-
-
 
 
 module.exports = router
