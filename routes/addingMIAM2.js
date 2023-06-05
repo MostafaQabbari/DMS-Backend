@@ -1,4 +1,4 @@
-const { Console } = require('console');
+
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
@@ -8,9 +8,6 @@ const mediator = require('../models/mediator');
 router.patch("/addingMIAM2/:id", authMiddleware, async (req, res) => {
 
 
-    // const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
-    // const med_id = medData.connectionData.mediatorID;
-
     try {
 
         let MIAM2mediator = req.body;
@@ -18,18 +15,17 @@ router.patch("/addingMIAM2/:id", authMiddleware, async (req, res) => {
         const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
         const med_id = medData.connectionData.mediatorID._id;
 
-        // console.log(med_id)
-        // console.log(req.user._id)
-        // console.log(med_id.toString() == req.user._id.toString())
+        const   stringfyMIAM2Data =JSON.stringify(MIAM2mediator)
         if (!currentCase.MIAM2AddedData) {
 
             if (med_id.toString() == req.user._id.toString()) {
                 // console.log(med_id)
                 // console.log(req.user._id)
 
-                const updatedCase = await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator, MIAM2AddedData: true })
-                console.log(updatedCase.MIAM2mediator[0])
-                res.json({ "message ": "right mediator" })
+                const updatedCase = await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator:stringfyMIAM2Data, MIAM2AddedData: true })
+               
+          const   parsedMIAM2Data =JSON.parse(stringfyMIAM2Data)
+                res.json({ "MIAM2 DATA ": parsedMIAM2Data })
             }
             else {
                 res.json({ "message ": "wrong mediator" })

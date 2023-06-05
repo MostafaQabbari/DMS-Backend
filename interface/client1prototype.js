@@ -1,4 +1,4 @@
-module.exports = client1data = [{
+ client1data = [{
  
         personalInfo: {
             firstName: { type: String },
@@ -15,13 +15,13 @@ module.exports = client1data = [{
             },
             participantKnoworNot:
             {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
-                    needtoSureDetails: { type: Boolean },
+                    needtoSureDetails: { type: String },
                 }
 
             },
-            vulnerableAdult: { type: Boolean },
+            vulnerableAdult: { type: String },
             Disability: [String],
             gender: { type: String },
 
@@ -31,7 +31,7 @@ module.exports = client1data = [{
             related: {
                 shouldDoChangesToAttendMediation:
                 {
-                    answer: { type: Boolean },
+                    answer: { type: String },
                     related: {
                         WhatcanWedotoassist: { type: String },
                     }
@@ -40,7 +40,7 @@ module.exports = client1data = [{
 
                 willBringAnyoneToSupport:
                 {
-                    answer: { type: Boolean },
+                    answer: { type: String },
                     related: {
                         fullNameOfSupportingPerson: { type: String },
                     }
@@ -53,7 +53,7 @@ module.exports = client1data = [{
         nationality: {
             enthnicOrigin: { type: String },
             haveBritishNationalityorPassport: {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
                     migrationDetailsToUK: { type: String }
                 }
@@ -65,12 +65,116 @@ module.exports = client1data = [{
             howFoundDMS: { type: String },
             facingIssues: {
                 answer: { type: String },
-                related: {
-
+                relatedIfThereChildrenIssues: {
+                    childrens: [
+                        {
+                            child1: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+                                isThere2ndChild: { type: String }
+                            },
+                        },
+                        {
+                            child2: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+                                isThere3rdChild: { type: String }
+                            },
+                        },
+                        {
+                            child3: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+                                isThere4thChild: { type: String }
+                            },
+                        },
+                        {
+                            child4: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+                                isThere5thChild: { type: String }
+                            },
+                        },
+                        {
+                            child5: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+                                isThere6thChild: { type: String }
+                            },
+            
+                        },
+                        {
+                            child6: {
+                                firstName: { type: String },
+                                surName: { type: String },
+                                gender: { type: String },
+                                livingWithWho: { type: String },
+                                DateOfBirth: { type: Date },
+                                haveAnySpecialNeeds: {
+                                    answer: { type: String },
+                                    related: {
+                                        whatSpecialNeeds: { type: String }
+                                    }
+                                },
+                                doYouHaveParentalResponsibility: { type: String },
+            
+                            },
+                        },
+                    ],
                 }
             },
             ifThereanyDayscantMake: {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
                     datesCantAttendMediation: { type: String },
                 }
@@ -87,7 +191,7 @@ module.exports = client1data = [{
             Email: { type: String },
             PhoneNumber: { type: String },
             DoYouKnowhisaddress: {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
                     houseNumberandStreet: { type: String },
                     cityandTown: { type: String },
@@ -101,128 +205,24 @@ module.exports = client1data = [{
             separationDate: { type: String },
             relationDuration: { type: String },
             wereMarried: {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
                     marriageDate: { type: String }
                 }
             }
 
         },
-        childrens: [
-            {
-                child1: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-                    isThere2ndChild: { type: Boolean }
-                },
-            },
-            {
-                child2: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-                    isThere3rdChild: { type: Boolean }
-                },
-            },
-            {
-                child3: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-                    isThere4thChild: { type: Boolean }
-                },
-            },
-            {
-                child4: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-                    isThere5thChild: { type: Boolean }
-                },
-            },
-            {
-                child5: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-                    isThere6thChild: { type: Boolean }
-                },
-
-            },
-            {
-                child6: {
-                    firstName: { type: String },
-                    surName: { type: String },
-                    gender: { type: String },
-                    livingWithWho: { type: String },
-                    DateOfBirth: { type: Date },
-                    haveAnySpecialNeeds: {
-                        answer: { type: Boolean },
-                        related: {
-                            whatSpecialNeeds: { type: String }
-                        }
-                    },
-                    doYouHaveParentalResponsibility: { type: Boolean },
-
-                },
-            },
-        ],
+     
 
         CourtProceedings: { // 
             awareofanylegalproceedings: {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: { awarnessInformation: { type: String }, }
             },
 
             knowcourtapplicationshavebeenmade:
             {
-                answer: { type: Boolean },
+                answer: { type: String },
                 related: {
                     DetailsAboutCourtsandDates: { type: String }
                 }
@@ -231,7 +231,8 @@ module.exports = client1data = [{
 
         MartialStatus: { type: String },
         SolicitororMcKenziefriendsdetails: {
-            answer: { haveOrnot: { type: Boolean }, },
+            answer: { 
+                haveOrnot: { type: String }, },
             related: {
                 Names: { type: String },
                 nameOfTheLawFirm: { type: String },
@@ -240,11 +241,11 @@ module.exports = client1data = [{
 
             }
         },
-        WantCertificateToSentToThem: { type: Boolean },
-        FreeConsultaionRegardingLegalSupport: { type: Boolean },
+        WantCertificateToSentToThem: { type: String },
+        FreeConsultaionRegardingLegalSupport: { type: String },
         ClientCareLetter: {
-            confirmReadingLetter: { type: Boolean },
-            confirmwatchingMIAMvideo: { type: Boolean },
+            confirmReadingLetter: { type: String },
+            confirmwatchingMIAMvideo: { type: String },
 
         }
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const path = require('path');
 const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
 const caseRoutes = require("./routes/case");
@@ -9,6 +10,7 @@ const pdfConvertor = require("./routes/pdfConvertor");
 const configureTwillio = require("./routes/configureTwillio")
 const getMediators = require("./routes/getMediators");
 const addingMIAM2 = require("./routes/addingMIAM2")
+const getDataFromCSV = require("./routes/getDataFromCSV")
 const cors = require('cors');
 require('dotenv')
 
@@ -26,8 +28,8 @@ mongoose
   });
 
 app.use(express.json());
-
-app.use(cors())
+app.use(cors());
+app.use(express.static(path.join(__dirname, 'uploads')))
 
 app.use("/auth", authRoutes);
 app.use("/", caseRoutes);
@@ -37,7 +39,7 @@ app.use(configureTwillio);
 app.use(client1Form)
 app.use(getMediators)
 app.use(addingMIAM2)
-
+app.use(getDataFromCSV)
 
 
 app.use((err, req, res, next) => {
