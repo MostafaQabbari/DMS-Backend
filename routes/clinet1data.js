@@ -133,7 +133,7 @@ async function createMIAM1Upload(client1data, folderName) {
     // Create a new Google Drive client
     const auth = new google.auth.GoogleAuth({
       // Add your Google Drive API credentials and scopes here
-      keyFile: "../DMS-Backend/credentials.json", // Path to your JSON credentials file
+      keyFile: "../DMS-Backend/company/credentials.json", // Path to your JSON credentials file
       scopes: ["https://www.googleapis.com/auth/drive"], // Scopes required for accessing Google Drive
     });
 
