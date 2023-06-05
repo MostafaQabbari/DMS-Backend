@@ -12,6 +12,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 // const { appendFile } = require("fs");
 const router = express.Router();
 
+
 // Create a storage engine for Multer
 const storage = multer.diskStorage({
   destination: "./uploads/logos",
@@ -80,6 +81,9 @@ router.post("/company-signup", (req, res, next) => {
     }
   });
 });
+
+
+
 
 
 
