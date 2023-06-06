@@ -16,19 +16,35 @@ const CryptoJS = require("crypto-js");
 
 */
 
-router.patch("/addTwillio", authMiddleware, verifyTwillio , async (req, res) => {
-  if (req.userRole !== "company") {
-    return res.status(401).json({ message: "Unauthorized only a company account can configure twillio account" });
-  }
-  try {
+router.patch("/addTwillio", authMiddleware, verifyTwillio, async (req, res) => {
 
-    var cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([req.body]), 'ourTwillioEncyptionKey').toString();
-    const userID = req.user._id
-    await company.findByIdAndUpdate(userID, { "twillioData": cryptedTwilioData })
-    res.json({ "message": " data added to DB with Encryption " })
+
+
+
+  try {
+    if (req.userRole == "admin") {
+    
+      var cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([req.body.twillioData]), 'ourTwillioEncyptionKey').toString();
+      const comp = await company.findOne({ email: req.body.email })
+      if (comp) {
+        const userID = comp._id
+        await company.findByIdAndUpdate(userID, { "twillioData": cryptedTwilioData })
+        res.json({ "message": " data added to DB with Encryption " })
+      } else {
+        res.json({ "message": " not found this email of the company " })
+      }
+
+
+    }
+    else {
+
+      return res.status(401).json({ message: "Unauthorized only a admin account can add twillio data" });
+    }
+
+
   }
   catch (err) {
-    res.json({ err: "this error after 2 middlewares and try to add data " })
+    res.json({ err:err.message })
   }
 })
 

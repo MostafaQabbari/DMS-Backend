@@ -242,6 +242,22 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 })
 
+router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
+
+
+  
+
+  try {
+    let currentCase = await Case.findById(req.params.id);
+    res.json(currentCase)
+  } catch (err) {
+    res.json(err.message)
+  }
+
+
+})
+
+
 
 router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
