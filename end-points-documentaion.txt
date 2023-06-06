@@ -320,5 +320,5 @@ Case Routes
     method : get
 
 
-    /companies
+    /get-companies
     Method: get
