@@ -257,8 +257,8 @@
 
 module.exports = function airTableData(data) {
 
-  return C1fullData={
-    C1 :{
+  return {
+    MIAM1 :[{
  
         personalInfo: {
             fullName: data["Full Name"],
@@ -508,9 +508,9 @@ module.exports = function airTableData(data) {
 
 
 
-    } ,
+    }] ,
 
-    C1MediatorMIAM2:{
+    MIAM2:[{
 
         mediatorData:{
             mediatorName:data["Name of Mediator"],
@@ -638,7 +638,8 @@ module.exports = function airTableData(data) {
         
         
         
-   }
+   }]
   }
+
 
 }

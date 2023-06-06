@@ -59,8 +59,8 @@ router.patch("/addClient1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    let client1data = req.body
-    let Reference = `${req.body.personalInfo.surName}& ${req.body.Client2Details.SurName}`;
+    let client1data = req.body[0]
+    let Reference = `${req.body[0].personalInfo.surName}& ${req.body[0].Client2Details.SurName}`;
 
     const StringfyData = JSON.stringify(client1data)
  
