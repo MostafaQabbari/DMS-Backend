@@ -29,6 +29,10 @@ const caseSchema = new Schema({
   MIAM2mediator:{type:String},
   MIAM2AddedData:{type:Boolean , default:false},
 
+  client2data:{type:String},
+  client2AddedData:{type:Boolean , default:false},
+  MIAM2C2:{type:String},
+  MIAM2C2AddedData:{type:Boolean , default:false},
 
 
 },

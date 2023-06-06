@@ -7,6 +7,7 @@ const Company = require("../models/company");
 const nodemailer = require("nodemailer")
 const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
+const { json } = require('stream/consumers');
 
 
 
@@ -108,6 +109,8 @@ const sendMail = function (companyData, clientData, messageBodyinfo) {
 }
 
 
+
+
 router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   let companyData = {};
@@ -116,35 +119,35 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   try {
     if (req.userRole == 'company') {
-      const {  firstName, surName, phoneNumber, email, dateOfMAIM, location ,mediatorMail } = req.body;
+      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail } = req.body;
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
 
-        
-        //console.log("theMed",Themediator);
-        console.log("body" ,req.body);
-     
-      let newCaseID ;
+
+      //console.log("theMed",Themediator);
+      console.log("body", req.body);
+
+      let newCaseID;
       // if (Themediator) {
 
-        console.log("mMail",mediatorMail)
-        let newCase = await Case.insertMany(
-          {
-            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-            connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
-          });
-          console.log(newCase)
-          newCaseID = newCase[0]._id
-        // Update the company's cases array with the new case ID
-        await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
-        await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
+      console.log("mMail", mediatorMail)
+      let newCase = await Case.insertMany(
+        {
+          client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+          connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
+        });
+      console.log(newCase)
+      newCaseID = newCase[0]._id
+      // Update the company's cases array with the new case ID
+      await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
+      await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
-        clientData.email = email;
-        clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-        messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
-        companyData.companyName = req.user.companyName;
-        companyData.email = req.user.email;
-        sendMail(companyData, clientData, messageBodyinfo)
+      clientData.email = email;
+      clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
+      messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+      companyData.companyName = req.user.companyName;
+      companyData.email = req.user.email;
+      sendMail(companyData, clientData, messageBodyinfo)
 
       // }
       // else{
@@ -177,8 +180,8 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
-     // console.log(newCase[0])
-      res.json({  caseID: newCase[0]._id })
+      // console.log(newCase[0])
+      res.json({ caseID: newCase[0]._id })
     }
 
     else {
@@ -189,6 +192,55 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
   }
 
 });
+
+
+router.get('/getCasesList', authMiddleware, async (req, res) => {
+
+  let client1data, MIAM2mediator, client2data, MIAM2C2
+
+  try {
+    if (req.userRole == "company") {
+
+      let cases = await Company.findById(req.user._id).populate('cases');
+
+      console.log(cases.cases[0])
+
+      res.json(cases.cases[0])
+
+    }
+    else if (req.userRole == "mediator") {
+
+
+      let cases = await mediator.findById(req.user._id).populate('cases');
+
+      for (let i = 0; i < cases.cases.length; i++) {
+        client1data = JSON.parse(cases.cases[i].client1data)
+        MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator)
+        client2data = JSON.parse(cases.cases[i].client2data)
+        MIAM2C2 = JSON.parse(cases.cases[i].MIAM2C2)
+
+        await Case.findByIdAndUpdate()
+
+        console.log("xxx")
+        console.log(client1data[0].personalInfo.surName)
+        console.log("yyy")
+        console.log(client2data[0].personalInfo.surName)
+
+      }
+
+
+      res.json(cases.cases[0])
+
+    }
+    else {
+      res.json("error with auth role ")
+    }
+  } catch (err) {
+    res.json(err.message)
+  }
+
+
+})
 
 
 router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res, next) => {
