@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const path = require("path");
 const config = require("../config/config");
+const Admin = require("../models/admin");
 const Company = require("../models/company");
 const Mediator = require('../models/mediator');
 const authMiddleware = require("../middleware/authMiddleware");
@@ -37,7 +38,13 @@ const upload = multer({
   },
 }).single("companyLogo");
 
-router.post("/company-signup", (req, res, next) => {
+router.post("/company-signup", authMiddleware, (req, res, next) => {
+
+  if (req.userRole !== "admin") {
+    return res.status(401).json({ message: "Unauthorized only a admin account can get all the companies" });
+  }
+
+
   upload(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ message: err });
@@ -82,6 +89,71 @@ router.post("/company-signup", (req, res, next) => {
   });
 });
 
+
+// Mediator form submission route
+router.post('/add-admin', async (req, res, next) => {
+  
+  try {
+    
+    const {email, password } = req.body;
+
+
+    
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    // Check if the password meets the minimum requirements
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin = new Admin({ email, password: hashedPassword});
+    
+    await admin.save();
+    
+
+    res.status(201).json({ message: 'Admin added successfully!' });
+  } catch (error) {
+    next(error);
+  }
+
+
+
+});
+
+
+
+router.post("/admin-login", async (req, res, next) => {
+  
+  try {
+    const { email, password } = req.body;
+
+    const user = await Admin.findOne({email});
+   
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email" });
+    }
+
+    
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid  password" });
+    }
+    
+    
+    const  accessToken = jwt.sign({ id: user._id, role: "admin", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user._id, role: "admin", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    
+    // Store refresh token in database
+    await Admin.findByIdAndUpdate(user._id, { refreshToken });
+
+    res.status(201).json({  accessToken , refreshToken });
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 
@@ -225,8 +297,10 @@ router.post("/refresh-token", async (req, res, next) => {
     if (!user) {
       user = await Mediator.findById(decoded.id);
       if (!user) {
+        user = await Admin.findById(decoded.id);
+        if(!user){
         return res.status(401).json({ message: "Invalid token" });
-      }
+        }}
     }
 
     if (user.refreshToken !== refreshToken) {

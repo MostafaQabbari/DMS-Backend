@@ -63,8 +63,14 @@ router.patch("/addClient1/:id", async (req, res) => {
     let Reference = `${req.body[0].personalInfo.surName}& ${req.body[0].Client2Details.SurName}`;
 
     const StringfyData = JSON.stringify(client1data)
+
+
+    const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
  
-    await createMIAM1Upload(client1data , Reference);
+    const companyEmail = companyData.connectionData.companyID.email;
+
+    await createMIAM1Upload(client1data , Reference ,companyEmail);
+   
 
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
@@ -105,7 +111,7 @@ router.patch("/addClient1/:id", async (req, res) => {
 
 
 
-async function createMIAM1Upload(client1data, folderName) {
+async function createMIAM1Upload(client1data, folderName , email) {
   try {
     // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
@@ -184,7 +190,7 @@ async function createMIAM1Upload(client1data, folderName) {
     });
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, 'mkabary8@gmail.com');//email of the mediator that want to access the case folder from his account 
+    shareWithPersonalAccount(folderId, email );//email of the mediator that want to access the case folder from his account 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {

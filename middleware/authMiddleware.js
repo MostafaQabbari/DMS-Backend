@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const Company = require("../models/company");
 const Mediator = require("../models/mediator");
+const Admin = require("../models/admin");
 
 
 const authMiddleware = async (req, res, next) => {
@@ -18,8 +19,10 @@ const authMiddleware = async (req, res, next) => {
     if (!user) {
       user = await Mediator.findById(decoded.id);
       if (!user) {
+        user = await Admin.findById(decoded.id);
+        if(!user){
         return res.status(401).json({ message: "Invalid token" });
-      }
+        }}
     }
 
     if (!user) {
