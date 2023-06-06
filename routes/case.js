@@ -194,6 +194,8 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 });
 
 
+
+
 router.get('/getCasesList', authMiddleware, async (req, res) => {
 
   let client1data, MIAM2mediator, client2data, MIAM2C2
