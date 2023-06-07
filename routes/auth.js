@@ -78,7 +78,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         
         
         x.messages.create({
-          body: `Your Client ${req.user.companyName} added his twillio `,
+          body: `Your Client ${companyName} twillio has been added   `,
           from: phoneNumber,
           // to here will be the Drion to send him that the company added twillio number
           to: '+44 7476 544877'
