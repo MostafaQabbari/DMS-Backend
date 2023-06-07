@@ -79,7 +79,7 @@ module.exports = function airTableData(data) {
 
                 marriageDate: data["What was the date of your marriage/civil partnership?"]
             },
-            children: {
+            children: [{
                 childOne: {
                     childFirstName: data["Name Child 1"],
                     childSurName: data["Surname Child 1"],
@@ -90,10 +90,10 @@ module.exports = function airTableData(data) {
                     childSpecialNeeds: data["Child 1 special needs info"],
                     childResponsibility: data["Child 1 parental responsibility?"],
                     secondChildCheck: data["Is there a 2nd child?"]
-                },
+                }},
 
 
-                childTwo: {
+             { childTwo: {
                     childFirstName: data["Name Child 2"],
                     childSurName: data["Surname Child 2"],
                     childGender: data["Child 2 gender"],
@@ -106,9 +106,9 @@ module.exports = function airTableData(data) {
 
                     childResponsibility: data["Child 2 parental responsibility?"],
                     thirdChildCheck: data["Is there a 3rd child?"]
-                },
+                }},
 
-                childThree: {
+                {childThree: {
                     childFirstName: data["Name Child 3"],
                     childSurName: data["Surname Child 3"],
                     childGender: data["Child 3 gender"],
@@ -121,9 +121,9 @@ module.exports = function airTableData(data) {
 
                     childResponsibility: data["Child 3 parental responsibility?"],
                     fourthChildCheck: data["Is there a 4th child?"]
-                },
+                }},
 
-                childFour: {
+                {childFour: {
                     childFirstName: data["Name Child 4"],
                     childSurName: data["Surname Child 4"],
                     childGender: data["Child 4 gender"],
@@ -137,9 +137,9 @@ module.exports = function airTableData(data) {
 
                     childResponsibility: data["Child 4 parental responsibility?"],
                     fifthChildCheck: data["Is there a 5th child?"]
-                },
+                }},
 
-                child5: {
+                {child5: {
                     childFirstName: data["Name Child 5"],
                     childSurName: data["Surname Child 5"],
                     childGender: data["Child 5 gender"],
@@ -152,10 +152,10 @@ module.exports = function airTableData(data) {
 
                     childResponsibility: data["Child 5 parental responsibility?"],
                     sixthChildCheck: data["Is there a 6th child?"]
-                },
+                }},
 
 
-                childSix: {
+               { childSix: {
                     childFirstName: data["Name Child 6"],
                     childSurName: data["Surname Child 6"],
                     childGender: data["Child 6 gender"],
@@ -168,8 +168,8 @@ module.exports = function airTableData(data) {
 
                     childResponsibility: data["Child 6 parental responsibility?"],
 
-                },
-            },
+                }},
+            ],
             courtProceedings: {
 
                 isFacingLegalProceedings: data["Any legal proceedings?"],
