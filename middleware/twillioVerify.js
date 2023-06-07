@@ -15,7 +15,7 @@ const verifyTwillio = async (req, res, next) => {
         body: `Your Client ${req.user.companyName} added his twillio `,
         from: phoneNumber,
         // to here will be the Drion to send him that the company added twillio number
-        to: '+201553499532'
+        to: '+44 7476 544877'
     }).then(message => {
       //  console.log({ message: "data added succesfully", messageID: message.sid });
         next();
