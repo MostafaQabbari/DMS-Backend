@@ -14,11 +14,18 @@ const getDataFromTwillio = async function (user, role) {
 
 
   }
-  else if (role == 'mediator' && user.twillioData) {
+  else if (role == 'mediator') {
     const mediatorCompanyData = await mediator.findById(user._id).populate('companyId');
-    const Data = CryptoJS.AES.decrypt(mediatorCompanyData.companyId.twillioData, 'ourTwillioEncyptionKey');
-    const decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8));
-    return decryptedData[0]
+    if(mediatorCompanyData.companyId['twillioData'])
+    {
+      const Data = CryptoJS.AES.decrypt(mediatorCompanyData.companyId.twillioData, 'ourTwillioEncyptionKey');
+      const decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8));
+      return decryptedData[0]
+    }
+   else{
+    console.log({"err" : "company does not twilio account yet"})
+   }
+  
 
   }
   else {
@@ -31,6 +38,7 @@ const getDataFromTwillio = async function (user, role) {
 
 function decryptTwillioData(req, res, next) {
 
+  //console.log(req.user)
   let ReqDataTwillio = getDataFromTwillio(req.user, req.userRole);
 
   const myPromise = new Promise((resolve, reject) => {

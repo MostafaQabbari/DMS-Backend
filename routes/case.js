@@ -144,7 +144,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       clientData.email = email;
       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
       companyData.companyName = req.user.companyName;
       companyData.email = req.user.email;
       sendMail(companyData, clientData, messageBodyinfo)
@@ -175,7 +175,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       clientData.email = email;
       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
 
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
@@ -273,6 +273,7 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
   let messageBodyData = {};
 
   let twillioInfo = req.twillioInfo;
+  console.log(twillioInfo)
 
   try {
     const { caseID } = req.body;
@@ -280,10 +281,11 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
     const client1ContactDetails = selectedCase.client1ContactDetails
     const compData = await Case.findById(caseID).populate('connectionData.companyID');
 
-    clientNumber = client1ContactDetails.phoneNumber;
+  //  clientNumber = client1ContactDetails.phoneNumber;
+  clientNumber = "+44 7476 544877"
     messageBodyData.companyName = compData.connectionData.companyID.companyName
     messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
-    messageBodyData.formLink = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+    messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
     sendingSMS(twillioInfo, clientNumber, messageBodyData)
 
     res.json({ message: "MIAM 1 link has been sent " })
@@ -313,7 +315,7 @@ router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
     // console.log(clientData.email)
     companyData.companyName = compData.connectionData.companyID.companyName
     companyData.email = compData.connectionData.companyID.email
-    messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_1_client1}/${caseID}`;
+    messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
 
     sendMail(companyData, clientData, messageBodyinfo)
 

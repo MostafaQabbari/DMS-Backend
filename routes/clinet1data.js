@@ -89,7 +89,7 @@ router.patch("/addClient1/:id", async (req, res) => {
 
      clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
      clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-     messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_2}/${updatedCase._id}`;
+     messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
 
      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 
