@@ -7,7 +7,8 @@ const Company = require("../models/company");
 const nodemailer = require("nodemailer")
 const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
-const { json } = require('stream/consumers');
+
+
 
 
 
@@ -196,18 +197,48 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
 
 
-router.get('/getCasesList', authMiddleware, async (req, res) => {
+router.get('/getDummyCasesList', authMiddleware, async (req, res) => {
 
-  let client1data, MIAM2mediator, client2data, MIAM2C2
+  let client1data, Reference, startDate, tempRefDummyData, MIAM2mediator
+  let resposedCaseObj, casesList = [];
+  let tempDate
 
   try {
     if (req.userRole == "company") {
 
       let cases = await Company.findById(req.user._id).populate('cases');
+      for (let i = 0; i < cases.cases.length; i++) {
 
-      console.log(cases.cases[0])
+        // Reference = cases.cases[i].client1data
+        // console.log(client1data.Reference)
+        // startDate = cases.cases[i].client1ContactDetails.dateOfMAIM
 
-      res.json(cases.cases[0])
+        client1data = JSON.parse(cases.cases[i].client1data);
+        if (cases.cases[i].MIAM2mediator) {
+
+          MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
+          tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
+
+        }
+
+
+        tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
+
+        // console.log(tempRefDummyData)
+
+        resposedCaseObj = {
+          _id: cases.cases[i]._id,
+          Reference: tempRefDummyData,
+          status: " Dummy Case ",
+          startDate: tempDate,
+        }
+
+        casesList.push(resposedCaseObj)
+
+      }
+      console.log(casesList)
+
+      res.json(casesList)
 
     }
     else if (req.userRole == "mediator") {
@@ -216,22 +247,36 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       let cases = await mediator.findById(req.user._id).populate('cases');
 
       for (let i = 0; i < cases.cases.length; i++) {
-        client1data = JSON.parse(cases.cases[i].client1data)
-        MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator)
-        client2data = JSON.parse(cases.cases[i].client2data)
-        MIAM2C2 = JSON.parse(cases.cases[i].MIAM2C2)
 
-        await Case.findByIdAndUpdate()
+        // Reference = cases.cases[i].client1data
+        // console.log(client1data.Reference)
+        // startDate = cases.cases[i].client1ContactDetails.dateOfMAIM
 
-        console.log("xxx")
-        console.log(client1data[0].personalInfo.surName)
-        console.log("yyy")
-        console.log(client2data[0].personalInfo.surName)
+
+        client1data = JSON.parse(cases.cases[i].client1data);
+        if (cases.cases[i].MIAM2mediator) {
+
+          MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
+          tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
+
+        }
+        tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
+
+        // console.log(tempRefDummyData)
+
+        resposedCaseObj = {
+          _id: cases.cases[i]._id,
+          Reference: tempRefDummyData,
+          status: " Dummy Case ",
+          startDate: tempDate,
+        }
+
+        casesList.push(resposedCaseObj)
 
       }
 
 
-      res.json(cases.cases[0])
+      res.json(casesList)
 
     }
     else {
@@ -246,12 +291,84 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
+  let CaseFound, CaseResponse , MIAM1_C1 , MIAM1_C2 , MIAM2_C1 , MIAM2_C2
+  //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
-  
+
 
   try {
-    let currentCase = await Case.findById(req.params.id);
-    res.json(currentCase)
+
+    if (req.userRole == "company") {
+
+      let cases = await Company.findById(req.user._id).populate('cases');
+
+
+      for (let i = 0; i < cases.cases.length; i++) {
+        if (cases.cases[i]._id == req.params.id) {
+
+          CaseFound = (cases.cases[i])
+        }
+      }
+      if (CaseFound) {
+
+        CaseResponse = {
+          Reference: CaseFound.Reference,
+          client1ContactDetails: CaseFound.client1ContactDetails,
+          status: CaseFound.status,
+          closed: CaseFound.closed,
+          MIAM1_C1: JSON.parse(CaseFound.client1data),
+          MIAM2_C1: JSON.parse(CaseFound.MIAM2mediator),
+          MIAM1_C2: JSON.parse(CaseFound.client2data),
+          MIAM2_C2: JSON.parse(CaseFound.MIAM2C2),
+        }
+
+
+
+        res.json(CaseResponse)
+      }
+      else {
+        res.json(" you don't have the access on this case ")
+      }
+
+    }
+    else if (req.userRole == "mediator") {
+     
+      let cases = await mediator.findById(req.user._id).populate('cases');
+  
+      for (let i = 0; i < cases.cases.length; i++) {
+        if (cases.cases[i]._id == req.params.id) {
+
+          CaseFound = (cases.cases[i])
+        }
+      }
+      if (CaseFound) {
+        if(CaseFound.client1data) MIAM1_C1= JSON.parse(CaseFound.client1data); else MIAM1_C1="Data didn't added yet"
+        if(CaseFound.MIAM2mediator)  MIAM2_C1= JSON.parse(CaseFound.MIAM2mediator); else MIAM2_C1="Data didn't added yet"
+        if(CaseFound.client2data) MIAM1_C2= JSON.parse(CaseFound.client2data); else MIAM1_C2="Data didn't added yet"
+        if(CaseFound.MIAM2C2)  MIAM2_C2= JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2="Data didn't added yet"
+
+
+        CaseResponse = {
+          Reference: CaseFound.Reference,
+          client1ContactDetails: CaseFound.client1ContactDetails,
+          status: CaseFound.status,
+          closed: CaseFound.closed,
+          MIAM1_C1,
+          MIAM2_C1,
+          MIAM1_C2,
+          MIAM2_C2,
+        }
+        
+        res.json(CaseResponse)
+      }
+      else {
+        res.json(" you don't have the access on this case ")
+      }
+    }
+    else{
+      res.json("err with user Auth")
+    }
+
   } catch (err) {
     res.json(err.message)
   }
@@ -281,8 +398,8 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
     const client1ContactDetails = selectedCase.client1ContactDetails
     const compData = await Case.findById(caseID).populate('connectionData.companyID');
 
-  //  clientNumber = client1ContactDetails.phoneNumber;
-  clientNumber = "+44 7476 544877"
+    //  clientNumber = client1ContactDetails.phoneNumber;
+    clientNumber = "+44 7476 544877"
     messageBodyData.companyName = compData.connectionData.companyID.companyName
     messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
     messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;

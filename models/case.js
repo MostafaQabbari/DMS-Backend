@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const caseSchema = new Schema({
 
-  Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
+  Reference: { type: String  },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
   client1ContactDetails:{
     firstName: { type: String },
     surName: { type: String},
@@ -24,16 +24,21 @@ const caseSchema = new Schema({
     }
   },
   
-  client1data:{type:String},
+  client1data:{type:String },
   client1AddedData:{type:Boolean , default:false},
-  MIAM2mediator:{type:String},
+  MIAM2mediator:{type:String } ,
   MIAM2AddedData:{type:Boolean , default:false},
 
-  client2data:{type:String},
+  client2data:{type:String },
   client2AddedData:{type:Boolean , default:false},
-  MIAM2C2:{type:String},
+  MIAM2C2:{type:String },
   MIAM2C2AddedData:{type:Boolean , default:false},
+  status : {type:String , default : "MIAM1 sent to C1"},
+  closed : {type:Boolean , default:false},
 
+  /**
+   * Case status – C1 MIAM Part 1/C1 MIAM Part 2/Invitation to C2 sent/Not suitable for mediation/C2 MIAM Part 1/C2 MIAM Part 2/Closed/Proceeding with mediation/Mediation Session 1..n/Agreed/Successful/Broken
+   */
 
 },
 {
