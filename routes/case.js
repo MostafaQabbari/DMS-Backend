@@ -10,6 +10,75 @@ const config = require("../config/config");
 
 
 
+const sendMail = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  */
+
+  let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      starttls: {
+          enable: true
+      },
+      starttls: {
+          enable: true
+      },
+
+      secureConnection: false,
+
+      auth: {
+          user: config.companyEmail,
+          pass: config.appPassWord,
+      },
+
+  })
+
+
+  let info = transporter.sendMail({
+      from: config.companyEmail,
+      to: clientData.email,
+      subject: "Applying To MIAM Form",
+      html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <h2> Follow the next Link to Apply to your form </h2>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+    <h3>Best Regards</h3>
+    <h3>${companyData.companyName}</h3>
+    <h3>${companyData.email}</h3>
+     </div>`,
+
+      // html: `
+      // <div>
+      // <h1>Dear ${clientData.clientName}  </h1>
+      // <h2> Follow the next Link to Apply to your form </h2>
+      // <a href='${messageBodyinfo.formUrl}'>Click here </a>
+      // <h3>Best Regards</h3>
+      // <h3>${companyData.companyName}</h3>
+      // <h3>${companyData.email}</h3>
+      // </div>
+      //  `,
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+      if (error) {
+          console.log('Error occurred while sending email:', error.message);
+
+      } else {
+          console.log('Email sent successfully:', info.messageId);
+      }
+  });
+
+}
+
+
 router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   let companyData = {};
@@ -22,7 +91,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
 
-
+     let Reference=`${surName} `;
       //console.log("theMed",Themediator);
       console.log("body", req.body);
 
@@ -35,7 +104,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
           startDate:dateOfMAIM,
           status:"MIAM 1 sent to C1",
-          Reference:`${surName} & `,
+          Reference,
           connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
         });
       console.log(newCase)
@@ -62,10 +131,13 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
     else if (req.userRole == 'mediator') {
       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-
+      let Reference=`${surName} `;
       let newCase = await Case.insertMany(
         {
           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+          startDate:dateOfMAIM,
+          status:"MIAM 1 sent to C1",
+          Reference,
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
 
