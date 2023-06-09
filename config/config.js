@@ -5,7 +5,7 @@
 module.exports = {
   jwtSecret: "mysecretkey",
   baseUrlMIAM1:"https://direct-mediation-services.vercel.app",
-  baseUrlMIAM2:'https://dms-2.vercel.app/recKzQdH2s4Moe9K0',
+  baseUrlMIAM2:'https://dms-2.vercel.app',
 
   companyEmail:"abdo.samir.7719@gmail.com",
   appPassWord:"evhxpzdevqnrrtpa",

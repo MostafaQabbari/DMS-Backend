@@ -53,7 +53,7 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
 }
 
-router.patch("/addClient1/:id", async (req, res) => {
+router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
   try {
@@ -78,11 +78,11 @@ router.patch("/addClient1/:id", async (req, res) => {
     
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
-    mediatorData.email = "abdosamir023023@gmail.com"
+    mediatorData.email = medEmail
 
 // !currentCase.client1AddedData
-    if (true) {
-     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true} )
+    if (!currentCase.client1AddedData) {
+     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true , status:"C1 MIAM Part 1 Applied"} )
      const  updatedCase = await Case.findById(req.params.id);
 
      const   parsedClientData =JSON.parse(updatedCase.client1data)
