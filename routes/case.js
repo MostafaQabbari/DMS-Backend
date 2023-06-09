@@ -33,6 +33,9 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       let newCase = await Case.insertMany(
         {
           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+          startDate:dateOfMAIM,
+          status:"MIAM 1 sent to C1",
+          Reference:`${surName} & `,
           connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
         });
       console.log(newCase)
