@@ -95,7 +95,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
 
 
-router.get('/getDummyCasesList', authMiddleware, async (req, res) => {
+router.get('/getCasesList', authMiddleware, async (req, res) => {
 
   let client1data, Reference, startDate, tempRefDummyData, MIAM2mediator
   let resposedCaseObj, casesList = [];
@@ -107,34 +107,17 @@ router.get('/getDummyCasesList', authMiddleware, async (req, res) => {
       let cases = await Company.findById(req.user._id).populate('cases');
       for (let i = 0; i < cases.cases.length; i++) {
 
-        // Reference = cases.cases[i].client1data
-        // console.log(client1data.Reference)
-        // startDate = cases.cases[i].client1ContactDetails.dateOfMAIM
-
-        client1data = JSON.parse(cases.cases[i].client1data);
-        if (cases.cases[i].MIAM2mediator) {
-
-          MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
-          tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
-
-        }
-
-
-        tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
-
-        // console.log(tempRefDummyData)
-
         resposedCaseObj = {
           _id: cases.cases[i]._id,
-          Reference: tempRefDummyData,
-          status: " Dummy Case ",
-          startDate: tempDate,
+          Reference: cases.cases[i].Reference,
+          status:cases.cases[i].status,
+          startDate:  cases.cases[i].startDate,
         }
 
         casesList.push(resposedCaseObj)
 
       }
-      console.log(casesList)
+     
 
       res.json(casesList)
 
@@ -146,27 +129,11 @@ router.get('/getDummyCasesList', authMiddleware, async (req, res) => {
 
       for (let i = 0; i < cases.cases.length; i++) {
 
-        // Reference = cases.cases[i].client1data
-        // console.log(client1data.Reference)
-        // startDate = cases.cases[i].client1ContactDetails.dateOfMAIM
-
-
-        client1data = JSON.parse(cases.cases[i].client1data);
-        if (cases.cases[i].MIAM2mediator) {
-
-          MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
-          tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
-
-        }
-        tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
-
-        // console.log(tempRefDummyData)
-
         resposedCaseObj = {
           _id: cases.cases[i]._id,
-          Reference: tempRefDummyData,
-          status: " Dummy Case ",
-          startDate: tempDate,
+          Reference: cases.cases[i].Reference,
+          status:cases.cases[i].status,
+          startDate:  cases.cases[i].startDate,
         }
 
         casesList.push(resposedCaseObj)
@@ -219,6 +186,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
+          startDate:CaseFound.startDate,
           status: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
@@ -254,6 +222,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
+          startDate:CaseFound.startDate,
           status: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
@@ -282,9 +251,50 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
 router.patch("/configureDummy", authMiddleware, async (req, res) => {
 
-  let cases = await Company.findById(req.user._id).populate('cases');
+  // let cases = await Company.findById(req.user._id).populate('cases');
+
+
+  // let meds = await Company.findById(req.user._id).populate('mediators');
+  //meds.cases=[]
+  for (let i = 0; i < meds.mediators.length; i++) {
+    //   await mediator.findByIdAndUpdate(meds.mediators[i]._id, { cases: [] })
+
+    //  console.log(meds.mediators)
+
+  }
+
   for (let i = 0; i < cases.cases.length; i++) {
-    console.log(cases.cases[i]._id)
+    // await Case.findByIdAndRemove(cases.cases[i]._id);
+    // await Company.findByIdAndUpdate(req.user._id,{cases:[]})
+    // let meds = await Company.findById(req.user._id).populate('mediators');
+    //   console.log(meds)
+
+
+
+
+    // if (!cases.cases[i]._id.Reference && cases.cases[i]._id.Reference!="Data didn't added yet " || cases.cases[i]._id.Reference!= "{Data didn't added yet} ") {
+    //   console.log(cases.cases[i])
+    //   if(cases.cases[i].client1data &&  cases.cases[i].client1data!="Data didn't added yet " || cases.cases[i].client1data!= "{Data didn't added yet} ")
+    //   {
+    //     client1data = JSON.parse(cases.cases[i].client1data);
+    //     if (cases.cases[i].MIAM2mediator && cases.cases[i].MIAM2mediator!="Data didn't added yet " || cases.cases[i].MIAM2mediator!="{Data didn't added yet} ") {
+
+    //         MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
+    //         tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
+    //         if (tempDate) tempDate = tempDate.slice(0, 10);
+    //         else tempDate = "2020-05-13"
+    //     }
+    //     tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
+    //   }
+
+    //   await Case.findByIdAndUpdate(cases.cases[i]._id, {
+    //     status: "C2 MIAM Part 2 Applied",
+    //     Reference: tempRefDummyData,
+    //     startDate: tempDate
+
+    //   })
+    // }
+
 
   }
   res.json("Xxxx")

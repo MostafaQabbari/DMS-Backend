@@ -95,16 +95,39 @@ router.post('/addDummyCases', authMiddleware, async (req, res) => {
 
   const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
 
-  for (let i = 0; i < 50 ; i++) {
+  for (let i = 50; i < 73; i++) {
 
-    console.log(dummyCases[i])
-    client1data = JSON.stringify(dummyCases[i][0].c1.MIAM1) 
-    MIAM2mediator = JSON.stringify(dummyCases[i][0].c1.MIAM2) 
-    client2data =  JSON.stringify(dummyCases[i][1].c2.MIAM1) 
-    MIAM2C2 = JSON.stringify( dummyCases[i][1].c2.MIAM2);
+    //console.log(dummyCases[i])
+    if (dummyCases[i][0].c1.MIAM1) client1data = JSON.stringify(dummyCases[i][0].c1.MIAM1)
+    if (dummyCases[i][0].c1.MIAM2) MIAM2mediator = JSON.stringify(dummyCases[i][0].c1.MIAM2)
+    if (dummyCases[i][1].c2.MIAM1) client2data = JSON.stringify(dummyCases[i][1].c2.MIAM1)
+    if (dummyCases[i][1].c2.MIAM2) MIAM2C2 = JSON.stringify(dummyCases[i][1].c2.MIAM2);
+    let tempData = dummyCases[i][0].c1.MIAM2.mediationDetails.DateOfMIAM;
 
-   let newCase = await Case.insertMany(
+    if(tempData) tempData = tempData.slice(0, 10);
+    else tempData = "2020-05-05"
+    //console.log(tempData)
+   
+    let tempStatus = dummyCases[i][1].c2.MIAM2.FinalComments.isSuitable
+    if(tempStatus=="Yes")
+    {
+      tempStatus ="Not suitable for mediation"
+    }
+    else{
+      if(i%2==0) tempStatus ="Mediation Successful"
+      if(i%2!=0) tempStatus ="Proceeding with mediation"
+      if(i%3==0)  tempStatus ="Mediation Agreed"
+      if(i%5==0)  tempStatus ="Mediation Broken up"
+      if(i%7==0)  tempStatus ="C2 MIAM Part 2 Applied"
+      if(i%11==0) tempStatus= "Proceeding with mediation"
+
+    }
+ console.log(tempStatus)
+    let newCase = await Case.insertMany(
       {
+        Reference: `${dummyCases[i][0].c1.MIAM1.personalContactAndCaseInfo.surName} & ${dummyCases[i][0].c1.MIAM1.otherParty.otherPartySurname}`,
+        startDate: tempData,
+        status:tempStatus,
         client1data,
         MIAM2mediator,
         client2data,

@@ -5,6 +5,8 @@ const Schema = mongoose.Schema;
 const caseSchema = new Schema({
 
   Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
+
+  startDate:{type:String},   // data from MIAM
   client1ContactDetails: {
     firstName: { type: String },
     surName: { type: String },
@@ -54,11 +56,11 @@ module.exports = Case;
             "Invitation to C2 sent"
             "Not suitable for mediation"
             "C2 MIAM Part 1 Applied"
-           ' C2 MIAM Part 2 Applied'
+           "C2 MIAM Part 2 Applied"
             "Case Closed"
             "Proceeding with mediation"
             "Mediation Session 1..n"
-           "Mediation Agreed" / "Mediation Successful" / "Mediation Broken D"
+           "Mediation Agreed" / "Mediation Successful" / "Mediation Broken up"
 
  */
 
