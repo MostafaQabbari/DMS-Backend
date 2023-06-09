@@ -31,6 +31,30 @@ Auth routes :
   Method: post
   Required:{ email, resetToken, newPassword }
 
+/auth/add-admin
+  Method: post
+  Required:  { email ,password }
+
+/auth/admin-login
+  Method: post
+  Required:  { email ,password }
+
+
+
+
+Compnay route:
+
+    /get-companies
+    Method: get
+    
+    /company/:id/stats
+    Method: get
+
+    /company/:id
+    Method: delete
+
+    /companies/:id
+    Method: patch
 
 
 ***************************************************************
@@ -320,5 +344,3 @@ Case Routes
     method : get
 
 
-    /get-companies
-    Method: get
