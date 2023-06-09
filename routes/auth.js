@@ -10,6 +10,9 @@ const Admin = require("../models/admin");
 const Company = require("../models/company");
 const Mediator = require('../models/mediator');
 const authMiddleware = require("../middleware/authMiddleware");
+const CryptoJS = require("crypto-js");
+
+
 // const { appendFile } = require("fs");
 const router = express.Router();
 
@@ -51,7 +54,8 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
     }
 
     try {
-      const { companyName, email, password } = req.body;
+      const { companyName, email, password, twillioData } = req.body;
+ 
       const existingUser = await Company.findOne({ email });
 
       if (existingUser) {
@@ -64,25 +68,49 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
       if (!passwordRegex.test(password)) {
         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
       }
-
-
       const hashedPassword = await bcrypt.hash(password, 10);
+      let cryptedTwilioData ;
+     
+      if (req.body.twillioData) {
+  
+        const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
+        const phoneNumber = twillioData.twillioNumber;
+        
+        
+        x.messages.create({
+          body: `Your Client ${companyName} twillio has been added   `,
+          from: phoneNumber,
+          // to here will be the Drion to send him that the company added twillio number
+          to: '+44 7476 544877'
+        }).then(()=>{
+          console.log("xxxx")
+          cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+
+        }).catch((err) => {
+          console.log(err.message)
+          
+        });
+
+      }
+
+
 
       const user = new Company({
         companyName,
         email,
         password: hashedPassword,
         companyLogo: req.file ? req.file.filename : null,
+        twillioData:cryptedTwilioData
       });
 
       await user.save();
 
-      const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
-      const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+      const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+      const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
       // Store refresh token in database
-       await Company.findByIdAndUpdate(user._id, { refreshToken });
+      await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-      res.status(201).json({  accessToken , refreshToken });
+      res.status(201).json({ accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
@@ -92,13 +120,13 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
 // Mediator form submission route
 router.post('/add-admin', async (req, res, next) => {
-  
+
   try {
-    
-    const {email, password } = req.body;
+
+    const { email, password } = req.body;
 
 
-    
+
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     // Check if the password meets the minimum requirements
@@ -107,10 +135,10 @@ router.post('/add-admin', async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const admin = new Admin({ email, password: hashedPassword});
-    
+    const admin = new Admin({ email, password: hashedPassword });
+
     await admin.save();
-    
+
 
     res.status(201).json({ message: 'Admin added successfully!' });
   } catch (error) {
@@ -124,32 +152,32 @@ router.post('/add-admin', async (req, res, next) => {
 
 
 router.post("/admin-login", async (req, res, next) => {
-  
+
   try {
     const { email, password } = req.body;
 
-    const user = await Admin.findOne({email});
-   
+    const user = await Admin.findOne({ email });
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email" });
     }
 
-    
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid  password" });
     }
-    
-    
-    const  accessToken = jwt.sign({ id: user._id, role: "admin", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "admin", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-    
+
+
+    const accessToken = jwt.sign({ id: user._id, role: "admin", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user._id, role: "admin", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+
     // Store refresh token in database
     await Admin.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({  accessToken , refreshToken });
+    res.status(201).json({ accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
@@ -160,32 +188,32 @@ router.post("/admin-login", async (req, res, next) => {
 
 
 router.post("/company-login", async (req, res, next) => {
-  
+
   try {
     const { email, password } = req.body;
 
-    const user = await Company.findOne({email});
-   
+    const user = await Company.findOne({ email });
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email" });
     }
 
-    
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid  password" });
     }
-    
-    
-    const  accessToken = jwt.sign({ id: user._id, role: "company", type:'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "company", type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-    
+
+
+    const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+
     // Store refresh token in database
     await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({  accessToken , refreshToken });
+    res.status(201).json({ accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
@@ -194,31 +222,31 @@ router.post("/company-login", async (req, res, next) => {
 
 
 router.post("/mediator-login", async (req, res, next) => {
-  
+
   try {
     const { email, password } = req.body;
 
-    const user = await Mediator.findOne({email});
-   
+    const user = await Mediator.findOne({ email });
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email" });
     }
 
-    
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid  password" });
     }
-    
-    
-    const  accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "mediator" , type:'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+
+
+    const accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({ id: user._id, role: "mediator", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
     // Store refresh token in database
     await Mediator.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({  accessToken , refreshToken });
+    res.status(201).json({ accessToken, refreshToken });
   } catch (error) {
     next(error);
   }
@@ -228,8 +256,8 @@ router.post("/mediator-login", async (req, res, next) => {
 
 router.get("/user-info", authMiddleware, (req, res, next) => {
 
-  res.status(200).json({ user: req.user, role: req.userRole});
- 
+  res.status(200).json({ user: req.user, role: req.userRole });
+
 });
 
 
@@ -242,9 +270,9 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
   if (req.userRole !== "company") {
     return res.status(401).json({ message: "Unauthorized only a company account can add Mediator" });
   }
-  
+
   try {
-    
+
     const { firstName, lastName, email, password, phoneNumber } = req.body;
 
 
@@ -256,10 +284,10 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
 
     // Validate input fields
-    if (!firstName || !lastName || !email || !password || !phoneNumber ) {
+    if (!firstName || !lastName || !email || !password || !phoneNumber) {
       return res.status(400).json({ message: 'All fields are required!' });
     }
-    
+
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     // Check if the password meets the minimum requirements
@@ -268,15 +296,15 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id});
-    
+    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id });
+
     await mediator.save();
-    
+
     const companyId = req.user._id;
 
     // Update the company's mediators array with the new mediator ID
     await Company.findByIdAndUpdate(companyId, { $push: { mediators: mediator._id } });
-    
+
 
     res.status(201).json({ message: 'Mediator added successfully!' });
   } catch (error) {
@@ -298,16 +326,17 @@ router.post("/refresh-token", async (req, res, next) => {
       user = await Mediator.findById(decoded.id);
       if (!user) {
         user = await Admin.findById(decoded.id);
-        if(!user){
-        return res.status(401).json({ message: "Invalid token" });
-        }}
+        if (!user) {
+          return res.status(401).json({ message: "Invalid token" });
+        }
+      }
     }
 
     if (user.refreshToken !== refreshToken) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    const accessToken = jwt.sign({ id: user._id, role: decoded.role , type:'access'}, config.jwtSecret, { expiresIn: "7d" });
+    const accessToken = jwt.sign({ id: user._id, role: decoded.role, type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
 
     res.status(200).json({ accessToken });
   } catch (error) {
@@ -325,9 +354,9 @@ router.post("/forgot-password", async (req, res, next) => {
     const resetTokenData = generateResetToken();
 
     // Find the user by email
-    let user = await Company.findOne({email});
+    let user = await Company.findOne({ email });
     if (!user) {
-      user = await Mediator.findOne({email});
+      user = await Mediator.findOne({ email });
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -342,7 +371,7 @@ router.post("/forgot-password", async (req, res, next) => {
     // Send the reset password email to the user (e.g., using Nodemailer)
     sendResetPasswordEmail(user.email, resetTokenData.token);
 
-    res.status(200).json({ message: "Password reset email sent" , resetTokenData });
+    res.status(200).json({ message: "Password reset email sent", resetTokenData });
   } catch (error) {
     next(error);
   }
@@ -397,11 +426,11 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   port: 587,
   starttls: {
-      enable: true
+    enable: true
   },
   starttls: {
     enable: true
-},
+  },
 
   secureConnection: false,
 
@@ -410,7 +439,7 @@ const transporter = nodemailer.createTransport({
     pass: config.appPassWord,
   },
 
-}) 
+})
 
 
 
@@ -427,7 +456,7 @@ function sendResetPasswordEmail(email, resetToken) {
     <a href="https://dms5.onrender.com/auth/reset-password?token=${resetToken}">Reset Password</a>`,
   };
 
-  
+
   // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {

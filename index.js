@@ -5,12 +5,13 @@ const { jwtSecret } = require("./config/config");
 const authRoutes = require("./routes/auth");
 const caseRoutes = require("./routes/case");
 const companyRoutes = require("./routes/company");
-const client1Form = require("./routes/clinet1data");
+const C1MIAM1 = require("./routes/C1_MIAM1");
 const pdfConvertor = require("./routes/pdfConvertor");
 const configureTwillio = require("./routes/configureTwillio")
 const getMediators = require("./routes/getMediators");
-const addingMIAM2 = require("./routes/addingMIAM2")
+const C1MIAM2 = require("./routes/C1_MIAM2")
 const getDataFromCSV = require("./routes/getDataFromCSV")
+const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
 const cors = require('cors');
 require('dotenv')
 
@@ -36,11 +37,11 @@ app.use("/", caseRoutes);
 app.use("/", companyRoutes);
 app.use("/", pdfConvertor);
 app.use(configureTwillio);
-app.use(client1Form)
+app.use(C1MIAM1)
 app.use(getMediators)
-app.use(addingMIAM2)
+app.use(C1MIAM2)
 app.use(getDataFromCSV)
-
+app.use(sendingMailsOrSMS)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

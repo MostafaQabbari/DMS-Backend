@@ -61,7 +61,7 @@ router.post('/getDataFromAirtable', async (req, res) => {
   try {
     const records = await base(tableName).select({
       view: 'viwxrs9ZXzEcqLjWK',
-      maxRecords: 5
+      maxRecords: 250
 
     }).all();
 
@@ -95,7 +95,9 @@ router.post('/addDummyCases', authMiddleware, async (req, res) => {
 
   const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
 
-  for (let i = 51; i < 100 ; i++) {
+  for (let i = 0; i < 50 ; i++) {
+
+    console.log(dummyCases[i])
     client1data = JSON.stringify(dummyCases[i][0].c1.MIAM1) 
     MIAM2mediator = JSON.stringify(dummyCases[i][0].c1.MIAM2) 
     client2data =  JSON.stringify(dummyCases[i][1].c2.MIAM1) 

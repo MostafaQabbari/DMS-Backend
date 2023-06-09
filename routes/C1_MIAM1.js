@@ -53,14 +53,14 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
 }
 
-router.patch("/addClient1/:id", async (req, res) => {
+router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    let client1data = req.body[0]
-    let Reference = `${req.body[0].personalInfo.surName}& ${req.body[0].Client2Details.SurName}`;
+    let client1data = req.body
+    let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
 
     const StringfyData = JSON.stringify(client1data)
 
@@ -78,18 +78,18 @@ router.patch("/addClient1/:id", async (req, res) => {
     
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
-    mediatorData.email = "abdosamir023023@gmail.com"
+    mediatorData.email = medEmail
 
 // !currentCase.client1AddedData
-    if (true) {
-     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true} )
+    if (!currentCase.client1AddedData) {
+     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true , status:"C1 MIAM Part 1 Applied"} )
      const  updatedCase = await Case.findById(req.params.id);
 
      const   parsedClientData =JSON.parse(updatedCase.client1data)
 
-     clientData.fname = parsedClientData.personalInfo.firstName;
-     clientData.surName = parsedClientData.personalInfo.surName;
-     messageBodyinfo.formUrl = `${config.baseUrl}/${config.MIAM_PART_2}/${updatedCase._id}`;
+     clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
+     clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
+     messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
 
      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 
@@ -125,11 +125,11 @@ async function createMIAM1Upload(client1data, folderName , email) {
     page.setFontSize(12);
 
     // Add client data to the PDF document
-    page.drawText(`First name: ${client1data.personalInfo.firstName}`, { x: 50, y: 600 });
-    page.drawText(`Sur name: ${client1data.personalInfo.surName}`, { x: 50, y: 650 });
-    page.drawText(`Birthday: ${client1data.personalInfo.dateOfBirth}`, { x: 50, y: 700 });
-    page.drawText(`Phone: ${client1data.personalInfo.phoneNumber}`, { x: 50, y: 750 });
-    page.drawText(`email: ${client1data.personalInfo.email}`, { x: 50, y: 800 });
+    page.drawText(`First name: ${client1data.personalContactAndCaseInfo.firstName}`, { x: 50, y: 600 });
+    page.drawText(`Sur name: ${client1data.personalContactAndCaseInfo.surName}`, { x: 50, y: 650 });
+    page.drawText(`Birthday: ${client1data.personalContactAndCaseInfo.dateOfBirth}`, { x: 50, y: 700 });
+    page.drawText(`Phone: ${client1data.personalContactAndCaseInfo.phoneNumber}`, { x: 50, y: 750 });
+    page.drawText(`email: ${client1data.personalContactAndCaseInfo.email}`, { x: 50, y: 800 });
 
     // Save the PDF document to a buffer
     const pdfBytes = await pdfDoc.save();
