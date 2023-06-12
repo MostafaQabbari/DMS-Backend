@@ -324,59 +324,6 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 })
 
 
-router.patch("/configureDummy", authMiddleware, async (req, res) => {
-
-  // let cases = await Company.findById(req.user._id).populate('cases');
-
-
-  // let meds = await Company.findById(req.user._id).populate('mediators');
-  //meds.cases=[]
-  for (let i = 0; i < meds.mediators.length; i++) {
-    //   await mediator.findByIdAndUpdate(meds.mediators[i]._id, { cases: [] })
-
-    //  console.log(meds.mediators)
-
-  }
-
-  for (let i = 0; i < cases.cases.length; i++) {
-    // await Case.findByIdAndRemove(cases.cases[i]._id);
-    // await Company.findByIdAndUpdate(req.user._id,{cases:[]})
-    // let meds = await Company.findById(req.user._id).populate('mediators');
-    //   console.log(meds)
-
-
-
-
-    // if (!cases.cases[i]._id.Reference && cases.cases[i]._id.Reference!="Data didn't added yet " || cases.cases[i]._id.Reference!= "{Data didn't added yet} ") {
-    //   console.log(cases.cases[i])
-    //   if(cases.cases[i].client1data &&  cases.cases[i].client1data!="Data didn't added yet " || cases.cases[i].client1data!= "{Data didn't added yet} ")
-    //   {
-    //     client1data = JSON.parse(cases.cases[i].client1data);
-    //     if (cases.cases[i].MIAM2mediator && cases.cases[i].MIAM2mediator!="Data didn't added yet " || cases.cases[i].MIAM2mediator!="{Data didn't added yet} ") {
-
-    //         MIAM2mediator = JSON.parse(cases.cases[i].MIAM2mediator);
-    //         tempDate = MIAM2mediator.mediationDetails.DateOfMIAM;
-    //         if (tempDate) tempDate = tempDate.slice(0, 10);
-    //         else tempDate = "2020-05-13"
-    //     }
-    //     tempRefDummyData = `${client1data.personalContactAndCaseInfo.surName} & ${client1data.otherParty.otherPartySurname}`
-    //   }
-
-    //   await Case.findByIdAndUpdate(cases.cases[i]._id, {
-    //     status: "C2 MIAM Part 2 Applied",
-    //     Reference: tempRefDummyData,
-    //     startDate: tempDate
-
-    //   })
-    // }
-
-
-  }
-  res.json("Xxxx")
-
-
-})
-
 module.exports = router;
 
 

@@ -12,6 +12,9 @@ const getMediators = require("./routes/getMediators");
 const C1MIAM2 = require("./routes/C1_MIAM2")
 const getDataFromCSV = require("./routes/getDataFromCSV")
 const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
+
+
+const updateCase = require("./routes/updateCase")
 const cors = require('cors');
 require('dotenv')
 
@@ -42,6 +45,7 @@ app.use(getMediators)
 app.use(C1MIAM2)
 app.use(getDataFromCSV)
 app.use(sendingMailsOrSMS)
+app.use(updateCase)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
