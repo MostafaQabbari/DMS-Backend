@@ -128,6 +128,122 @@ router.patch('/updateC2M1/:id', authMiddleware, async (req, res, next) => {
     }
 
 });
+router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
+
+    let CaseFound;
+
+
+    try {
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if(CaseFound){
+                let MIAM2mediator = req.body
+                const StringfyData = JSON.stringify(MIAM2mediator)
+        
+      await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
+             //console.log(updatedCase)
+                res.json({ res: "Data of MIAM2-C1 has been updated" })
+        
+            }
+
+        }
+       else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if(CaseFound){
+                let MIAM2mediator = req.body
+                const StringfyData = JSON.stringify(MIAM2mediator)
+        
+                await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
+        
+                res.json({ res: "Data of MIAM2-C1 has been updated" })
+        
+            }
+
+        }
+
+        else{
+            res.json({res : "there is an arror with getting case access for the user"})
+        }
+
+    
+
+    } catch (err) {
+        res.json(err.message)
+    }
+
+});
+router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
+
+    let CaseFound;
+
+
+    try {
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if(CaseFound){
+                let MIAM2C2 = req.body
+                const StringfyData = JSON.stringify(MIAM2C2)
+        
+      await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
+             //console.log(updatedCase)
+                res.json({ res: "Data of MIAM2-C2 has been updated" })
+        
+            }
+
+        }
+       else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if(CaseFound){
+                let MIAM2C2 = req.body
+                const StringfyData = JSON.stringify(MIAM2C2)
+        
+                await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
+        
+                res.json({ res: "Data of MIAM2-C2 has been updated" })
+        
+            }
+
+        }
+
+        else{
+            res.json({res : "there is an arror with getting case access for the user"})
+        }
+
+    
+
+    } catch (err) {
+        res.json(err.message)
+    }
+
+});
+
+
 
 
 
