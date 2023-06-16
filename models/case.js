@@ -51,16 +51,16 @@ module.exports = Case;
 /**
  
  Case status – 
-            "C1 MIAM Part 1 Applied"
-            "C1 MIAM Part 2 Applied"
+            "MIAM Part 1-C1"
+            "MIAM Part 2-C1"
+            "MIAM Part 1-C2"
+            "MIAM Part 2-C2"
+            "Proceeding with mediation"
+            "Not Proceeding with mediation"
+            "Mediation Session 1..n"
+            "Agreed" / "Successful" / "Broken"
             "Invitation to C2 sent"
             "Not suitable for mediation"
-            "C2 MIAM Part 1 Applied"
-           "C2 MIAM Part 2 Applied"
-            "Case Closed"
-            "Proceeding with mediation"
-            "Mediation Session 1..n"
-           "Mediation Agreed" / "Mediation Successful" / "Mediation Broken up"
-
+            "Closed"
  */
 
