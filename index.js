@@ -14,6 +14,7 @@ const getDataFromCSV = require("./routes/getDataFromCSV")
 const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
 
 const updateCaseStatus= require("./routes/updateCaseStatus")
+const C2Invitation= require("./routes/C2_invitation")
 
 
 const updateCase = require("./routes/updateCase")
@@ -49,6 +50,7 @@ app.use(getDataFromCSV)
 app.use(sendingMailsOrSMS)
 app.use(updateCase)
 app.use(updateCaseStatus)
+app.use(C2Invitation)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

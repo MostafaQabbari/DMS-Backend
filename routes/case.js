@@ -21,30 +21,30 @@ const sendMail = function (companyData, clientData, messageBodyinfo) {
   */
 
   let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      port: 587,
-      starttls: {
-          enable: true
-      },
-      starttls: {
-          enable: true
-      },
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
 
-      secureConnection: false,
+    secureConnection: false,
 
-      auth: {
-          user: config.companyEmail,
-          pass: config.appPassWord,
-      },
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
 
   })
 
 
   let info = transporter.sendMail({
-      from: config.companyEmail,
-      to: clientData.email,
-      subject: "Applying To MIAM Form",
-      html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: "Applying To MIAM Form",
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
      <h1>Dear ${clientData.clientName}  </h1>
     <h2> Follow the next Link to Apply to your form </h2>
     <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
@@ -53,27 +53,27 @@ const sendMail = function (companyData, clientData, messageBodyinfo) {
     <h3>${companyData.email}</h3>
      </div>`,
 
-      // html: `
-      // <div>
-      // <h1>Dear ${clientData.clientName}  </h1>
-      // <h2> Follow the next Link to Apply to your form </h2>
-      // <a href='${messageBodyinfo.formUrl}'>Click here </a>
-      // <h3>Best Regards</h3>
-      // <h3>${companyData.companyName}</h3>
-      // <h3>${companyData.email}</h3>
-      // </div>
-      //  `,
+    // html: `
+    // <div>
+    // <h1>Dear ${clientData.clientName}  </h1>
+    // <h2> Follow the next Link to Apply to your form </h2>
+    // <a href='${messageBodyinfo.formUrl}'>Click here </a>
+    // <h3>Best Regards</h3>
+    // <h3>${companyData.companyName}</h3>
+    // <h3>${companyData.email}</h3>
+    // </div>
+    //  `,
 
   });
 
 
   transporter.sendMail(info, (error, info) => {
-      if (error) {
-          console.log('Error occurred while sending email:', error.message);
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
 
-      } else {
-          console.log('Email sent successfully:', info.messageId);
-      }
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
   });
 
 }
@@ -91,39 +91,43 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
 
-     let Reference=`${surName} `;
-      //console.log("theMed",Themediator);
-      console.log("body", req.body);
-
+      let Reference = `${surName} `;
       let newCaseID;
-      // if (Themediator) {
+      if (Themediator) {
 
-      console.log("mMail", mediatorMail)
-      let newCase = await Case.insertMany(
-        {
-          client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-          startDate:dateOfMAIM,
-          status:"MIAM 1 sent to C1",
-          Reference,
-          connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
-        });
-      console.log(newCase)
-      newCaseID = newCase[0]._id
-      // Update the company's cases array with the new case ID
-      await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
-      await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
-      clientData.email = email;
-      clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
-      companyData.companyName = req.user.companyName;
-      companyData.email = req.user.email;
-      sendMail(companyData, clientData, messageBodyinfo)
+        let newCase = await Case.insertMany(
+          {
+            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+            startDate: dateOfMAIM,
+            status: "MIAM 1 sent to C1",
+            Reference,
+            MajorDataC1: {
+              fName: firstName,
+              sName: surName,
+              mail: email,
+              phoneNumber:phoneNumber
+            },
 
-      // }
-      // else{
-      //   res.json({"message" : "please add the mediator first"})
-      // }
+            connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
+          });
+        console.log(newCase)
+        newCaseID = newCase[0]._id
+        // Update the company's cases array with the new case ID
+        await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
+        await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
+
+        clientData.email = email;
+        clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+        companyData.companyName = req.user.companyName;
+        companyData.email = req.user.email;
+        sendMail(companyData, clientData, messageBodyinfo)
+
+      }
+      else {
+        res.json({ "message": "please add the mediator first" })
+      }
 
       res.json({ caseID: newCaseID })
     }
@@ -131,13 +135,19 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
     else if (req.userRole == 'mediator') {
       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-      let Reference=`${surName} `;
+      let Reference = `${surName} `;
       let newCase = await Case.insertMany(
         {
           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-          startDate:dateOfMAIM,
-          status:"MIAM 1 sent to C1",
+          startDate: dateOfMAIM,
+          status: "MIAM 1 sent to C1",
           Reference,
+          MajorDataC1: {
+            fName: firstName,
+            sName: surName,
+            mail: email,
+            phoneNumber:phoneNumber
+          },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
 
@@ -154,7 +164,6 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       companyData.companyName = mediatorCompanyData.companyId.companyName
       companyData.email = mediatorCompanyData.companyId.email
       sendMail(companyData, clientData, messageBodyinfo)
-      // console.log(newCase[0])
       res.json({ caseID: newCase[0]._id })
     }
 
@@ -185,14 +194,14 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
-          status:cases.cases[i].status,
-          startDate:  cases.cases[i].startDate,
+          status: cases.cases[i].status,
+          startDate: cases.cases[i].startDate,
         }
 
         casesList.push(resposedCaseObj)
 
       }
-     
+
 
       res.json(casesList)
 
@@ -207,8 +216,8 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
-          status:cases.cases[i].status,
-          startDate:  cases.cases[i].startDate,
+          status: cases.cases[i].status,
+          startDate: cases.cases[i].startDate,
         }
 
         casesList.push(resposedCaseObj)
@@ -234,7 +243,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
-  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2
+  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2 , MajorDataC1 ,MajorDataC2
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -256,18 +265,23 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2mediator) MIAM2_C1 = JSON.parse(CaseFound.MIAM2mediator); else MIAM2_C1 = "Data didn't added yet"
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
-
+        MajorDataC1 = CaseFound.MajorDataC1; 
+        JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
+     
 
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
-          startDate:CaseFound.startDate,
+          startDate: CaseFound.startDate,
           status: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
           MIAM2_C1,
           MIAM1_C2,
           MIAM2_C2,
+          MajorDataC1,
+          MajorDataC2
+
         }
 
         res.json(CaseResponse)
@@ -292,18 +306,23 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2mediator) MIAM2_C1 = JSON.parse(CaseFound.MIAM2mediator); else MIAM2_C1 = "Data didn't added yet"
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
-
+        MajorDataC1 = CaseFound.MajorDataC1; 
+      
+        JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
+   
 
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
-          startDate:CaseFound.startDate,
+          startDate: CaseFound.startDate,
           status: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
           MIAM2_C1,
           MIAM1_C2,
           MIAM2_C2,
+          MajorDataC1,
+          MajorDataC2
         }
 
         res.json(CaseResponse)

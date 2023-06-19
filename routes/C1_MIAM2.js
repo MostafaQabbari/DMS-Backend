@@ -10,12 +10,31 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
     try {
 
         let MIAM2mediator = req.body;
-        let currentCase = await Case.findById(req.params.id);
-        const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
-        if (!currentCase.MIAM2AddedData) {
+        let MajorDataC1 = {
+            fName: req.body.mediationDetails.clientFirstName,
+            sName: req.body.mediationDetails.clientSurName,
+            mail: req.body.mediationDetails.clientEmail,
+        }
 
-            await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true , status:"C1 MIAM Part 2 Applied" })
-        
+        let MajorDataC2sName = req.body.mediationDetails.otherPartySurname;
+
+
+
+        let currentCase = await Case.findById(req.params.id);
+       // console.log("xxx",currentCase.MajorDataC2)
+        const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
+        //!currentCase.MIAM2AddedData
+        if (currentCase.MIAM2AddedData) {
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $set: {
+                    'MajorDataC1.fName': MajorDataC1.fName,
+                    'MajorDataC1.sName': MajorDataC1.sName,
+                    'MajorDataC1.mail': MajorDataC1.mail,
+                    'MajorDataC2.sName': MajorDataC2sName
+                }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
+            })
+
             res.json({ "message": " MIAM2 has been added " })
         }
         else {

@@ -6,7 +6,7 @@ const caseSchema = new Schema({
 
   Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
 
-  startDate:{type:String},   // data from MIAM
+  startDate: { type: String },   // data from MIAM
   client1ContactDetails: {
     firstName: { type: String },
     surName: { type: String },
@@ -35,7 +35,31 @@ const caseSchema = new Schema({
   client2AddedData: { type: Boolean, default: false },
   MIAM2C2: { type: String },
   MIAM2C2AddedData: { type: Boolean, default: false },
-  status: { type: String, default: "MIAM1 sent to C1" },
+
+  C2invitation: { type: String },
+  C2invitationApplied: { type: Boolean, default: false },
+
+  MajorDataC1: {
+    fName: { type: String },
+    sName: { type: String },
+    mail: { type: String },
+    phoneNumber:{ type: String}
+  },
+
+  MajorDataC2: {
+    fName: { type: String },
+    sName: { type: String },
+    mail: { type: String },
+    phoneNumber:{ type: String}
+  },
+
+
+
+
+
+
+
+  status: { type: String, default: "MIAM Part 1-C1" },
   closed: { type: Boolean, default: false },
 },
   {

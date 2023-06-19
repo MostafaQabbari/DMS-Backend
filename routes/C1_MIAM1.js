@@ -61,6 +61,19 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     let currentCase = await Case.findById(req.params.id);
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
+  let  MajorDataC1= {
+      fName:req.body.personalContactAndCaseInfo.firstName,
+      sName:req.body.personalContactAndCaseInfo.surName,
+      mail:req.body.personalContactAndCaseInfo.email,
+      phoneNumber:req.body.personalContactAndCaseInfo.phoneNumber
+    }
+  
+   let MajorDataC2= {
+      fName:req.body.otherParty.otherPartyFirstName,
+      sName: req.body.otherParty.otherPartySurname,
+      mail:req.body.otherParty.otherPartyEmail,
+      phoneNumber:req.body.otherParty.otherPartyPhone,
+    }
 
     const StringfyData = JSON.stringify(client1data)
 
@@ -80,9 +93,9 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
 
-// !currentCase.client1AddedData
+
     if (!currentCase.client1AddedData) {
-     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true , status:"C1 MIAM Part 1 Applied"} )
+     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true ,MajorDataC1,MajorDataC2 , status:"MIAM Part 1-C1"} )
      const  updatedCase = await Case.findById(req.params.id);
 
      const   parsedClientData =JSON.parse(updatedCase.client1data)
