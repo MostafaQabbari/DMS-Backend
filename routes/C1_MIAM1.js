@@ -54,7 +54,7 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 }
 
 router.patch("/addC1MIAM1/:id", async (req, res) => {
-
+ 
 
   try {
 
@@ -93,8 +93,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
 
-
-    if (!currentCase.client1AddedData) {
+//!currentCase.client1AddedData
+    if (true) {
      await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true ,MajorDataC1,MajorDataC2 , status:"MIAM Part 1-C1"} )
      const  updatedCase = await Case.findById(req.params.id);
 
