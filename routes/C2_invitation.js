@@ -14,24 +14,54 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
     let currentCase = await Case.findById(req.params.id);
     let C2invitation = req.body
+    //currentCase.status == "MIAM Part 2-C1" && !currentCase.C2invitationApplied
+    if (true) {
 
-    const StringfyData = JSON.stringify(C2invitation)
+      let MajorDataC2 = {
+        fName: C2invitation.firstName,
+        sName: C2invitation.surName,
+        mail: C2invitation.C2mail,
+        phoneNumber: C2invitation.phoneNumber
+      }
 
-    const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
-    const companyEmail = companyData.connectionData.companyID.email;
+      const StringfyData = JSON.stringify(C2invitation)
 
-    const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
-    const medEmail = medData.connectionData.mediatorID.email;
-    
-    mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-    mediatorData.email = medEmail
+      console.log(StringfyData)
+
+    const updatedCase=   await Case.findByIdAndUpdate(req.params.id, {
+        $set: {
+          'MajorDataC2.fName': MajorDataC2.fName,
+          'MajorDataC2.sName': MajorDataC2.sName,
+          'MajorDataC2.mail': MajorDataC2.mail,
+          'MajorDataC2.phoneNumber': MajorDataC2.phoneNumber
+        }, C2invitation: StringfyData, C2invitationApplied: true, status: "Invitation to C2 sent"
+      })
 
 
-    // messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+      const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
+      const companyEmail = companyData.connectionData.companyID.email;
+      const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+      const medEmail = medData.connectionData.mediatorID.email;
+      //mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
+      //  mediatorData.email = medEmail
+      // messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
 
-     res.json("parsedClientData")
 
-  
+
+      res.json({ "res": "C2 invitation form has been applies" })
+    }
+    else {
+      res.json({ "res": "this case has been applied before or not suitable please check it out" })
+    }
+
+
+
+
+
+
+
+
+
   } catch (err) {
     res.json(err.message)
   }

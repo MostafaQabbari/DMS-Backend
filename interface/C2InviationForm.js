@@ -1,7 +1,8 @@
 C2_Inviation={
 C2Consent:"yes",
 willingToMediation:" ",
-firstName:"   ",
+firstName:"",
+surName:"",
 C2mail:" ",
 otherPartyFirstName:" ",
 otherPartySurName:" ",

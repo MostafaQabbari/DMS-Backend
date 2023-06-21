@@ -243,7 +243,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
-  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2 , MajorDataC1 ,MajorDataC2
+  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2 , MajorDataC1 ,MajorDataC2,C2invitation
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -264,11 +264,14 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client1data) MIAM1_C1 = JSON.parse(CaseFound.client1data); else MIAM1_C1 = "Data didn't added yet"
         if (CaseFound.MIAM2mediator) MIAM2_C1 = JSON.parse(CaseFound.MIAM2mediator); else MIAM2_C1 = "Data didn't added yet"
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
-        if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
+        if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet";
+        if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+  
+
         MajorDataC1 = CaseFound.MajorDataC1; 
         JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
      
-
+     
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
@@ -280,7 +283,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MIAM1_C2,
           MIAM2_C2,
           MajorDataC1,
-          MajorDataC2
+          MajorDataC2,
+          C2invitation
 
         }
 
@@ -306,6 +310,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2mediator) MIAM2_C1 = JSON.parse(CaseFound.MIAM2mediator); else MIAM2_C1 = "Data didn't added yet"
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
+        if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+
         MajorDataC1 = CaseFound.MajorDataC1; 
       
         JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
@@ -322,7 +328,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MIAM1_C2,
           MIAM2_C2,
           MajorDataC1,
-          MajorDataC2
+          MajorDataC2,
+          C2invitation
         }
 
         res.json(CaseResponse)
