@@ -25,6 +25,13 @@ require('dotenv')
 const PORT = process.env.PORT || 3007
 const app = express();
 
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve , swaggerUi.setup(swaggerDocument));
+
+
 mongoose
   .connect("mongodb+srv://mkabary8:O8uafwuq79PBkJoJ@cluster1.xnqqhnm.mongodb.net/users", { useNewUrlParser: true })
   .then(() => {
