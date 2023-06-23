@@ -43,15 +43,27 @@ const caseSchema = new Schema({
     fName: { type: String },
     sName: { type: String },
     mail: { type: String },
-    phoneNumber:{ type: String}
+    phoneNumber: { type: String }
   },
 
   MajorDataC2: {
     fName: { type: String },
     sName: { type: String },
     mail: { type: String },
-    phoneNumber:{ type: String}
+    phoneNumber: { type: String }
   },
+
+  Reminders:{
+    statusRemider: {
+      reminderID: { type: String },      // ID =>   caseID + "statusRemider" keyWord
+      reminderTitle: { type: String },    // title   =>  ReferenceCase + StatusValue
+      startDate: { type: Date }
+    }
+  },
+
+  
+
+ 
 
 
 

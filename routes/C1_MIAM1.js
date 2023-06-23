@@ -8,7 +8,7 @@ const stream = require("stream");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
 const drive = google.drive('v3');
-
+const dateNow = require("../global/dateNow")
 const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
   let transporter = nodemailer.createTransport({
@@ -54,67 +54,82 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 }
 
 router.patch("/addC1MIAM1/:id", async (req, res) => {
- 
+
 
   try {
 
     let currentCase = await Case.findById(req.params.id);
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
-  let  MajorDataC1= {
-      fName:req.body.personalContactAndCaseInfo.firstName,
-      sName:req.body.personalContactAndCaseInfo.surName,
-      mail:req.body.personalContactAndCaseInfo.email,
-      phoneNumber:req.body.personalContactAndCaseInfo.phoneNumber
+    let MajorDataC1 = {
+      fName: req.body.personalContactAndCaseInfo.firstName,
+      sName: req.body.personalContactAndCaseInfo.surName,
+      mail: req.body.personalContactAndCaseInfo.email,
+      phoneNumber: req.body.personalContactAndCaseInfo.phoneNumber
     }
-  
-   let MajorDataC2= {
-      fName:req.body.otherParty.otherPartyFirstName,
+
+    let MajorDataC2 = {
+      fName: req.body.otherParty.otherPartyFirstName,
       sName: req.body.otherParty.otherPartySurname,
-      mail:req.body.otherParty.otherPartyEmail,
-      phoneNumber:req.body.otherParty.otherPartyPhone,
+      mail: req.body.otherParty.otherPartyEmail,
+      phoneNumber: req.body.otherParty.otherPartyPhone,
     }
 
     const StringfyData = JSON.stringify(client1data)
 
 
     const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
- 
+
     const companyEmail = companyData.connectionData.companyID.email;
 
-    await createMIAM1Upload(client1data , Reference ,companyEmail);
-   
+    await createMIAM1Upload(client1data, Reference, companyEmail);
+
 
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
     mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-    
+
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
 
-//!currentCase.client1AddedData
+    //!currentCase.client1AddedData
     if (true) {
-     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true ,MajorDataC1,MajorDataC2 , status:"MIAM Part 1-C1"} )
-     const  updatedCase = await Case.findById(req.params.id);
 
-     const   parsedClientData =JSON.parse(updatedCase.client1data)
 
-     clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
-     clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-     messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
-
-     sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
+      let statusRemider = {
+        reminderID: `${currentCase._id}-statusRemider`,
+        reminderTitle: `${currentCase.Reference}-MIAM Part 1-C1`,
+        startDate: dateNow()
+      }
+      // console.log(statusRemider)
 
  
-     console.log("client_data_fromDB" , parsedClientData)
-     res.json(parsedClientData)
+
+      await Case.findByIdAndUpdate(req.params.id, {
+        client1data: StringfyData, $set: {
+          'Reminders.statusRemider': statusRemider
+        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2, status: "MIAM Part 1-C1"
+      })
+      const updatedCase = await Case.findById(req.params.id);
+
+      const parsedClientData = JSON.parse(updatedCase.client1data)
+
+      clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
+      clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+
+      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
+
+
+      //console.log("client_data_fromDB", parsedClientData)
+      res.json(parsedClientData)
 
     }
-     else {
-     res.json({ "message": "this from has been applied before" })
+    else {
+      res.json({ "message": "this from has been applied before" })
 
-     }
+    }
   } catch (err) {
     res.json(err.message)
   }
@@ -124,7 +139,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
 
-async function createMIAM1Upload(client1data, folderName , email) {
+async function createMIAM1Upload(client1data, folderName, email) {
   try {
     // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
@@ -203,7 +218,7 @@ async function createMIAM1Upload(client1data, folderName , email) {
     });
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, email );//email of the mediator that want to access the case folder from his account 
+    shareWithPersonalAccount(folderId, email);//email of the mediator that want to access the case folder from his account 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {

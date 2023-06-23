@@ -4,6 +4,7 @@ const router = express.Router();
 const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
+const dateNow = require("../global/dateNow")
 
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
@@ -97,10 +98,21 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 sName: req.body.mediationDetails.clientSurName,
                 mail: req.body.mediationDetails.clientEmail,
             }
+         
+
 
             let MajorDataC2sName = req.body.mediationDetails.otherPartySurname;
 
             let currentCase = await Case.findById(req.params.id);
+
+            let Reference = `${req.body.mediationDetails.clientSurName} & ${ currentCase.MajorDataC2.sName}`;
+            let statusRemider = {
+                reminderID: `${currentCase._id}-statusRemider`,
+                reminderTitle: `${currentCase.Reference}-MIAM Part 2-C1`,
+                startDate: dateNow()
+              }
+        
+
             caseDetails.C2mail = currentCase.MajorDataC2.mail
             caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
             caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
@@ -118,7 +130,8 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'MajorDataC1.fName': MajorDataC1.fName,
                         'MajorDataC1.sName': MajorDataC1.sName,
                         'MajorDataC1.mail': MajorDataC1.mail,
-                        'MajorDataC2.sName': MajorDataC2sName
+                        'MajorDataC2.sName': MajorDataC2sName,
+                        'Reminders.statusRemider': statusRemider
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
                 })
                 if (validationMail(caseDetails.C2mail)) {
@@ -155,7 +168,9 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1.sName,
                         'MajorDataC1.mail': MajorDataC1.mail,
                         'MajorDataC2.sName': MajorDataC2sName
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "Not suitable for mediation"
+                    }, MIAM2mediator: stringfyMIAM2Data,
+                     MIAM2AddedData: true,
+                      status: "Not suitable for mediation"
                 })
                 res.json({ "message": " MIAM2 has been added with Not Suitable status " })
             }

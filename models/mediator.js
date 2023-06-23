@@ -17,6 +17,11 @@ const mediatorSchema = new mongoose.Schema({
     ref: "company"
   },
   cases: [{ type: mongoose.Schema.Types.ObjectId, ref: "Case" }],
+  Reminders:[{
+  
+    reminderTitle: { type: String },    
+    startDate: { type: String }
+  }]
 
 },
   {

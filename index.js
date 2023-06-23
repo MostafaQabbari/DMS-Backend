@@ -12,6 +12,7 @@ const getMediators = require("./routes/getMediators");
 const C1MIAM2 = require("./routes/C1_MIAM2")
 const getDataFromCSV = require("./routes/getDataFromCSV")
 const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
+const reminders = require("./routes/reminders")
 
 const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
@@ -58,6 +59,7 @@ app.use(sendingMailsOrSMS)
 app.use(updateCase)
 app.use(updateCaseStatus)
 app.use(C2Invitation)
+app.use(reminders)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

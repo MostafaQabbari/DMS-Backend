@@ -3,6 +3,8 @@ const router = express.Router();
 const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
+const dateNow = require("../global/dateNow")
+
 
 
 
@@ -13,7 +15,13 @@ router.patch("/C2_invitation/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    let C2invitation = req.body
+    let C2invitation = req.body;
+    let statusRemider = {
+      reminderID: `${currentCase._id}-statusRemider`,
+      reminderTitle: `${currentCase.Reference}-Invitation to C2 sent`,
+      startDate: dateNow()
+    }
+    
     //currentCase.status == "MIAM Part 2-C1" && !currentCase.C2invitationApplied
     if (true) {
 
@@ -23,18 +31,22 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         mail: C2invitation.C2mail,
         phoneNumber: C2invitation.phoneNumber
       }
+      let Reference = `${currentCase.MajorDataC1.sName}& ${ C2invitation.surName}`;
+     // console.log(Reference)
+
 
       const StringfyData = JSON.stringify(C2invitation)
 
-      console.log(StringfyData)
+     // console.log(StringfyData)
 
     const updatedCase=   await Case.findByIdAndUpdate(req.params.id, {
         $set: {
           'MajorDataC2.fName': MajorDataC2.fName,
           'MajorDataC2.sName': MajorDataC2.sName,
           'MajorDataC2.mail': MajorDataC2.mail,
-          'MajorDataC2.phoneNumber': MajorDataC2.phoneNumber
-        }, C2invitation: StringfyData, C2invitationApplied: true, status: "Invitation to C2 sent"
+          'MajorDataC2.phoneNumber': MajorDataC2.phoneNumber,
+          'Reminders.statusRemider': statusRemider
+        }, C2invitation: StringfyData, C2invitationApplied: true,Reference, status: "Invitation to C2 sent"
       })
 
 

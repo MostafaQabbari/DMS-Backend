@@ -7,6 +7,7 @@ const Company = require("../models/company");
 const nodemailer = require("nodemailer")
 const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
+const dateNow = require("../global/dateNow")
 
 
 
@@ -79,6 +80,7 @@ const sendMail = function (companyData, clientData, messageBodyinfo) {
 }
 
 
+
 router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   let companyData = {};
@@ -106,12 +108,25 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
               fName: firstName,
               sName: surName,
               mail: email,
-              phoneNumber:phoneNumber
+              phoneNumber: phoneNumber
             },
 
             connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
           });
-        console.log(newCase)
+        
+          let statusRemider = {
+            reminderID: `${newCase[0]._id}-statusRemider`,
+            reminderTitle: `${Reference}-${newCase[0].status}`,
+            startDate: dateNow()
+          }
+    
+          await Case.findByIdAndUpdate(newCase[0]._id, {
+            $set: {
+              'Reminders.statusRemider': statusRemider
+            }
+          });
+
+
         newCaseID = newCase[0]._id
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
@@ -136,6 +151,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
       let Reference = `${surName} `;
+
       let newCase = await Case.insertMany(
         {
           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
@@ -146,10 +162,28 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
             fName: firstName,
             sName: surName,
             mail: email,
-            phoneNumber:phoneNumber
+            phoneNumber: phoneNumber
           },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
+
+      let statusRemider = {
+        reminderID: `${newCase[0]._id}-statusRemider`,
+        reminderTitle: `${Reference}-${newCase[0].status}`,
+        startDate: dateNow()
+      }
+
+      await Case.findByIdAndUpdate(newCase[0]._id, {
+        $set: {
+          'Reminders.statusRemider': statusRemider
+        }
+      });
+
+
+
+
+
+
 
       // Update the company's cases array with the new case ID
       const compID = mediatorCompanyData.companyId._id;
@@ -243,7 +277,8 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
-  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2 , MajorDataC1 ,MajorDataC2,C2invitation
+  let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
+  let Reminders
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -266,12 +301,12 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet";
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
-  
 
-        MajorDataC1 = CaseFound.MajorDataC1; 
-        JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
-     
-     
+        Reminders = CaseFound.Reminders
+        MajorDataC1 = CaseFound.MajorDataC1;
+        JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
+
+
         CaseResponse = {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
@@ -284,7 +319,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MIAM2_C2,
           MajorDataC1,
           MajorDataC2,
-          C2invitation
+          C2invitation,
+          Reminders
 
         }
 
@@ -311,11 +347,12 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+        Reminders = CaseFound.Reminders
+        MajorDataC1 = CaseFound.MajorDataC1;
+        console.log(CaseFound.Reminders)
 
-        MajorDataC1 = CaseFound.MajorDataC1; 
-      
-        JSON.stringify(CaseFound.MajorDataC2) ==='{}' ?  MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
-   
+        JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
+
 
         CaseResponse = {
           Reference: CaseFound.Reference,
@@ -329,7 +366,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MIAM2_C2,
           MajorDataC1,
           MajorDataC2,
-          C2invitation
+          C2invitation,
+          Reminders
         }
 
         res.json(CaseResponse)
