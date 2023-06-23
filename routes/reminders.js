@@ -167,7 +167,7 @@ router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
 
 });
 
-router.patch('/deleteReminder', authMiddleware, async (req, res, next) => {
+router.delete('/deleteReminder', authMiddleware, async (req, res, next) => {
 
     try {
         if (req.userRole == 'company') {

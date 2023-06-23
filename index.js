@@ -16,6 +16,7 @@ const reminders = require("./routes/reminders")
 
 const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
+const C2MIAM1= require("./routes/C2_MIAM1")
 
 
 const updateCase = require("./routes/updateCase")
@@ -60,6 +61,9 @@ app.use(updateCase)
 app.use(updateCaseStatus)
 app.use(C2Invitation)
 app.use(reminders)
+app.use(C2MIAM1)
+
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

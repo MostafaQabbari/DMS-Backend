@@ -13,6 +13,7 @@ module.exports = {
   MIAM_PART_1_client1:"MIAM_PART_1_client1",
   MIAM_PART_2:"MIAM_PART_2",
   C2_Invitaion:"C2_Invitaion",
+  C2_M1:"C2_M1"
 
 
 
