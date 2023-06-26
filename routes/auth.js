@@ -11,6 +11,9 @@ const Company = require("../models/company");
 const Mediator = require('../models/mediator');
 const authMiddleware = require("../middleware/authMiddleware");
 const CryptoJS = require("crypto-js");
+const { google } = require('googleapis');
+
+
 
 
 // const { appendFile } = require("fs");
@@ -44,7 +47,7 @@ const upload = multer({
 router.post("/company-signup", authMiddleware, (req, res, next) => {
 
   if (req.userRole !== "admin") {
-    return res.status(401).json({ message: "Unauthorized only a admin account can get all the companies" });
+    return res.status(401).json({ message: "Unauthorized only a admin can create a company " });
   }
 
 
@@ -95,6 +98,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
 
 
+
       const user = new Company({
         companyName,
         email,
@@ -104,6 +108,9 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
       });
 
       await user.save();
+
+
+      await createServiceAccount(companyName , user._id);
 
       const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
@@ -482,6 +489,84 @@ function generateResetToken() {
 }
 
 
+
+async function createServiceAccount(accountName , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+
+  const iam = google.iam('v1');
+  const projectId = config.projectID;
+
+  const request = {
+    name: `projects/${projectId}`,
+    requestBody: {
+      accountId: accountName,
+      serviceAccount: {
+        displayName: accountName,
+      },
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.create(request);
+    const { email  } = response.data;
+    
+   
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
+    
+    //save the service email in the company model
+    await createServiceAccountKey(email , companyID);
+      
+
+    console.log(`Service Account created. Credentials saved in the database`);
+  } catch (error) {
+    console.error('Error creating Service Account:', error.message);
+  }
+}
+
+
+async function createServiceAccountKey(serviceAccountEmail , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+
+  const iam = google.iam('v1');
+  const projectId = 'direct-mediation-services';
+
+
+  const request = {
+    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
+    requestBody: {
+      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.keys.create(request);
+    const { privateKeyData } = response.data;
+
+    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
+
+    
+    const plainParsed = JSON.parse(plain);
+    const serviceAccountId = plainParsed.client_id;
+    console.log(serviceAccountId);
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
+
+
+
+    console.log(`Key created and saved in the database.`);
+  } catch (error) {
+    console.error('Error creating service account key:', error.message);
+  }
+}
 
 
 module.exports = router;
