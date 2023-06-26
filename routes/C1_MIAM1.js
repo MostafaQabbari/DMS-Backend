@@ -7,6 +7,8 @@ const config = require("../config/config");
 const stream = require("stream");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
+const { gmail } = require('googleapis/build/src/apis/gmail');
+const crypto = require("crypto");
 const drive = google.drive('v3');
 const dateNow = require("../global/dateNow")
 const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
@@ -82,8 +84,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyEmail = companyData.connectionData.companyID.email;
 
-    await createMIAM1Upload(client1data, Reference, companyEmail);
-
+    await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+   
 
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
@@ -138,8 +140,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 })
 
 
-
-async function createMIAM1Upload(client1data, folderName, email) {
+//this function create pdf and folder and then upload it to that google drive folder 
+async function createMIAM1Upload(client1data, folderName , email , caseID) {
   try {
     // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
@@ -162,18 +164,37 @@ async function createMIAM1Upload(client1data, folderName, email) {
     // Save the PDF document to a buffer
     const pdfBytes = await pdfDoc.save();
 
+    const companyData = await Case.findById(caseID).populate('connectionData.companyID');
+ 
+    const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
+    const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
+    
+
+  
+    const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
+    
+    // console.log(plain);
 
 
-    // Create a new Google Drive client
-    const auth = new google.auth.GoogleAuth({
-      // Add your Google Drive API credentials and scopes here
-      keyFile: "../DMS-Backend/company/credentials.json", // Path to your JSON credentials file
-      scopes: ["https://www.googleapis.com/auth/drive"], // Scopes required for accessing Google Drive
+    const plainParsed = JSON.parse(plain);
+    const privatekey1 = plainParsed.private_key;
+
+    
+
+
+
+
+    const auth = await google.auth.getClient({
+      credentials: {
+        client_email: companyServiceAccount ,
+        private_key: privatekey1,
+      },
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
     });
 
 
     const drive = google.drive({ version: "v3", auth });
-    //console.log(drive)
+
     // Get the folder ID using the reference object (folder name)
     const response = await drive.files.list({
       q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
@@ -191,7 +212,6 @@ async function createMIAM1Upload(client1data, folderName, email) {
     });
     const folderId = folder.data.id;
 
-    console.log(folderId);
 
     // Create a readable stream from the PDF bytes
     const readableStream = new stream.Readable({
@@ -217,8 +237,12 @@ async function createMIAM1Upload(client1data, folderName, email) {
       fields: "id",
     });
 
+    //put the FolderID into the database
+    await Case.findByIdAndUpdate(caseID, { folderID: folderId });
+
+
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, email);//email of the mediator that want to access the case folder from his account 
+    shareWithPersonalAccount(folderId, email , companyServiceAccount , privatekey1 );//the gmail sharing account that belong to the company 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {
@@ -229,10 +253,14 @@ async function createMIAM1Upload(client1data, folderName, email) {
 
 
 
-async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+async function shareWithPersonalAccount(folderId, personalAccountEmail , Semail , Skey ) {
+
   const authClient = await google.auth.getClient({
-    keyFile: '../DMS-Backend/credentials.json', // Path to your service account key file
-    scopes: ['https://www.googleapis.com/auth/drive'],
+    credentials: {
+      client_email: Semail ,
+      private_key: Skey,
+    },
+    scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
   });
 
   // Set the permissions for the folder or file
@@ -249,12 +277,8 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
     requestBody: permission,
   });
 
-  console.log('Folder or file shared successfully!');
+  console.log('Folder shared successfully!');
 }
-
-
-
-
-
+ 
 
 module.exports = router;

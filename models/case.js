@@ -84,6 +84,7 @@ const caseSchema = new Schema({
 
   status: { type: String, default: "MIAM Part 1-C1" },
   closed: { type: Boolean, default: false },
+  folderID:{type: String},
 },
   {
     timestamps: true,
