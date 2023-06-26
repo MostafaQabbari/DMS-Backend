@@ -8,6 +8,7 @@ const dateNow = require("../global/dateNow")
 
 
 /*! لسة فى شغل كتير هنا from scratch */
+/** after adding M2 we should send invitaion to  2 clients from data clients */
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
     let transporter = nodemailer.createTransport({
@@ -75,23 +76,10 @@ const validationMail = function (x) {
 
 router.patch("/addC2MIAM2/:id", async (req, res) => {
 
-
-    /*
-    {
-           caseDetails.C2mail,
-           caseDetails.C2name,
-           caseDetails.C1name,
- 
-           mediationDetails.companyName,
-           mediationDetails.medName,
- 
-           messageInfo.formUrl
-    }
-    */
-
     try {
 
         let MIAM2mediator = req.body;
+        let MIAM_C2_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
 
         if (caseSuitable == "Yes") {
@@ -134,16 +122,11 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1.sName,
                         'MajorDataC1.mail': MajorDataC1.mail,
                         'MajorDataC2.sName': MajorDataC2sName,
-                        'Reminders.statusRemider': statusRemider
+                        'Reminders.statusRemider': statusRemider,
+                        'MIAMDates.MIAM_C2_Date': MIAM_C2_Date, 
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
                 })
-                if (validationMail(caseDetails.C2mail)) {
-
-                    sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
-                }
-                else {
-                    res.json({ "message": "Client 2 did not add valid email to recieve the invitation " })
-                }
+           
 
                 res.json({ "message": " MIAM2 has been added and Inviation sent to C2" })
             }
