@@ -179,10 +179,7 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
     const plainParsed = JSON.parse(plain);
     const privatekey1 = plainParsed.private_key;
 
-    
-
-
-
+  
 
     const auth = await google.auth.getClient({
       credentials: {

@@ -72,10 +72,7 @@ router.delete("/company/:id", authMiddleware , async (req, res, next) => {
     }
 
     // delete service account
-    const projectId = config.projectID;
-    const serviceAccountId = company.serviceAccountID;
-    
-    deleteServiceAccount(projectId, serviceAccountId);
+    deleteServiceAccount(config.projectID, company.serviceAccountID);
     
     // Delete the company
     await Company.findByIdAndRemove(companyId);
@@ -142,11 +139,6 @@ async function deleteServiceAccount(projectId, serviceAccountId) {
     console.error('Error deleting service account:', error);
   }
 }
-
-
-
-
-
 
 
 
