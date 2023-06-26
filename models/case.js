@@ -52,8 +52,19 @@ const caseSchema = new Schema({
     mail: { type: String },
     phoneNumber: { type: String }
   },
+  MIAMDates: {
+    MIAM_C1_Date: { type: String },
+    MIAM_C2_Date: { type: String },
 
-  Reminders:{
+    MIAM_sessions_Dates: [{
+      sessionNo: { type: Number },
+      sessionDate: { type: String }
+    }]
+    ,
+
+  },
+
+  Reminders: {
     statusRemider: {
       reminderID: { type: String },      // ID =>   caseID + "statusRemider" keyWord
       reminderTitle: { type: String },    // title   =>  ReferenceCase + StatusValue
@@ -61,9 +72,9 @@ const caseSchema = new Schema({
     }
   },
 
-  
 
- 
+
+
 
 
 

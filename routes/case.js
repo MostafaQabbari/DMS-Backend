@@ -86,10 +86,12 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
   let companyData = {};
   let clientData = {};
   let messageBodyinfo = {};
+  
 
   try {
     if (req.userRole == 'company') {
       const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail } = req.body;
+      let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
 
@@ -110,21 +112,26 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
               mail: email,
               phoneNumber: phoneNumber
             },
+            $set: {
+
+              'MIAMDates.MIAM_C1_Date': MIAM_C1_Date,
+
+            },
 
             connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
           });
-        
-          let statusRemider = {
-            reminderID: `${newCase[0]._id}-statusRemider`,
-            reminderTitle: `${Reference}-${newCase[0].status}`,
-            startDate: dateNow()
+
+        let statusRemider = {
+          reminderID: `${newCase[0]._id}-statusRemider`,
+          reminderTitle: `${Reference}-${newCase[0].status}`,
+          startDate: dateNow()
+        }
+
+        await Case.findByIdAndUpdate(newCase[0]._id, {
+          $set: {
+            'Reminders.statusRemider': statusRemider
           }
-    
-          await Case.findByIdAndUpdate(newCase[0]._id, {
-            $set: {
-              'Reminders.statusRemider': statusRemider
-            }
-          });
+        });
 
 
         newCaseID = newCase[0]._id
@@ -149,6 +156,9 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
     else if (req.userRole == 'mediator') {
       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
+      let MIAM_C1_Date = dateOfMAIM;
+console.log(MIAM_C1_Date)
+
       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
       let Reference = `${surName} `;
 
@@ -164,9 +174,17 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
             mail: email,
             phoneNumber: phoneNumber
           },
+          MIAMDates:{
+            MIAM_C1_Date: MIAM_C1_Date
+          },
+          // $set: {
+ 
+          //   'MIAMDates.MIAM_C1_Date': MIAM_C1_Date,
+
+          // },
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
-
+ 
       let statusRemider = {
         reminderID: `${newCase[0]._id}-statusRemider`,
         reminderTitle: `${Reference}-${newCase[0].status}`,
@@ -278,7 +296,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
-  let Reminders
+  let Reminders, MIAMDates;
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -301,6 +319,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet";
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+        CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
@@ -320,7 +339,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC1,
           MajorDataC2,
           C2invitation,
-          Reminders
+          Reminders,
+          MIAMDates
 
         }
 
@@ -347,6 +367,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+        CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
+        console.log(CaseFound.MIAMDates)
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
         console.log(CaseFound.Reminders)
@@ -367,7 +389,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC1,
           MajorDataC2,
           C2invitation,
-          Reminders
+          Reminders,
+          MIAMDates
         }
 
         res.json(CaseResponse)
