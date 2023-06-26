@@ -10,7 +10,7 @@ const { PDFDocument } = require("pdf-lib");
 const { gmail } = require('googleapis/build/src/apis/gmail');
 const crypto = require("crypto");
 const drive = google.drive('v3');
-
+const dateNow = require("../global/dateNow")
 const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
   let transporter = nodemailer.createTransport({
@@ -41,9 +41,9 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
     html: `<body>
       <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
       <h1>Hello ${mediatorData.name} 's Teams  </h1>
-      <h3>MIAM 1 has been applied by ${clientData.fname} ${clientData.surName} and that's your link to apply your MIAM 2 </h3>
+      <h3>MIAM 1 has been applied by C1 ${clientData.fname} ${clientData.surName} and that's your link to apply your MIAM 2 </h3>
       <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-      <h4> MIAM 1 is attached as a pdf file </h4>
+      <h4> MIAM 1_C1 is attached as a pdf file </h4>
 
       <p> Best Regards </p>
       <p> DMS Team </p>
@@ -63,12 +63,25 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     let currentCase = await Case.findById(req.params.id);
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
+    let MajorDataC1 = {
+      fName: req.body.personalContactAndCaseInfo.firstName,
+      sName: req.body.personalContactAndCaseInfo.surName,
+      mail: req.body.personalContactAndCaseInfo.email,
+      phoneNumber: req.body.personalContactAndCaseInfo.phoneNumber
+    }
+
+    let MajorDataC2 = {
+      fName: req.body.otherParty.otherPartyFirstName,
+      sName: req.body.otherParty.otherPartySurname,
+      mail: req.body.otherParty.otherPartyEmail,
+      phoneNumber: req.body.otherParty.otherPartyPhone,
+    }
 
     const StringfyData = JSON.stringify(client1data)
 
 
     const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
- 
+
     const companyEmail = companyData.connectionData.companyID.email;
 
     await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
@@ -77,33 +90,48 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
     mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-    
+
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
 
-// !currentCase.client1AddedData
-    if (!currentCase.client1AddedData) {
-     await Case.findByIdAndUpdate(req.params.id, {client1data:StringfyData , Reference, client1AddedData: true , status:"C1 MIAM Part 1 Applied"} )
-     const  updatedCase = await Case.findById(req.params.id);
+    //!currentCase.client1AddedData
+    if (true) {
 
-     const   parsedClientData =JSON.parse(updatedCase.client1data)
 
-     clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
-     clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-     messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
-
-     sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
+      let statusRemider = {
+        reminderID: `${currentCase._id}-statusRemider`,
+        reminderTitle: `${currentCase.Reference}-MIAM Part 1-C1`,
+        startDate: dateNow()
+      }
+      // console.log(statusRemider)
 
  
-     console.log("client_data_fromDB" , parsedClientData)
-     res.json(parsedClientData)
+
+      await Case.findByIdAndUpdate(req.params.id, {
+        client1data: StringfyData, $set: {
+          'Reminders.statusRemider': statusRemider
+        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2, status: "MIAM Part 1-C1"
+      })
+      const updatedCase = await Case.findById(req.params.id);
+
+      const parsedClientData = JSON.parse(updatedCase.client1data)
+
+      clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
+      clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+
+      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
+
+
+      //console.log("client_data_fromDB", parsedClientData)
+      res.json(parsedClientData)
 
     }
-     else {
-     res.json({ "message": "this from has been applied before" })
+    else {
+      res.json({ "message": "this from has been applied before" })
 
-     }
+    }
   } catch (err) {
     res.json(err.message)
   }

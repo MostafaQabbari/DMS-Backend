@@ -6,6 +6,8 @@ const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow")
 
+
+/*! لسة فى شغل كتير هنا from scratch */
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
     let transporter = nodemailer.createTransport({
@@ -71,25 +73,25 @@ const validationMail = function (x) {
     }
 }
 
-router.patch("/addC1MIAM2/:id", async (req, res) => {
+router.patch("/addC2MIAM2/:id", async (req, res) => {
 
 
-    /*{
+    /*
+    {
            caseDetails.C2mail,
-           caseDetails.C2name
-           caseDetails.C1name
+           caseDetails.C2name,
+           caseDetails.C1name,
  
-            mediationDetails.companyName
-            mediationDetails.medName
+           mediationDetails.companyName,
+           mediationDetails.medName,
  
-            messageInfo.formUrl
+           messageInfo.formUrl
     }
     */
 
     try {
 
         let MIAM2mediator = req.body;
-        let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
 
         if (caseSuitable == "Yes") {
@@ -112,7 +114,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 reminderTitle: `${currentCase.Reference}-MIAM Part 2-C1`,
                 startDate: dateNow()
             }
-  
+
 
             caseDetails.C2mail = currentCase.MajorDataC2.mail
             caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
@@ -132,11 +134,8 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1.sName,
                         'MajorDataC1.mail': MajorDataC1.mail,
                         'MajorDataC2.sName': MajorDataC2sName,
-                        'Reminders.statusRemider': statusRemider,
-                        'MIAMDates.MIAM_C1_Date': MIAM_C1_Date, 
-
+                        'Reminders.statusRemider': statusRemider
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
-                  
                 })
                 if (validationMail(caseDetails.C2mail)) {
 
@@ -200,42 +199,8 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
 
 
 
+
+
+
+
 module.exports = router;
-
-
-
-// const express = require('express');
-// const router = express.Router();
-// const Case = require('../models/case');
-// const { uploadToGoogleDrive } = require('../utils/googleDrive');
-
-// router.patch("/addC1MIAM2/:id", async (req, res) => {
-//   try {
-//     let MIAM2mediator = req.body;
-//     let currentCase = await Case.findById(req.params.id);
-//     const stringfyMIAM2Data = JSON.stringify(MIAM2mediator);
-//     if (!currentCase.MIAM2AddedData) {
-//       // Upload PDF files to Google Drive
-//       const c100 = req.files.file1;
-//       const formA = req.files.file2;
-//       const fileId1 = await uploadToGoogleDrive(c100);
-//       const fileId2 = await uploadToGoogleDrive(formA);
-      
-//       await Case.findByIdAndUpdate(req.params.id, {
-//         MIAM2mediator: stringfyMIAM2Data,
-//         MIAM2AddedData: true,
-//         status: "C1 MIAM Part 2 Applied",
-//         file1Id: fileId1,
-//         file2Id: fileId2
-//       });
-  
-//       res.json({ "message": "MIAM2 has been added" });
-//     } else {
-//       res.json({ "message": "This MIAM2 has been added before" });
-//     }
-//   } catch (err) {
-//     res.json({ "err": err.message });
-//   }
-// });
-
-// module.exports = router;
