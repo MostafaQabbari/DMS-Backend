@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const config = require("../config/config");
 const Company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/get-companies",authMiddleware ,async (req, res, next) => {
   
   if (req.userRole !== "admin") {
-    return res.status(401).json({ message: "Unauthorized only a admin account can get all the companies" });
+    return res.status(401).json({ message: "Unauthorized only an admin can get all the companies" });
   }
   
   try {
@@ -18,7 +19,12 @@ router.get("/get-companies",authMiddleware ,async (req, res, next) => {
 });
 
 // GET /company/:id/stats
-router.get("/company/:id/stats", async (req, res, next) => {
+router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
+  
+  if (req.userRole !== "admin") {
+    return res.status(401).json({ message: "Unauthorized only an admin can get the stats of a company" });
+  }
+  
   try {
     const { id } = req.params;
 
@@ -64,11 +70,19 @@ router.delete("/company/:id", authMiddleware , async (req, res, next) => {
     if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
+
+    // delete service account
+    const projectId = config.projectID;
+    const serviceAccountId = company.serviceAccountID;
+    
+    deleteServiceAccount(projectId, serviceAccountId);
     
     // Delete the company
     await Company.findByIdAndRemove(companyId);
+
+
     
-    res.json({ message: "Company deleted successfully" });
+    res.json({ message: "Company account and service account deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -100,6 +114,37 @@ router.patch("/update-company/:id", authMiddleware , async (req, res, next) => {
     next(error);
   }
 });
+
+
+
+const { google } = require('googleapis');
+const auth = new google.auth.GoogleAuth({
+  keyFile: config.credentialFile,
+  scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+});
+
+async function deleteServiceAccount(projectId, serviceAccountId) {
+  try {
+    const iam = google.iam({
+      version: 'v1',
+      auth,
+    });
+
+    const name = `projects/${projectId}/serviceAccounts/${serviceAccountId}`;
+
+    // Delete the service account
+    await iam.projects.serviceAccounts.delete({
+      name,
+    });
+
+    console.log(`Service account ${name} deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting service account:', error);
+  }
+}
+
+
+
 
 
 

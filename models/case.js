@@ -35,6 +35,7 @@ const caseSchema = new Schema({
   MIAM2C2AddedData: { type: Boolean, default: false },
   status: { type: String, default: "MIAM1 sent to C1" },
   closed: { type: Boolean, default: false },
+  folderID:{type: String},
 },
   {
     timestamps: true,

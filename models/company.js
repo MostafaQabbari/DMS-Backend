@@ -13,6 +13,11 @@ const companySchema = new mongoose.Schema({
   resetTokenExpiry: { type: Date, default: null },
 
   twillioData:{type:String},
+  
+  serviceAccountID:{type:String},
+  serviceAccount:{type:String},
+  serviceAccountKey:{type:String},
+  
  
   mediators: [{ type: mongoose.Schema.Types.ObjectId, ref: "Mediator" }],
   cases: [{ type: mongoose.Schema.Types.ObjectId, ref: "Case" }],
