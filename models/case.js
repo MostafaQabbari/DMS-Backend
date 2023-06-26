@@ -61,7 +61,7 @@ const caseSchema = new Schema({
       sessionDate: { type: String }
     }]
     ,
-
+    
   },
 
   Reminders: {
