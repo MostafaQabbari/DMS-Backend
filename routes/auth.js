@@ -65,12 +65,15 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d]{8,}$/;
+
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
       // Check if the password meets the minimum requirements
       if (!passwordRegex.test(password)) {
         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
       }
+
+
       const hashedPassword = await bcrypt.hash(password, 10);
       let cryptedTwilioData ;
      
@@ -125,36 +128,36 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 });
 
 
-// Mediator form submission route
-router.post('/add-admin', async (req, res, next) => {
 
-  try {
+// router.post('/add-admin', async (req, res, next) => {
 
-    const { email, password } = req.body;
+//   try {
 
-
-
-    const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d]{8,}$/;
-
-    // Check if the password meets the minimum requirements
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const admin = new Admin({ email, password: hashedPassword });
-
-    await admin.save();
-
-
-    res.status(201).json({ message: 'Admin added successfully!' });
-  } catch (error) {
-    next(error);
-  }
+//     const { email, password } = req.body;
 
 
 
-});
+//     const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d]{8,}$/;
+
+//     // Check if the password meets the minimum requirements
+//     if (!passwordRegex.test(password)) {
+//       return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     const admin = new Admin({ email, password: hashedPassword });
+
+//     await admin.save();
+
+
+//     res.status(201).json({ message: 'Admin added successfully!' });
+//   } catch (error) {
+//     next(error);
+//   }
+
+
+
+// });
 
 
 
@@ -556,7 +559,7 @@ async function createServiceAccountKey(serviceAccountEmail , companyID) {
     
     const plainParsed = JSON.parse(plain);
     const serviceAccountId = plainParsed.client_id;
-    console.log(serviceAccountId);
+    
 
     await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
 

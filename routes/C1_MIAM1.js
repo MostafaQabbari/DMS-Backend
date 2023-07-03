@@ -173,7 +173,6 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
   
     const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
     
-    // console.log(plain);
 
 
     const plainParsed = JSON.parse(plain);
