@@ -6,6 +6,7 @@ const companySchema = new mongoose.Schema({
   companyName: { type: String, required: true , unique: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  sharingGmail: { type: String },
   companyLogo: { type: String },
 
   refreshToken: {type: String,default: null,},

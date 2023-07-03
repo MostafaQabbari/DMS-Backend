@@ -3,7 +3,7 @@ const router = express.Router();
 const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
-
+const GoogleFunctions = require("../global/GoogleAPIs");
 const stream = require("stream");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
@@ -80,12 +80,13 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const StringfyData = JSON.stringify(client1data)
 
 
-    const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
+    const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
     const companyEmail = companyData.connectionData.companyID.email;
 
-    await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
-   
+    // await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+
+    
 
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
@@ -94,6 +95,10 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
+
+
+    GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
+
 
     //!currentCase.client1AddedData
     if (true) {
