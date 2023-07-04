@@ -152,7 +152,8 @@ router.patch("/update-gmail/:id", authMiddleware, async (req, res) => {
     if (req.userRole == "admin") {
     
         const companyID = req.params.id;
-        await company.findByIdAndUpdate(companyID, { sharingGmail: req.body.sharingGmail });
+        await Company.findByIdAndUpdate(companyID, { sharingGmail: req.body.sharingGmail });
+        return res.status(200).json({ message: "the gmail account has been changed" });
   
     }
     else {
