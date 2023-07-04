@@ -57,7 +57,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
     }
 
     try {
-      const { companyName, email, password, twillioData } = req.body;
+      const { companyName, email, password, sharingGmail ,twillioData } = req.body;
  
       const existingUser = await Company.findOne({ email });
 
@@ -106,6 +106,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         companyName,
         email,
         password: hashedPassword,
+        sharingGmail:sharingGmail,
         companyLogo: req.file ? req.file.filename : null,
         twillioData:cryptedTwilioData
       });
@@ -298,7 +299,7 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ message: 'All fields are required!' });
     }
 
-    const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     // Check if the password meets the minimum requirements
     if (!passwordRegex.test(password)) {
