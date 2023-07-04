@@ -58,28 +58,31 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
             const companyId = req.user._id;
             const selectedComp = await Company.findById(companyId);
-            const userReminders = selectedComp.Reminders
+            const userReminders = selectedComp.Reminders;
+            const mediatorReminders = []
+            const casesReminders =[]
 
             const mediatorsList = await Company.findById(req.user._id).populate('mediators');
             const casesList = await Company.findById(req.user._id).populate('cases');
             let Reminders = [
                 { "compReminders": userReminders },
-                {"mediatorReminders":[]},
-                {"casesReminders":[]}
+                {"mediatorReminders":mediatorReminders},
+                {"casesReminders":casesReminders}
 
             ]
+            console.log(Reminders['mediatorReminders'])
 
             for (let i = 0; i < mediatorsList.mediators.length; i++) {
                 let medName = `${mediatorsList.mediators[i].firstName} ${mediatorsList.mediators[i].lastName}`;
                 let medReminders = mediatorsList.mediators[i].Reminders
-                Reminders.mediatorReminders.push({ medName: medName, Reminders: medReminders })
+                mediatorReminders.push({ medName: medName, Reminders: medReminders })
 
             }
             for (let i = 0; i < casesList.cases.length; i++) {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
 
             }
 
@@ -98,12 +101,13 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
             const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
             const casesList = await mediator.findById(req.user._id).populate('cases');
 
-            const compReminders = mediatorCompanyData.companyId.Reminders
+            const compReminders = mediatorCompanyData.companyId.Reminders;
+            const casesReminders =[]
 
             let Reminders = [
                 { "companyReminders": compReminders },
                 { "MediatorReminder": userReminders },
-                {"casesReminders":[]}
+                {"casesReminders":casesReminders}
 
 
             ]
@@ -111,7 +115,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
 
             }
 
