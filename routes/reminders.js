@@ -63,20 +63,23 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
             const mediatorsList = await Company.findById(req.user._id).populate('mediators');
             const casesList = await Company.findById(req.user._id).populate('cases');
             let Reminders = [
-                { "compReminders": userReminders }
+                { "compReminders": userReminders },
+                {"mediatorReminders":[]},
+                {"casesReminders":[]}
+
             ]
 
             for (let i = 0; i < mediatorsList.mediators.length; i++) {
                 let medName = `${mediatorsList.mediators[i].firstName} ${mediatorsList.mediators[i].lastName}`;
                 let medReminders = mediatorsList.mediators[i].Reminders
-                Reminders.push({ medName: medName, Reminders: medReminders })
+                Reminders.mediatorReminders.push({ medName: medName, Reminders: medReminders })
 
             }
             for (let i = 0; i < casesList.cases.length; i++) {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                Reminders.casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
 
             }
 
@@ -100,6 +103,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
             let Reminders = [
                 { "companyReminders": compReminders },
                 { "MediatorReminder": userReminders },
+                {"casesReminders":[]}
 
 
             ]
@@ -107,7 +111,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                Reminders.casesReminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
 
             }
 

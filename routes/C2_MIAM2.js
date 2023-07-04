@@ -9,7 +9,7 @@ const dateNow = require("../global/dateNow")
 
 /*! لسة فى شغل كتير هنا from scratch */
 /** after adding M2 we should send invitaion to  2 clients from data clients */
-const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
+const sendInvitationFormsForBothClients = function (C1details,C2details, mediationDetails,invitaionLink) {
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -31,14 +31,18 @@ const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInf
     })
 
     /*{
-           caseDetails.C2mail,
-           caseDetails.C2name
-           caseDetails.C1name
+          C1details.fname
+          C1details.sname
+          C1details.email
+          C2details.fname
+          C2details.sname
+          C2details.email
 
             mediationDetails.companyName
             mediationDetails.medName
-
-           messageInfo.formUrl
+            mediationDetails.email
+  لسة هنشوف هنبعت الاتنين زى بعض ولا هنبعت ايه
+           invitaionLink.formUrl
     }
     */
 
@@ -84,7 +88,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
         if (caseSuitable == "Yes") {
             let caseDetails = {}, mediationDetails = {}, messageInfo = {};
-            let MajorDataC1 = {
+            let MajorDataC2 = {
                 fName: req.body.mediationDetails.clientFirstName,
                 sName: req.body.mediationDetails.clientSurName,
                 mail: req.body.mediationDetails.clientEmail,
@@ -92,39 +96,40 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
 
 
-            let MajorDataC2sName = req.body.mediationDetails.otherPartySurname;
+            let MajorDataC1sName = req.body.mediationDetails.otherPartySurname;
 
             let currentCase = await Case.findById(req.params.id);
 
-            let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
+            let Reference = `${MajorDataC1sName} & ${MajorDataC2.sName}`;
             let statusRemider = {
                 reminderID: `${currentCase._id}-statusRemider`,
-                reminderTitle: `${currentCase.Reference}-MIAM Part 2-C1`,
+                reminderTitle: `${currentCase.Reference}-MIAM Part 2-C2`,
                 startDate: dateNow()
             }
 
 
-            caseDetails.C2mail = currentCase.MajorDataC2.mail
-            caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
-            caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
-            const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
-            mediationDetails.companyName = companyData.connectionData.companyID.companyName;
-            const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
-            mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-            messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
+            // caseDetails.C2mail = currentCase.MajorDataC2.mail
+            // caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
+            // caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
+
+            //const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
+           // mediationDetails.companyName = companyData.connectionData.companyID.companyName;
+            //const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+           // mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
+          //  messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
             const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
             //!currentCase.MIAM2AddedData
             if (true) {
-
+ 
                 await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
-                        'MajorDataC1.fName': MajorDataC1.fName,
-                        'MajorDataC1.sName': MajorDataC1.sName,
-                        'MajorDataC1.mail': MajorDataC1.mail,
-                        'MajorDataC2.sName': MajorDataC2sName,
+                        'MajorDataC2.fName': MajorDataC2.fName,
+                        'MajorDataC2.sName': MajorDataC2.sName,
+                        'MajorDataC2.mail': MajorDataC2.mail,
+                        'MajorDataC1.sName': MajorDataC1sName,
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C2_Date': MIAM_C2_Date, 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
+                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C2",Reference
                 })
            
 
@@ -136,13 +141,13 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
         } else {
 
-            let MajorDataC1 = {
+            let MajorDataC2 = {
                 fName: req.body.mediationDetails.clientFirstName,
                 sName: req.body.mediationDetails.clientSurName,
                 mail: req.body.mediationDetails.clientEmail,
             }
 
-            let MajorDataC2sName = req.body.mediationDetails.otherPartySurname;
+            let MajorDataC1sName = req.body.mediationDetails.otherPartySurname;
 
             const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
             //!currentCase.MIAM2AddedData
@@ -150,13 +155,13 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
                 await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
-                        'MajorDataC1.fName': MajorDataC1.fName,
-                        'MajorDataC1.sName': MajorDataC1.sName,
-                        'MajorDataC1.mail': MajorDataC1.mail,
-                        'MajorDataC2.sName': MajorDataC2sName
+                       'MajorDataC2.fName': MajorDataC2.fName,
+                        'MajorDataC2.sName': MajorDataC2.sName,
+                        'MajorDataC2.mail': MajorDataC2.mail,
+                        'MajorDataC1.sName': MajorDataC1sName,
                     }, MIAM2mediator: stringfyMIAM2Data,
                     MIAM2AddedData: true,
-                    status: "Not suitable for mediation"
+                    status: "Not suitable for mediation" ,Reference
                 })
                 res.json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
