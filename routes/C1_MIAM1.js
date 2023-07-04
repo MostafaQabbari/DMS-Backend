@@ -61,6 +61,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
+    GoogleFunction(currentCase._id, currentCase.startDate, "mkabary8@gmail.com", "mkabary8@gmail.com", "mkabary8@gmail.com");
+
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
     let MajorDataC1 = {
@@ -97,9 +99,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     mediatorData.email = medEmail
 
 
-    GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
-
-
+    // GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
+    
     //!currentCase.client1AddedData
     if (true) {
 
