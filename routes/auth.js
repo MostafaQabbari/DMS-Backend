@@ -47,7 +47,7 @@ const upload = multer({
 
 
 
-async function createServiceAccount(accountName , companyID) {
+async function createServiceAccount(accountName, companyID) {
   const auth = new google.auth.GoogleAuth({
     keyFile: config.credentialFile,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
@@ -69,15 +69,15 @@ async function createServiceAccount(accountName , companyID) {
 
   try {
     const response = await iam.projects.serviceAccounts.create(request);
-    const { email  } = response.data;
-    
-   
+    const { email } = response.data;
 
-    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
-    
+
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccount: email });
+
     //save the service email in the company model
-    await createServiceAccountKey(email , companyID);
-      
+    await createServiceAccountKey(email, companyID);
+
 
     console.log(`Service Account created. Credentials saved in the database`);
   } catch (error) {
@@ -86,7 +86,7 @@ async function createServiceAccount(accountName , companyID) {
 }
 
 
-async function createServiceAccountKey(serviceAccountEmail , companyID) {
+async function createServiceAccountKey(serviceAccountEmail, companyID) {
   const auth = new google.auth.GoogleAuth({
     keyFile: config.credentialFile,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
@@ -110,12 +110,12 @@ async function createServiceAccountKey(serviceAccountEmail , companyID) {
 
     const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
 
-    
+
     const plainParsed = JSON.parse(plain);
     const serviceAccountId = plainParsed.client_id;
-    
 
-    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData, serviceAccountID: serviceAccountId });
 
 
 
@@ -139,14 +139,14 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
     }
 
     try {
-      const { companyName, email, password, sharingGmail ,twillioData } = req.body;
- 
+      const { companyName, email, password, sharingGmail, twillioData } = req.body;
+
       const existingUser = await Company.findOne({ email });
 
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
- 
+
 
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -155,59 +155,60 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
       }
 
- 
+
       const hashedPassword = await bcrypt.hash(password, 10);
-      let cryptedTwilioData ;
-     
+      let cryptedTwilioData;
+
       if (req.body.twillioData) {
-  
+
         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
         const phoneNumber = twillioData.twillioNumber;
-        
-        
+
+
         x.messages.create({
           body: `Your Client ${companyName} twillio has been added   `,
           from: phoneNumber,
           // to here will be the Drion to send him that the company added twillio number
           to: '+44 7476 544877'
-        }).then(()=>{
+        }).then(() => {
           console.log("xxxx")
-          cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+          cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
         }).catch((err) => {
           console.log(err.message);
-          res.status(400).json({ message: "unvaild twilio data ..." });
-
-          
-          
+          res.status(400).json({ "error": "unvaild twilio data ..." });
         });
+
+      }
+      else {
+        const user = new Company({
+          companyName,
+          email,
+          password: hashedPassword,
+          sharingGmail: sharingGmail,
+          companyLogo: req.file ? req.file.filename : null,
+          twillioData: cryptedTwilioData
+        });
+
+        await user.save();
+        console.log("xxx")
+
+        await createServiceAccount(companyName, user._id);
+
+        const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+        const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+        // Store refresh token in database
+        await Company.findByIdAndUpdate(user._id, { refreshToken });
+        res.status(200).json({ res: "comapny data added successfuly" });
+
+        //res.status(201).json({ accessToken, refreshToken });
 
       }
 
 
 
 
-      const user = new Company({
-        companyName,
-        email,
-        password: hashedPassword,
-        sharingGmail:sharingGmail,
-        companyLogo: req.file ? req.file.filename : null,
-        twillioData:cryptedTwilioData
-      });
- 
-      await user.save();
-      console.log("xxx")
 
-      await createServiceAccount(companyName , user._id);
-
-      const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-      const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-      // Store refresh token in database
-      await Company.findByIdAndUpdate(user._id, { refreshToken });
-      res.status(201).json({res : "comapny data added successfuly"});
-
-      //res.status(201).json({ accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
