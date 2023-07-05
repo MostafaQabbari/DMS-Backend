@@ -44,6 +44,88 @@ const upload = multer({
   },
 }).single("companyLogo");
 
+
+
+
+async function createServiceAccount(accountName , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+
+  const iam = google.iam('v1');
+  const projectId = config.projectID;
+
+  const request = {
+    name: `projects/${projectId}`,
+    requestBody: {
+      accountId: accountName,
+      serviceAccount: {
+        displayName: accountName,
+      },
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.create(request);
+    const { email  } = response.data;
+    
+   
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
+    
+    //save the service email in the company model
+    await createServiceAccountKey(email , companyID);
+      
+
+    console.log(`Service Account created. Credentials saved in the database`);
+  } catch (error) {
+    console.error('Error creating Service Account:', error.message);
+  }
+}
+
+
+async function createServiceAccountKey(serviceAccountEmail , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+
+  const iam = google.iam('v1');
+  const projectId = 'direct-mediation-services';
+
+
+  const request = {
+    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
+    requestBody: {
+      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.keys.create(request);
+    const { privateKeyData } = response.data;
+
+    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
+
+    
+    const plainParsed = JSON.parse(plain);
+    const serviceAccountId = plainParsed.client_id;
+    
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
+
+
+
+    console.log(`Key created and saved in the database.`);
+  } catch (error) {
+    console.error('Error creating service account key:', error.message);
+  }
+}
+
+
 router.post("/company-signup", authMiddleware, (req, res, next) => {
 
   if (req.userRole !== "admin") {
@@ -64,7 +146,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
-
+ 
 
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -73,7 +155,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
       }
 
-
+ 
       const hashedPassword = await bcrypt.hash(password, 10);
       let cryptedTwilioData ;
      
@@ -110,9 +192,9 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         companyLogo: req.file ? req.file.filename : null,
         twillioData:cryptedTwilioData
       });
-
+ 
       await user.save();
-
+      console.log("xxx")
 
       await createServiceAccount(companyName , user._id);
 
@@ -494,83 +576,7 @@ function generateResetToken() {
 
 
 
-async function createServiceAccount(accountName , companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
 
-  const iam = google.iam('v1');
-  const projectId = config.projectID;
-
-  const request = {
-    name: `projects/${projectId}`,
-    requestBody: {
-      accountId: accountName,
-      serviceAccount: {
-        displayName: accountName,
-      },
-    },
-    auth,
-  };
-
-  try {
-    const response = await iam.projects.serviceAccounts.create(request);
-    const { email  } = response.data;
-    
-   
-
-    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
-    
-    //save the service email in the company model
-    await createServiceAccountKey(email , companyID);
-      
-
-    console.log(`Service Account created. Credentials saved in the database`);
-  } catch (error) {
-    console.error('Error creating Service Account:', error.message);
-  }
-}
-
-
-async function createServiceAccountKey(serviceAccountEmail , companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
-
-  const iam = google.iam('v1');
-  const projectId = 'direct-mediation-services';
-
-
-  const request = {
-    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
-    requestBody: {
-      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
-    },
-    auth,
-  };
-
-  try {
-    const response = await iam.projects.serviceAccounts.keys.create(request);
-    const { privateKeyData } = response.data;
-
-    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
-
-    
-    const plainParsed = JSON.parse(plain);
-    const serviceAccountId = plainParsed.client_id;
-    
-
-    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
-
-
-
-    console.log(`Key created and saved in the database.`);
-  } catch (error) {
-    console.error('Error creating service account key:', error.message);
-  }
-}
 
 
 module.exports = router;

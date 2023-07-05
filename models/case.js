@@ -68,7 +68,7 @@ const caseSchema = new Schema({
     statusRemider: {
       reminderID: { type: String },      // ID =>   caseID + "statusRemider" keyWord
       reminderTitle: { type: String },    // title   =>  ReferenceCase + StatusValue
-      startDate: { type: Date }
+      startDate: { type: String }
     }
   },
 
