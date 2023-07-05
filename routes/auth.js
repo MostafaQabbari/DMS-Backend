@@ -158,7 +158,6 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
       const hashedPassword = await bcrypt.hash(password, 10);
       let cryptedTwilioData;
-
       if (req.body.twillioData) {
 
         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
@@ -171,16 +170,15 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
           // to here will be the Drion to send him that the company added twillio number
           to: '+44 7476 544877'
         }).then(() => {
-          console.log("xxxx")
           cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
-        }).catch((err) => {
-          console.log(err.message);
-          res.status(400).json({ "error": "unvaild twilio data ..." });
-        });
+        }).catch((error) => {
+          //console.log(err.message);
+          res.status(500).json({ error: error.message });
+        })
 
       }
-      else {
+     
         const user = new Company({
           companyName,
           email,
@@ -191,7 +189,6 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
         });
 
         await user.save();
-        console.log("xxx")
 
         await createServiceAccount(companyName, user._id);
 
@@ -203,7 +200,7 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
         //res.status(201).json({ accessToken, refreshToken });
 
-      }
+      
 
 
 
