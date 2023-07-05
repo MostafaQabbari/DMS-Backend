@@ -175,7 +175,10 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
           cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
         }).catch((err) => {
-          console.log(err.message)
+          console.log(err.message);
+          res.status(400).json({ message: "unvaild twilio data ..." });
+
+          
           
         });
 
@@ -202,8 +205,9 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
       // Store refresh token in database
       await Company.findByIdAndUpdate(user._id, { refreshToken });
+      res.status(201).json({res : "comapny data added successfuly"});
 
-      res.status(201).json({ accessToken, refreshToken });
+      //res.status(201).json({ accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
