@@ -94,7 +94,6 @@ router.post("/add-company", authMiddleware, (req, res, next) => {
 
         }).catch((err) => {
           console.log(err.message)
-           res.status(400).json({ message: err.message});
           
         });
 
@@ -112,7 +111,7 @@ router.post("/add-company", authMiddleware, (req, res, next) => {
           twillioData:cryptedTwilioData
         });
 
-    // Check if sharingGmail is already present in any user within the company accounts
+      // Check if sharingGmail is already present in any user within the company accounts
       const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
       if (existingUser1) {
         return res.status(400).json({ message: 'Sharing Gmail already exists' });
@@ -134,14 +133,8 @@ router.post("/add-company", authMiddleware, (req, res, next) => {
         if (error.code === 11000) {
           // Duplicate key error
           return res.status(400).json({ message: 'Duplicate entry', error });
-        } else {
-          // Other database error
-          return res.status(500).json({ message: 'Database error', error });
         }
       }
-
-
-
 
 
       await createServiceAccount(companyName , user._id);
