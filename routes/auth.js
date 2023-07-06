@@ -94,6 +94,7 @@ router.post("/add-company", authMiddleware, (req, res, next) => {
 
         }).catch((err) => {
           console.log(err.message)
+           res.status(400).json({ message: err.message});
           
         });
 
