@@ -44,89 +44,7 @@ const upload = multer({
   },
 }).single("companyLogo");
 
-
-
-
-async function createServiceAccount(accountName, companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
-
-  const iam = google.iam('v1');
-  const projectId = config.projectID;
-
-  const request = {
-    name: `projects/${projectId}`,
-    requestBody: {
-      accountId: accountName,
-      serviceAccount: {
-        displayName: accountName,
-      },
-    },
-    auth,
-  };
-
-  try {
-    const response = await iam.projects.serviceAccounts.create(request);
-    const { email } = response.data;
-
-
-
-    await Company.findByIdAndUpdate(companyID, { serviceAccount: email });
-
-    //save the service email in the company model
-    await createServiceAccountKey(email, companyID);
-
-
-    console.log(`Service Account created. Credentials saved in the database`);
-  } catch (error) {
-    console.error('Error creating Service Account:', error.message);
-  }
-}
-
-
-async function createServiceAccountKey(serviceAccountEmail, companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
-
-  const iam = google.iam('v1');
-  const projectId = 'direct-mediation-services';
-
-
-  const request = {
-    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
-    requestBody: {
-      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
-    },
-    auth,
-  };
-
-  try {
-    const response = await iam.projects.serviceAccounts.keys.create(request);
-    const { privateKeyData } = response.data;
-
-    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
-
-
-    const plainParsed = JSON.parse(plain);
-    const serviceAccountId = plainParsed.client_id;
-
-
-    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData, serviceAccountID: serviceAccountId });
-
-
-
-    console.log(`Key created and saved in the database.`);
-  } catch (error) {
-    console.error('Error creating service account key:', error.message);
-  }
-}
-
-
-router.post("/company-signup", authMiddleware, (req, res, next) => {
+router.post("/add-company", authMiddleware, (req, res, next) => {
 
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only a admin can create a company " });
@@ -139,8 +57,8 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
     }
 
     try {
-      const { companyName, email, password, sharingGmail, twillioData } = req.body;
-
+      const { companyName, email, password, sharingGmail ,twillioData } = req.body;
+ 
       const existingUser = await Company.findOne({ email });
 
       if (existingUser) {
@@ -157,55 +75,82 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      let cryptedTwilioData;
+      let cryptedTwilioData ;
+     
       if (req.body.twillioData) {
-
+  
         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
         const phoneNumber = twillioData.twillioNumber;
-
-
+        
+        
         x.messages.create({
           body: `Your Client ${companyName} twillio has been added   `,
           from: phoneNumber,
           // to here will be the Drion to send him that the company added twillio number
           to: '+44 7476 544877'
-        }).then(() => {
-          cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+        }).then(()=>{
+          console.log("xxxx")
+          cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
-        }).catch((error) => {
-          //console.log(err.message);
-          res.status(500).json({ error: error.message });
-        })
+        }).catch((err) => {
+          console.log(err.message)
+          
+        });
 
       }
-     
+
+    
+
+      try {
         const user = new Company({
           companyName,
           email,
           password: hashedPassword,
-          sharingGmail: sharingGmail,
+          sharingGmail:sharingGmail,
           companyLogo: req.file ? req.file.filename : null,
-          twillioData: cryptedTwilioData
+          twillioData:cryptedTwilioData
         });
 
-        await user.save();
-
-        await createServiceAccount(companyName, user._id);
-
-        const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-        const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-        // Store refresh token in database
-        await Company.findByIdAndUpdate(user._id, { refreshToken });
-        res.status(200).json({ res: "comapny data added successfuly" });
-
-        //res.status(201).json({ accessToken, refreshToken });
-
+    // Check if sharingGmail is already present in any user within the company accounts
+      const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
+      if (existingUser1) {
+        return res.status(400).json({ message: 'Sharing Gmail already exists' });
+      }
       
+      // Perform server-side validation
+      const validationErrors = user.validateSync();
+      if (validationErrors) {
+        const errorMessages = Object.values(validationErrors.errors).map((error) => error.message);
+        return res.status(400).json({ message: 'Validation errors', errors: errorMessages });
+      }
+  
+      
+        // Save the user to the database
+        await user.save();
+      
+        res.status(201).json({ message: 'User created successfully' });
+      } catch (error) {
+        if (error.code === 11000) {
+          // Duplicate key error
+          return res.status(400).json({ message: 'Duplicate entry', error });
+        } else {
+          // Other database error
+          return res.status(500).json({ message: 'Database error', error });
+        }
+      }
 
 
 
 
 
+      await createServiceAccount(companyName , user._id);
+
+      // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+      const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+      // Store refresh token in database
+      await Company.findByIdAndUpdate(user._id, { refreshToken });
+
+      res.status(201).json({ refreshToken , message: "Company account and it's service account  created successfully " });
     } catch (error) {
       next(error);
     }
@@ -578,7 +523,83 @@ function generateResetToken() {
 
 
 
+async function createServiceAccount(accountName , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
 
+  const iam = google.iam('v1');
+  const projectId = config.projectID;
+
+  const request = {
+    name: `projects/${projectId}`,
+    requestBody: {
+      accountId: accountName,
+      serviceAccount: {
+        displayName: accountName,
+      },
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.create(request);
+    const { email  } = response.data;
+    
+   
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
+    
+    //save the service email in the company model
+    await createServiceAccountKey(email , companyID);
+      
+
+    console.log(`Service Account created. Credentials saved in the database`);
+  } catch (error) {
+    console.error('Error creating Service Account:', error.message);
+  }
+}
+
+
+async function createServiceAccountKey(serviceAccountEmail , companyID) {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: config.credentialFile,
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+
+  const iam = google.iam('v1');
+  const projectId = 'direct-mediation-services';
+
+
+  const request = {
+    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
+    requestBody: {
+      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
+    },
+    auth,
+  };
+
+  try {
+    const response = await iam.projects.serviceAccounts.keys.create(request);
+    const { privateKeyData } = response.data;
+
+    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
+
+    
+    const plainParsed = JSON.parse(plain);
+    const serviceAccountId = plainParsed.client_id;
+    
+
+    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
+
+
+
+    console.log(`Key created and saved in the database.`);
+  } catch (error) {
+    console.error('Error creating service account key:', error.message);
+  }
+}
 
 
 module.exports = router;

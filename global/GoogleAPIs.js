@@ -2,21 +2,31 @@ const { google } = require('googleapis');
 const Company = require('../models/company');
 const Case = require('../models/case');
 
-module.exports = async function createEvent(caseId, startDate, mediatorEmail, client1Email, client2Email) {
+//, client2Email
+module.exports = async function createEvent(caseId, mediatorEmail, client1Email) {
   try {
-    // Retrieve the necessary data from the database
-    const currentCase = await Case.findById(caseId);
-    const company = await Company.findById(currentCase.connectionData.companyID);
+    // // Retrieve the necessary data from the database
+    // const currentCase = await Case.findById(caseId);
+    // const company = await Company.findById(currentCase.connectionData.companyID);
 
-    // Retrieve the service account details from the company schema
-    const serviceAccountEmail = company.serviceAccountEmail;
-    const privateKey = company.serviceAccountPrivateKey;
+    const companyData = await Case.findById(caseId).populate('connectionData.companyID');
+ 
+    const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
+    const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
+    
+
+    const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
+    
+    const plainParsed = JSON.parse(plain);
+    const privatekey1 = plainParsed.private_key;
+
+
 
     // Create the JWT auth client
     const auth = new google.auth.JWT({
-      email: serviceAccountEmail,
-      key: privateKey,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
+      email: companyServiceAccount,
+      key: privatekey1,
+      scopes: ['https://www.googleapis.com/auth/calendar.events'],
     });
 
     // Authorize the client
@@ -26,17 +36,17 @@ module.exports = async function createEvent(caseId, startDate, mediatorEmail, cl
     const event = {
       summary: 'Meeting',
       start: {
-        dateTime: startDate,
+        dateTime: "2023-12-09T01:00:00Z",
         timeZone: 'Africa/Cairo', // Replace with the appropriate time zone (spain or UK)
       },
       end: {
-        dateTime: new Date(new Date(startDate).getTime() + 86400000).toISOString(), // Next day at midnight,
+        dateTime: "2023-12-09T22:00:00Z", // Next day at midnight,
         timeZone: 'Africa/Cairo', // Replace with the appropriate time zone (spain or UK)
       },
       attendees: [
         { email: mediatorEmail },
         { email: client1Email },
-        { email: client2Email },
+        // { email: client2Email },
       ],
     };
 

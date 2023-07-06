@@ -57,11 +57,11 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
 router.patch("/addC1MIAM1/:id", async (req, res) => {
 
-
+//currentCase.startDate
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    GoogleFunction(currentCase._id, currentCase.startDate, "mkabary8@gmail.com", "mkabary8@gmail.com", "mkabary8@gmail.com");
+    // GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
@@ -86,7 +86,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyEmail = companyData.connectionData.companyID.email;
 
-    // await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+    await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
 
     
 
