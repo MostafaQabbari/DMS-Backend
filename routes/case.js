@@ -127,6 +127,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
           startDate: dateNow()
         }
 
+      
         await Case.findByIdAndUpdate(newCase[0]._id, {
           $set: {
             'Reminders.statusRemider': statusRemider
@@ -177,11 +178,7 @@ console.log(MIAM_C1_Date)
           MIAMDates:{
             MIAM_C1_Date: MIAM_C1_Date
           },
-          // $set: {
- 
-          //   'MIAMDates.MIAM_C1_Date': MIAM_C1_Date,
-
-          // },
+    
           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
         });
  
@@ -190,6 +187,7 @@ console.log(MIAM_C1_Date)
         reminderTitle: `${Reference}-${newCase[0].status}`,
         startDate: dateNow()
       }
+     
 
       await Case.findByIdAndUpdate(newCase[0]._id, {
         $set: {

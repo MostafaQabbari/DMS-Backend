@@ -55,28 +55,72 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
     try {
         if (req.userRole == 'company') {
-
+            /**
+             {
+                creator:
+                mediatorName:
+                companyName:
+                caseReference:
+                id: createEventId(),
+                title: "All-day event",
+                start: todayStr + "T02:00:00",
+                
+              }
+             */
             const companyId = req.user._id;
             const selectedComp = await Company.findById(companyId);
-            const userReminders = selectedComp.Reminders
+            const userReminders = selectedComp.Reminders;
+            const mediatorReminders = []
+            const casesReminders = []
 
             const mediatorsList = await Company.findById(req.user._id).populate('mediators');
             const casesList = await Company.findById(req.user._id).populate('cases');
-            let Reminders = [
-                { "compReminders": userReminders }
-            ]
+
+            let Reminders = []
+
+
+            for (let i = 0; i < userReminders.length; i++) {
+                let reminderObj = {}
+                reminderObj.id = userReminders[i]._id
+                reminderObj.title = userReminders[i].reminderTitle
+                reminderObj.start = userReminders[i].startDate
+                reminderObj.creator = "company"
+                reminderObj.companyName = selectedComp.companyName
+                Reminders.push(reminderObj)
+
+            }
 
             for (let i = 0; i < mediatorsList.mediators.length; i++) {
                 let medName = `${mediatorsList.mediators[i].firstName} ${mediatorsList.mediators[i].lastName}`;
-                let medReminders = mediatorsList.mediators[i].Reminders
-                Reminders.push({ medName: medName, Reminders: medReminders })
+                let medReminders = mediatorsList.mediators[i].Reminders;
+                let reminderObj = {}
+                for (let j = 0; j < medReminders.length; j++) {
+
+                    reminderObj.id = medReminders[i]._id
+                    reminderObj.title = medReminders[i].reminderTitle
+                    reminderObj.start = medReminders[i].startDate
+                    reminderObj.creator = "mediator"
+                    reminderObj.mediatorName = medName
+                    Reminders.push(reminderObj)
+
+
+                }
 
             }
             for (let i = 0; i < casesList.cases.length; i++) {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                let reminderObj = {}
+                reminderObj.id = caseStatusReminders.reminderID
+                reminderObj.title = caseStatusReminders.reminderTitle
+                reminderObj.start = caseStatusReminders.startDate
+                reminderObj.creator = "caseStatus"
+                reminderObj.caseReference = caseReference;
+
+                console.log(reminderObj)
+                Reminders.push(reminderObj)
+
 
             }
 
@@ -90,24 +134,50 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
             const medID = req.user._id;
             const selectedMed = await mediator.findById(medID);
+            let medName = `${selectedMed.firstName} ${selectedMed.lastName}`;
+
             const userReminders = selectedMed.Reminders;
 
             const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
             const casesList = await mediator.findById(req.user._id).populate('cases');
+            const compName =  mediatorCompanyData.companyId.companyName
 
-            const compReminders = mediatorCompanyData.companyId.Reminders
+            const compReminders = mediatorCompanyData.companyId.Reminders;
+            const casesReminders = []
 
-            let Reminders = [
-                { "companyReminders": compReminders },
-                { "MediatorReminder": userReminders },
+            let Reminders = []
+            for (let i = 0; i < compReminders.length; i++) {
+                let reminderObj = {}
+                reminderObj.id = userReminders[i]._id
+                reminderObj.title = userReminders[i].reminderTitle
+                reminderObj.start = userReminders[i].startDate
+                reminderObj.creator = "company"
+                reminderObj.companyName = compName
+                Reminders.push(reminderObj)
 
+            }
 
-            ]
+            for (let i = 0; i < userReminders.length; i++) {
+                let reminderObj = {}
+                reminderObj.id = userReminders[i]._id
+                reminderObj.title = userReminders[i].reminderTitle
+                reminderObj.start = userReminders[i].startDate
+                reminderObj.creator = "mediator"
+                reminderObj.mediatorName = medName
+                Reminders.push(reminderObj)
+
+            }
             for (let i = 0; i < casesList.cases.length; i++) {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                Reminders.push({ caseReference: caseReference, Reminder: caseStatusReminders })
+                let reminderObj = {}
+                reminderObj.id = caseStatusReminders.reminderID
+                reminderObj.title = caseStatusReminders.reminderTitle
+                reminderObj.start = caseStatusReminders.startDate
+                reminderObj.creator = "caseStatus"
+                reminderObj.caseReference = caseReference;
+                Reminders.push(reminderObj)
 
             }
 
