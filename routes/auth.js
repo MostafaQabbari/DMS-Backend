@@ -13,9 +13,6 @@ const authMiddleware = require("../middleware/authMiddleware");
 const CryptoJS = require("crypto-js");
 const { google } = require('googleapis');
 
-
-
-
 // const { appendFile } = require("fs");
 const router = express.Router();
 
@@ -44,112 +41,103 @@ const upload = multer({
   },
 }).single("companyLogo");
 
-router.post("/add-company", authMiddleware, (req, res, next) => {
 
-  if (req.userRole !== "admin") {
-    return res.status(401).json({ message: "Unauthorized only a admin can create a company " });
-  }
+router.post("/add-company", authMiddleware, async (req, res, next) => {
+  try {
+    // Code for authorization, file upload, and data extraction
+    if (req.userRole !== "admin") {
+      return res.status(401).json({ message: "Unauthorized. Only an admin can create a company." });
+    }
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ message: err });
+      }
+    
+    const { companyName, email, password, sharingGmail, twillioData } = req.body;
 
 
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ message: err });
+    const existingUser = await Company.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    try {
-      const { companyName, email, password, sharingGmail ,twillioData } = req.body;
- 
-      const existingUser = await Company.findOne({ email });
+    // Other validation and data processing code
 
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    let cryptedTwilioData;
 
-      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-
-      // Check if the password meets the minimum requirements
-      if (!passwordRegex.test(password)) {
-        return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
-      }
-
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      let cryptedTwilioData ;
-     
       if (req.body.twillioData) {
-  
         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
         const phoneNumber = twillioData.twillioNumber;
-        
-        
-        x.messages.create({
-          body: `Your Client ${companyName} twillio has been added   `,
-          from: phoneNumber,
-          // to here will be the Drion to send him that the company added twillio number
-          to: '+44 7476 544877'
-        }).then(()=>{
-          console.log("xxxx")
-          cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
-        }).catch((err) => {
-          console.log(err.message)
-          
-        });
+        try {
+          await x.messages.create({
+            body: `Your Client ${companyName} twillio has been added`,
+            from: phoneNumber,
+            to: '+44 7476 544877' // Replace with actual recipient number
+          });
 
+          cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+        } catch (error) {
+          console.error(error);
+        }
       }
 
-    
+    const user = new Company({
+      // Company data
+      companyName,
+      email,
+      password: hashedPassword,
+      sharingGmail:sharingGmail,
+      companyLogo: req.file ? req.file.filename : null,
+      twillioData:cryptedTwilioData
+    });
+    // Check if sharingGmail is already present in any user within the company accounts
+    const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
+    if (existingUser1) {
+      return res.status(400).json({ message: 'Sharing Gmail already exists' });
+    }
 
-      try {
-        const user = new Company({
-          companyName,
-          email,
-          password: hashedPassword,
-          sharingGmail:sharingGmail,
-          companyLogo: req.file ? req.file.filename : null,
-          twillioData:cryptedTwilioData
-        });
-
-      // Check if sharingGmail is already present in any user within the company accounts
-      const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
-      if (existingUser1) {
-        return res.status(400).json({ message: 'Sharing Gmail already exists' });
-      }
-      
       // Perform server-side validation
       const validationErrors = user.validateSync();
       if (validationErrors) {
         const errorMessages = Object.values(validationErrors.errors).map((error) => error.message);
         return res.status(400).json({ message: 'Validation errors', errors: errorMessages });
       }
-  
-      
-        // Save the user to the database
-        await user.save();
-      
-        res.status(201).json({ message: 'User created successfully' });
-      } catch (error) {
-        if (error.code === 11000) {
-          // Duplicate key error
-          return res.status(400).json({ message: 'Duplicate entry', error });
-        }
-      }
 
+    try {
+      // Save the user to the database
+      await user.save();
 
-      await createServiceAccount(companyName , user._id);
+      // Other code for creating service account, generating refresh token, and storing it
+      await createServiceAccount(companyName, user._id);
 
-      // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-      // Store refresh token in database
       await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-      res.status(201).json({ refreshToken , message: "Company account and it's service account  created successfully " });
+      // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+      res.status(201).json({ refreshToken, message: "Company account and its service account created successfully" });
     } catch (error) {
+      if (error.code === 11000) {
+        // Duplicate key error
+        const duplicateField = Object.keys(error.keyValue)[0];
+        const duplicateValue = error.keyValue[duplicateField];
+        const errorMessage = `Duplicate entry: ${duplicateField} '${duplicateValue}' already exists.`;
+        return res.status(400).json({ message: errorMessage });
+      }
       next(error);
     }
   });
+  } catch (error) {
+    next(error);
+  }
 });
+
 
 
 
@@ -594,6 +582,194 @@ async function createServiceAccountKey(serviceAccountEmail , companyID) {
     console.error('Error creating service account key:', error.message);
   }
 }
+
+
+
+
+// router.post("/add-company", authMiddleware, (req, res, next) => {
+
+//   if (req.userRole !== "admin") {
+//     return res.status(401).json({ message: "Unauthorized only a admin can create a company " });
+//   }
+
+
+//   upload(req, res, async (err) => {
+//     if (err) {
+//       return res.status(400).json({ message: err });
+//     }
+
+//     try {
+//       const { companyName, email, password, sharingGmail ,twillioData } = req.body;
+ 
+//       const existingUser = await Company.findOne({ email });
+
+//       if (existingUser) {
+//         return res.status(400).json({ message: "User already exists" });
+//       }
+
+
+//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+//       // Check if the password meets the minimum requirements
+//       if (!passwordRegex.test(password)) {
+//         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+//       }
+
+
+//       const hashedPassword = await bcrypt.hash(password, 10);
+//       let cryptedTwilioData ;
+     
+//       if (req.body.twillioData) {
+  
+//         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
+//         const phoneNumber = twillioData.twillioNumber;
+        
+        
+//         x.messages.create({
+//           body: `Your Client ${companyName} twillio has been added   `,
+//           from: phoneNumber,
+//           // to here will be the Drion to send him that the company added twillio number
+//           to: '+44 7476 544877'
+//         }).then(()=>{
+//           console.log("xxxx")
+//           cryptedTwilioData =  CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+
+//         }).catch((err) => {
+//           console.log(err.message)
+          
+//         });
+
+//       }
+
+    
+
+//       try {
+//         const user = new Company({
+//           companyName,
+//           email,
+//           password: hashedPassword,
+//           sharingGmail:sharingGmail,
+//           companyLogo: req.file ? req.file.filename : null,
+//           twillioData:cryptedTwilioData
+//         });
+
+//       // Check if sharingGmail is already present in any user within the company accounts
+//       const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
+//       if (existingUser1) {
+//         return res.status(400).json({ message: 'Sharing Gmail already exists' });
+//       }
+      
+//       // Perform server-side validation
+//       const validationErrors = user.validateSync();
+//       if (validationErrors) {
+//         const errorMessages = Object.values(validationErrors.errors).map((error) => error.message);
+//         return res.status(400).json({ message: 'Validation errors', errors: errorMessages });
+//       }
+  
+      
+//         // Save the user to the database
+//         await user.save();
+      
+//         res.status(201).json({ message: 'User created successfully' });
+//       } catch (error) {
+//         if (error.code === 11000) {
+//           // Duplicate key error
+//           return res.status(400).json({ message: 'Duplicate entry', error });
+//         }
+//       }
+
+
+//       await createServiceAccount(companyName , user._id);
+
+//       // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+//       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+//       // Store refresh token in database
+//       await Company.findByIdAndUpdate(user._id, { refreshToken });
+
+//       res.status(201).json({ refreshToken , message: "Company account and it's service account  created successfully " });
+//     } catch (error) {
+//       next(error);
+//     }
+//   });
+// });
+
+// router.post("/add-company", authMiddleware, async (req, res, next) => {
+//   try {
+//     if (req.userRole !== "admin") {
+//       return res.status(401).json({ message: "Unauthorized. Only an admin can create a company." });
+//     }
+
+//     upload(req, res, async (err) => {
+//       if (err) {
+//         return res.status(400).json({ message: err });
+//       }
+
+//       const { companyName, email, password, sharingGmail, twillioData } = req.body;
+
+//       const existingUser = await Company.findOne({ email });
+//       if (existingUser) {
+//         return res.status(400).json({ message: "User already exists" });
+//       }
+
+//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+//       if (!passwordRegex.test(password)) {
+//         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+//       }
+
+//       const hashedPassword = await bcrypt.hash(password, 10);
+//       let cryptedTwilioData;
+
+//       if (req.body.twillioData) {
+//         const x = require('twilio')(twillioData.twillioSID, twillioData.twillioToken);
+//         const phoneNumber = twillioData.twillioNumber;
+
+//         try {
+//           await x.messages.create({
+//             body: `Your Client ${companyName} twillio has been added`,
+//             from: phoneNumber,
+//             to: '+44 7476 544877' // Replace with actual recipient number
+//           });
+
+//           cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+//         } catch (error) {
+//           console.error(error);
+//         }
+//       }
+
+//       const user = new Company({
+//         companyName,
+//         email,
+//         password: hashedPassword,
+//         sharingGmail,
+//         companyLogo: req.file ? req.file.filename : null,
+//         twillioData: cryptedTwilioData
+//       });
+
+//       const existingUser1 = await Company.findOne({ "users.sharingGmail": sharingGmail });
+//       if (existingUser1) {
+//         return res.status(400).json({ message: 'Sharing Gmail already exists' });
+//       }
+
+//       const validationErrors = user.validateSync();
+//       if (validationErrors) {
+//         const errorMessages = Object.values(validationErrors.errors).map((error) => error.message);
+//         return res.status(400).json({ message: 'Validation errors', errors: errorMessages });
+//       }
+
+//       await user.save();
+
+//       await createServiceAccount(companyName, user._id);
+
+//       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+//       await Company.findByIdAndUpdate(user._id, { refreshToken });
+
+//       res.status(201).json({ refreshToken, message: "Company account and its service account created successfully" });
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
 
 
 module.exports = router;
