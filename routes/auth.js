@@ -44,7 +44,7 @@ const upload = multer({
   },
 }).single("companyLogo");
 
-router.post("/company-signup", authMiddleware, (req, res, next) => {
+router.post("/add-company", authMiddleware, (req, res, next) => {
 
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only a admin can create a company " });
@@ -99,29 +99,56 @@ router.post("/company-signup", authMiddleware, (req, res, next) => {
 
       }
 
+    
 
+      try {
+        const user = new Company({
+          companyName,
+          email,
+          password: hashedPassword,
+          sharingGmail:sharingGmail,
+          companyLogo: req.file ? req.file.filename : null,
+          twillioData:cryptedTwilioData
+        });
 
+      // Check if sharingGmail is already present in any user within the company accounts
+      const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
+      if (existingUser1) {
+        return res.status(400).json({ message: 'Sharing Gmail already exists' });
+      }
+      
+      // Perform server-side validation
+      const validationErrors = user.validateSync();
+      if (validationErrors) {
+        const errorMessages = Object.values(validationErrors.errors).map((error) => error.message);
+        return res.status(400).json({ message: 'Validation errors', errors: errorMessages });
+      }
+  
+      
+        // Save the user to the database
+        await user.save();
+      
+        res.status(201).json({ message: 'User created successfully' });
+      } catch (error) {
+        if (error.code === 11000) {
+          // Duplicate key error
+          return res.status(400).json({ message: 'Duplicate entry', error });
+        } else {
+          // Other database error
+          return res.status(500).json({ message: 'Database error', error });
+        }
+      }
 
-      const user = new Company({
-        companyName,
-        email,
-        password: hashedPassword,
-        sharingGmail:sharingGmail,
-        companyLogo: req.file ? req.file.filename : null,
-        twillioData:cryptedTwilioData
-      });
-
-      await user.save();
 
 
       await createServiceAccount(companyName , user._id);
 
-      const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+      // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
       // Store refresh token in database
       await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-      res.status(201).json({ accessToken, refreshToken });
+      res.status(201).json({ refreshToken , message: "Company account and it's service account  created successfully " });
     } catch (error) {
       next(error);
     }
