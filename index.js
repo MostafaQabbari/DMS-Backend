@@ -16,7 +16,9 @@ const reminders = require("./routes/reminders")
 const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
 const C2MIAM1= require("./routes/C2_MIAM1");
-const C2MIAM2 = require("./routes/C2_MIAM2")
+const C2MIAM2 = require("./routes/C2_MIAM2");
+const invitations = require("./routes/invitations");
+const recieveSMS = require("./routes/receiveSMS")
 
 
 const updateCase = require("./routes/updateCase")
@@ -59,6 +61,8 @@ app.use(C2Invitation)
 app.use(reminders)
 app.use(C2MIAM1)
 app.use(C2MIAM2)
+app.use(invitations)
+app.use(recieveSMS)
 
 
 

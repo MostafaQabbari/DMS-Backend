@@ -4,28 +4,56 @@ const config = require("../config/config");
 const Company = require("../models/company");
 const { google } = require('googleapis');
 const authMiddleware = require("../middleware/authMiddleware");
+const CryptoJS = require("crypto-js");
+const { ContentAndApprovalsListInstance } = require("twilio/lib/rest/content/v1/contentAndApprovals");
+router.get("/get-companies", authMiddleware, async (req, res, next) => {
 
-router.get("/get-companies",authMiddleware ,async (req, res, next) => {
-  
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only an admin can get all the companies" });
   }
-  
+
+
+
   try {
-    const users = await Company.find({});
-    res.status(200).json(users);
+    let users = await Company.find({});
+    let resUsers = []
+    let user = {};
+    let dataTwilio;
+    for (let i = 0; i < users.length; i++) {
+     
+      user = users[i];
+      // console.log(user.twillioData)
+      if(user.twillioData){
+
+        const Data = CryptoJS.AES.decrypt(user.twillioData, 'ourTwillioEncyptionKey');
+        let  decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8));
+        const x =decryptedData[0];
+        user.twillioData= JSON.stringify(x);
+        resUsers.push(user)
+
+      }else{
+
+        user.twillioData="twilio data did not added yet ..."
+        resUsers.push(user)
+      }
+  
+
+
+    }
+
+    res.status(200).json(resUsers);
   } catch (error) {
     next(error);
   }
 });
 
 // GET /company/:id/stats
-router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
-  
+router.get("/company/:id/stats", authMiddleware, async (req, res, next) => {
+
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only an admin can get the stats of a company" });
   }
-  
+
   try {
     const { id } = req.params;
 
@@ -41,7 +69,7 @@ router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
     const caseCount = company.cases.length;
     const companyName = company.companyName
 
- 
+
     res.json({
       mediatorCount,
       caseCount,
@@ -54,12 +82,12 @@ router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
 });
 
 
-router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
-  
+router.get("/company/:id/stats", authMiddleware, async (req, res, next) => {
+
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only an admin can get the stats of a company" });
   }
-  
+
   try {
     const { id } = req.params;
 
@@ -75,7 +103,7 @@ router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
     const caseCount = company.cases.length;
     const companyName = company.companyName
 
- 
+
     res.json({
       mediatorCount,
       caseCount,
@@ -88,16 +116,16 @@ router.get("/company/:id/stats", authMiddleware ,async (req, res, next) => {
 });
 
 // DELETE /companies/:id
-router.delete("/company/:id", authMiddleware , async (req, res, next) => {
-  
+router.delete("/company/:id", authMiddleware, async (req, res, next) => {
+
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only an admin  can delete a company account " });
   }
-  
-  
+
+
   try {
     const companyId = req.params.id;
-    
+
     // Check if the company exists
     const company = await Company.findById(companyId);
     if (!company) {
@@ -106,12 +134,12 @@ router.delete("/company/:id", authMiddleware , async (req, res, next) => {
 
     // delete service account
     deleteServiceAccount(config.projectID, company.serviceAccountID);
-    
+
     // Delete the company
     await Company.findByIdAndRemove(companyId);
 
 
-    
+
     res.json({ message: "Company account and service account deleted successfully" });
   } catch (error) {
     next(error);
@@ -119,13 +147,13 @@ router.delete("/company/:id", authMiddleware , async (req, res, next) => {
 });
 
 // PATCH /companies/:id
-router.patch("/update-company/:id", authMiddleware , async (req, res, next) => {
-  
+router.patch("/update-company/:id", authMiddleware, async (req, res, next) => {
+
   if (req.userRole !== "admin") {
     return res.status(401).json({ message: "Unauthorized only an admin  can update a company account " });
   }
-  
-  
+
+
   try {
     const companyId = req.params.id;
     const updateData = req.body;
@@ -150,11 +178,11 @@ router.patch("/update-gmail/:id", authMiddleware, async (req, res) => {
 
   try {
     if (req.userRole == "admin") {
-    
-        const companyID = req.params.id;
-        await Company.findByIdAndUpdate(companyID, { sharingGmail: req.body.sharingGmail });
-        return res.status(200).json({ message: "the gmail account has been changed" });
-  
+
+      const companyID = req.params.id;
+      await Company.findByIdAndUpdate(companyID, { sharingGmail: req.body.sharingGmail });
+      return res.status(200).json({ message: "the gmail account has been changed" });
+
     }
     else {
 
@@ -164,7 +192,7 @@ router.patch("/update-gmail/:id", authMiddleware, async (req, res) => {
 
   }
   catch (err) {
-    res.json({ err:err.message })
+    res.json({ err: err.message })
   }
 })
 
