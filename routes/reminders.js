@@ -237,11 +237,12 @@ router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
 
 });
 
-router.delete('/deleteReminder', authMiddleware, async (req, res, next) => {
+router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => {
 
     try {
         if (req.userRole == 'company') {
-            const { _id } = req.body;
+           const  _id  = req.params._id;
+            console.log(_id)
             const companyId = req.user._id;
             const selectedComp = await Company.findById(companyId)
 
@@ -257,7 +258,7 @@ router.delete('/deleteReminder', authMiddleware, async (req, res, next) => {
         }
 
         else if (req.userRole == 'mediator') {
-            const { _id } = req.body;
+            const  _id  = req.params._id;
             const medID = req.user._id;
             const selectedMed = await mediator.findById(medID)
             let obj = selectedMed.Reminders.find(obj => obj._id == _id);
