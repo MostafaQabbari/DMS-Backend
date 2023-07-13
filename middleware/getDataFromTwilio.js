@@ -4,7 +4,7 @@ const Company = require("../models/company");
 
 // at first we get data from twillio and decrypt it
 
-const getDataFromTwillio = async function (user, role) {
+const getDataFromTwillio = async function (user, role ,res) {
 
   if (role == 'company' && user.twillioData ) {
     // console.log(user.twillioData)
@@ -24,12 +24,14 @@ const getDataFromTwillio = async function (user, role) {
     }
    else{
     console.log({"err" : "company does not twilio account yet"})
+    res.json({"err" : "company does not twilio account yet"})
    }
   
 
   }
   else {
     console.log({ message: "something wrong with twilio data " })
+    res.json({ "err": "something wrong with twilio data " })
   }
 }
 
@@ -39,22 +41,23 @@ const getDataFromTwillio = async function (user, role) {
 function decryptTwillioData(req, res, next) {
 
   //console.log(req.user)
-  let ReqDataTwillio = getDataFromTwillio(req.user, req.userRole);
+  let ReqDataTwillio = getDataFromTwillio(req.user, req.userRole ,res);
 
   const myPromise = new Promise((resolve, reject) => {
        resolve(ReqDataTwillio);
     });
-
+   
     myPromise
     .then(data => {
       req.twillioInfo = data;
       next();
     })
     .catch(error => {
+      
       console.log(error);
       next(error);
     });
 }
 
-
+ 
 module.exports = decryptTwillioData
