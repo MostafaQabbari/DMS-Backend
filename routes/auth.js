@@ -53,7 +53,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
         return res.status(400).json({ message: err });
       }
     
-    const { companyName, email, password, sharingGmail, twillioData } = req.body;
+    const { companyName, email, password, logo ,sharingGmail, twillioData } = req.body;
 
 
     const existingUser = await Company.findOne({ email });
@@ -94,6 +94,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       email,
       password: hashedPassword,
       sharingGmail:sharingGmail,
+      logo: logo,
       companyLogo: req.file ? req.file.filename : null,
       twillioData:cryptedTwilioData
     });
