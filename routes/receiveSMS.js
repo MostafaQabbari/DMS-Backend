@@ -105,7 +105,7 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
 router.get("/chatSMSbyNumber", authMiddleware,decryptTwillioData, async (req, res) => {
 
   let twillioInfo = req.twillioInfo
-  let otherNumber = req.body;
+  let {otherNumber} = req.body;
  // console.log(twillioInfo)
 
    getMessgaes(twillioInfo.twillioNumber ,otherNumber ,twillioInfo,res);
