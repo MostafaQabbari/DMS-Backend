@@ -14,6 +14,7 @@ const caseSchema = new Schema({
     phoneNumber: { type: String },
     dateOfMAIM: { type: Date },
     location: { type: String },
+    caseType:{type:String , required:true}    //private , LegalAid , passporting , lowIncome
   },
   connectionData: {
     mediatorID: {

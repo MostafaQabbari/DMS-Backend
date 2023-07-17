@@ -11,7 +11,7 @@ const dateNow = require("../global/dateNow")
 
 
 
-const sendMail = function (companyData, clientData, messageBodyinfo) {
+const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
 
   /*
 
@@ -44,26 +44,134 @@ const sendMail = function (companyData, clientData, messageBodyinfo) {
   let info = transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
-    subject: "Applying To MIAM Form",
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
     html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
      <h1>Dear ${clientData.clientName}  </h1>
-    <h2> Follow the next Link to Apply to your form </h2>
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-    <h3>Best Regards</h3>
-    <h3>${companyData.companyName}</h3>
-    <h3>${companyData.email}</h3>
-     </div>`,
+    <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
+     we need you to complete an online form records basic information about you and your situation. </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px;"> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
 
-    // html: `
-    // <div>
-    // <h1>Dear ${clientData.clientName}  </h1>
-    // <h2> Follow the next Link to Apply to your form </h2>
-    // <a href='${messageBodyinfo.formUrl}'>Click here </a>
-    // <h3>Best Regards</h3>
-    // <h3>${companyData.companyName}</h3>
-    // <h3>${companyData.email}</h3>
-    // </div>
-    //  `,
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
+}
+const sendMailPassporting = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  */
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
+
+
+  let info = transporter.sendMail({
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you MIAM booking you MIAM  , here is your passporting form </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
+
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
+}
+const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  */
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
+
+
+  let info = transporter.sendMail({
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you MIAM , here is your low income / no income form </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
+
 
   });
 
@@ -90,7 +198,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   try {
     if (req.userRole == 'company') {
-      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail } = req.body;
+      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail , caseType } = req.body;
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
@@ -99,12 +207,12 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       let newCaseID;
       if (Themediator) {
 
-
+ 
         let newCase = await Case.insertMany(
           {
-            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location ,caseType },
             startDate: dateOfMAIM,
-            status: "MIAM 1 sent to C1",
+            status: `New Case`,
             Reference,
             MajorDataC1: {
               fName: firstName,
@@ -142,10 +250,30 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
         clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
         companyData.companyName = req.user.companyName;
         companyData.email = req.user.email;
-        sendMail(companyData, clientData, messageBodyinfo)
+ 
+        if(req.body.caseType=='private')
+        {
+          messageBodyinfo.formType= "MIAM 1"
+          messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+          sendMailMIAM1(companyData, clientData, messageBodyinfo)
+
+        }
+        else if(req.body.caseType=='lowIncome'){
+          messageBodyinfo.formType="low Income / No Income"
+          messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME_client1}/${newCase[0]._id}`;
+          sendMailLowIncome(companyData, clientData, messageBodyinfo)
+        }
+        else if(req.body.caseType=='passporting'){
+          messageBodyinfo.formType= 'Passporting'
+          messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING_client1}/${newCase[0]._id}`;
+          sendMailPassporting(companyData, clientData, messageBodyinfo)
+        }
+        else
+        {
+          res.json({ "message": "please confirm case type" })
+        }
 
       }
       else {
@@ -155,67 +283,60 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       res.json({ caseID: newCaseID })
     }
 
-    else if (req.userRole == 'mediator') {
-      const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
-      let MIAM_C1_Date = dateOfMAIM;
-console.log(MIAM_C1_Date)
+//     else if (req.userRole == 'mediator') {
+//       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
+//       let MIAM_C1_Date = dateOfMAIM;
+// console.log(MIAM_C1_Date)
 
-      const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-      let Reference = `${surName} `;
+//       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+//       let Reference = `${surName} `;
 
-      let newCase = await Case.insertMany(
-        {
-          client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-          startDate: dateOfMAIM,
-          status: "MIAM 1 sent to C1",
-          Reference,
-          MajorDataC1: {
-            fName: firstName,
-            sName: surName,
-            mail: email,
-            phoneNumber: phoneNumber
-          },
-          MIAMDates:{
-            MIAM_C1_Date: MIAM_C1_Date
-          },
+//       let newCase = await Case.insertMany(
+//         {
+//           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
+//           startDate: dateOfMAIM,
+//           status: "MIAM 1 sent to C1",
+//           Reference,
+//           MajorDataC1: {
+//             fName: firstName,
+//             sName: surName,
+//             mail: email,
+//             phoneNumber: phoneNumber
+//           },
+//           MIAMDates:{
+//             MIAM_C1_Date: MIAM_C1_Date
+//           },
     
-          connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
-        });
+//           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
+//         });
  
-      let statusRemider = {
-        reminderID: `${newCase[0]._id}-statusRemider`,
-        reminderTitle: `${Reference}-${newCase[0].status}`,
-        startDate: dateNow()
-      }
+//       let statusRemider = {
+//         reminderID: `${newCase[0]._id}-statusRemider`,
+//         reminderTitle: `${Reference}-${newCase[0].status}`,
+//         startDate: dateNow()
+//       }
      
 
-      await Case.findByIdAndUpdate(newCase[0]._id, {
-        $set: {
-          'Reminders.statusRemider': statusRemider
-        }
-      });
+//       await Case.findByIdAndUpdate(newCase[0]._id, {
+//         $set: {
+//           'Reminders.statusRemider': statusRemider
+//         }
+//       });
+//       // Update the company's cases array with the new case ID
+//       const compID = mediatorCompanyData.companyId._id;
+//       const medID = req.user._id
+//       await Company.findByIdAndUpdate(compID, { $push: { cases: newCase[0]._id } });
+//       await mediator.findByIdAndUpdate(medID, { $push: { cases: newCase[0]._id } });
 
+//       clientData.email = email;
+//       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
+//       messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
 
-
-
-
-
-
-      // Update the company's cases array with the new case ID
-      const compID = mediatorCompanyData.companyId._id;
-      const medID = req.user._id
-      await Company.findByIdAndUpdate(compID, { $push: { cases: newCase[0]._id } });
-      await mediator.findByIdAndUpdate(medID, { $push: { cases: newCase[0]._id } });
-
-      clientData.email = email;
-      clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-      messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
-
-      companyData.companyName = mediatorCompanyData.companyId.companyName
-      companyData.email = mediatorCompanyData.companyId.email
-      sendMail(companyData, clientData, messageBodyinfo)
-      res.json({ caseID: newCase[0]._id })
-    }
+//       companyData.companyName = mediatorCompanyData.companyId.companyName
+//       companyData.email = mediatorCompanyData.companyId.email
+//       sendMail(companyData, clientData, messageBodyinfo)
+//       res.json({ caseID: newCase[0]._id })
+//     }
 
     else {
       res.json({ 'message': "error in the role of token" })
@@ -225,6 +346,12 @@ console.log(MIAM_C1_Date)
   }
 
 });
+
+
+
+
+
+
 
 
 

@@ -242,7 +242,7 @@ router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => 
     try {
         if (req.userRole == 'company') {
            const  _id  = req.params._id;
-            console.log(_id)
+           
             const companyId = req.user._id;
             const selectedComp = await Company.findById(companyId)
 
