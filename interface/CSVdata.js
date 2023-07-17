@@ -54,8 +54,9 @@ module.exports = function airTableData(data) {
                 isThereDaysCanNotAttend: data["Dates you cannot attend?"],
 
                 whatDaysCanNotAttend: data["Dates not attending"],
-
                 appointmentTime: data["when would you like your appointment?"],
+
+                
                 otherParty: data["Please tell us who is the other party in the conflict."]
             },
             otherParty: {

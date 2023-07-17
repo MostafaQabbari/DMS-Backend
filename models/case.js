@@ -27,11 +27,16 @@ const caseSchema = new Schema({
     }
   },
 
+
+  passporting_C1:{type: String},
+  lowIncome_C1:{type: String},
   client1data: { type: String },
   client1AddedData: { type: Boolean, default: false },
   MIAM2mediator: { type: String },
   MIAM2AddedData: { type: Boolean, default: false },
 
+  passporting_C2:{type: String},
+  lowIncome_C2:{type: String},
   client2data: { type: String },
   client2AddedData: { type: Boolean, default: false },
   MIAM2C2: { type: String },
@@ -39,6 +44,15 @@ const caseSchema = new Schema({
 
   C2invitation: { type: String },
   C2invitationApplied: { type: Boolean, default: false },
+  
+  availableTimes_C1:{
+    whatDaysCanNotAttend:{types:String},
+    appointmentTime:{types:String}
+  },
+  availableTimes_C2:{
+    whatDaysCanNotAttend:{types:String},
+    appointmentTime:{types:String}
+  },
 
   MajorDataC1: {
     fName: { type: String },

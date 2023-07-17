@@ -61,7 +61,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+   //  GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
@@ -79,6 +79,11 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
       phoneNumber: req.body.otherParty.otherPartyPhone,
     }
 
+   let availableTimes_C1={
+      whatDaysCanNotAttend:req.body.personalContactAndCaseInfo.whatDaysCanNotAttend,
+      appointmentTime:req.body.personalContactAndCaseInfo.appointmentTime,
+    }
+
     const StringfyData = JSON.stringify(client1data)
 
 
@@ -86,7 +91,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyEmail = companyData.connectionData.companyID.email;
 
-    await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+    // await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
 
     
 
@@ -117,7 +122,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
       await Case.findByIdAndUpdate(req.params.id, {
         client1data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2, status: "MIAM Part 1-C1"
+        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1"
       })
       const updatedCase = await Case.findById(req.params.id);
 
@@ -131,7 +136,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
       //console.log("client_data_fromDB", parsedClientData)
-      res.json(parsedClientData)
+      res.json({ "message": "M1_C1 has been added" })
 
     }
     else {

@@ -65,6 +65,10 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       mail: req.body.personalContactAndCaseInfo.email,
       phoneNumber: req.body.personalContactAndCaseInfo.phoneNumber
     }
+    let availableTimes_C2={
+      whatDaysCanNotAttend:req.body.personalContactAndCaseInfo.whatDaysCanNotAttend,
+      appointmentTime:req.body.personalContactAndCaseInfo.appointmentTime,
+    }
 
 
     const StringfyData = JSON.stringify(client2data)
@@ -95,7 +99,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       await Case.findByIdAndUpdate(req.params.id, {
         client2data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client2AddedData: true, MajorDataC2, status: "MIAM Part 1-C2"
+        }, Reference, client2AddedData: true, MajorDataC2,availableTimes_C2,status: "MIAM Part 1-C2"
       })
       const updatedCase = await Case.findById(req.params.id);
 

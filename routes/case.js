@@ -421,7 +421,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
-  let Reminders, MIAMDates;
+  let Reminders, MIAMDates ,availableTimes_C1,availableTimes_C2
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -446,6 +446,11 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
 
+        CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
+        CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
+
+        
+
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
@@ -465,7 +470,10 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC2,
           C2invitation,
           Reminders,
-          MIAMDates
+          MIAMDates,
+          availableTimes_C1,
+          availableTimes_C2
+          
 
         }
 
@@ -493,10 +501,13 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
-        console.log(CaseFound.MIAMDates)
+
+        CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
+        CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
+    
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
-        console.log(CaseFound.Reminders)
+        
 
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
 
@@ -515,7 +526,9 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC2,
           C2invitation,
           Reminders,
-          MIAMDates
+          MIAMDates,
+          availableTimes_C1,
+          availableTimes_C2
         }
 
         res.json(CaseResponse)

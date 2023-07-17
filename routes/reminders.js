@@ -135,28 +135,29 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
             const medID = req.user._id;
             const selectedMed = await mediator.findById(medID);
             let medName = `${selectedMed.firstName} ${selectedMed.lastName}`;
-
+            
             const userReminders = selectedMed.Reminders;
-
+            
             const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
             const casesList = await mediator.findById(req.user._id).populate('cases');
             const compName =  mediatorCompanyData.companyId.companyName
-
+            
             const compReminders = mediatorCompanyData.companyId.Reminders;
             const casesReminders = []
-
+            
+           // console.log("👌👌👌",userReminders)
             let Reminders = []
             for (let i = 0; i < compReminders.length; i++) {
                 let reminderObj = {}
-                reminderObj.id = userReminders[i]._id
-                reminderObj.title = userReminders[i].reminderTitle
-                reminderObj.start = userReminders[i].startDate
+                reminderObj.id = compReminders[i]._id
+                reminderObj.title = compReminders[i].reminderTitle
+                reminderObj.start = compReminders[i].startDate
                 reminderObj.creator = "company"
                 reminderObj.companyName = compName
                 Reminders.push(reminderObj)
-
+                
             }
-
+            
             for (let i = 0; i < userReminders.length; i++) {
                 let reminderObj = {}
                 reminderObj.id = userReminders[i]._id
@@ -165,6 +166,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
                 reminderObj.creator = "mediator"
                 reminderObj.mediatorName = medName
                 Reminders.push(reminderObj)
+           //     console.log('😒😒😒😒',Reminders)
 
             }
             for (let i = 0; i < casesList.cases.length; i++) {
