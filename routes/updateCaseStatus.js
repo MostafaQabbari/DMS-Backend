@@ -14,7 +14,7 @@ router.patch("/closeTheCase/:id", authMiddleware, async (req, res) => {
 
 
     try {
-        let{newStatus} = req.body
+      
         let currentCase = await Case.findById(req.params.id);
         if (req.userRole == 'company') {
             let cases = await Company.findById(req.user._id).populate('cases');
@@ -25,13 +25,13 @@ router.patch("/closeTheCase/:id", authMiddleware, async (req, res) => {
                 }
             }
             if (CaseFound) {
-                let caseClosed = req.body.newStatus;
+                let caseClosed = "Closed"
                 let statusRemider = {
                     reminderID: `${currentCase._id}-statusRemider`,
                     reminderTitle: `${currentCase.Reference}-${caseClosed}`,
                     startDate: dateNow()
                 }
-                console.log(caseClosed)
+
                 await Case.findByIdAndUpdate(req.params.id, { status: caseClosed, closed: true ,
                     $set: {'Reminders.statusRemider': statusRemider } })
                 res.json({ res: `Case Status updated to be ${caseClosed}` })
@@ -48,7 +48,7 @@ router.patch("/closeTheCase/:id", authMiddleware, async (req, res) => {
                 }
             }
             if (CaseFound) {
-                let caseClosed = req.body.newStatus;
+                let caseClosed ="Closed";
                 let statusRemider = {
                     reminderID: `${currentCase._id}-statusRemider`,
                     reminderTitle: `${currentCase.Reference}-${caseClosed}`,
@@ -147,8 +147,106 @@ router.patch("/updateCaseStatus/:id", authMiddleware, async (req, res) => {
     }
 
 
-})
+});
 
+router.patch("/converToprivate_C1/:id", authMiddleware, async (req, res) => {
+    let CaseFound;
+    try {
+      
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+         
+                await Case.findByIdAndUpdate(req.params.id, { caseTypeC1:"Private"})
+                res.json({ res: `Case coverted to private funding` })
+
+            } 
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                await Case.findByIdAndUpdate(req.params.id, { caseTypeC1:"Private"})
+                res.json({ res: `Case coverted to private funding` })
+
+            }
+
+        }
+
+        else {
+            res.json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.json(err.message)
+    }
+
+
+
+})
+router.patch("/converToprivate_C2/:id", authMiddleware, async (req, res) => {
+    let CaseFound;
+    try {
+      
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+         
+                await Case.findByIdAndUpdate(req.params.id, { caseTypeC2:"Private"})
+                res.json({ res: `Case coverted to private funding` })
+
+            } 
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                await Case.findByIdAndUpdate(req.params.id, { caseTypeC2:"Private"})
+                res.json({ res: `Case coverted to private funding` })
+
+            }
+
+        }
+
+        else {
+            res.json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.json(err.message)
+    }
+
+
+
+})
 
 
 

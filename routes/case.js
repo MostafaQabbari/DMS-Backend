@@ -285,7 +285,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         }
         else
         {
-          res.json({ "message": "please confirm case type" })
+          res.status(400).json({ "message": "please confirm case type" })
         }
 
       }
