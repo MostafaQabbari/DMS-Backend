@@ -70,7 +70,7 @@ router.get("/company/:id/stats", authMiddleware, async (req, res, next) => {
     const companyName = company.companyName
 
 
-    res.json({
+    res.status(200).json({
       mediatorCount,
       caseCount,
       companyName,
@@ -104,7 +104,7 @@ router.get("/company/:id/stats", authMiddleware, async (req, res, next) => {
     const companyName = company.companyName
 
 
-    res.json({
+    res.status(200).json({
       mediatorCount,
       caseCount,
       companyName,
@@ -140,7 +140,7 @@ router.delete("/company/:id", authMiddleware, async (req, res, next) => {
 
 
 
-    res.json({ message: "Company account and service account deleted successfully" });
+    res.status(200).json({ message: "Company account and service account deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -167,7 +167,7 @@ router.patch("/update-company/:id", authMiddleware, async (req, res, next) => {
     // Update the company data
     const updatedCompany = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
 
-    res.json({ company: updatedCompany });
+    res.status(200).json({ company: updatedCompany });
   } catch (error) {
     next(error);
   }
@@ -192,7 +192,7 @@ router.patch("/update-gmail/:id", authMiddleware, async (req, res) => {
 
   }
   catch (err) {
-    res.json({ err: err.message })
+    res.status(400).json({ err: err.message })
   }
 })
 

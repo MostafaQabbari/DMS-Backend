@@ -136,15 +136,15 @@ router.patch("/passporting_c1/:id", async (req, res) => {
             sendMailMIAM1(companyData, clientData, messageBodyinfo);
             notifyCompany(companyData.email, clientData.clientName)
 
-            res.json({ "message": "Passporting form for C1 has been added" })
+            res.status(200).json({ "message": "Passporting form for C1 has been added" })
 
         }
         else {
-            res.json({ "message": "this from has been applied before" })
+            res.status(400).json({ "message": "this from has been applied before" })
 
         }
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -181,15 +181,15 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
             sendMailMIAM1(companyData, clientData, messageBodyinfo);
             notifyCompany(companyData.email, clientData.clientName)
 
-            res.json({ "message": "LowIncome form for C1 has been added" })
+            res.status(200).json({ "message": "LowIncome form for C1 has been added" })
 
         }
         else {
-            res.json({ "message": "this from has been applied before" })
+            res.status(400).json({ "message": "this from has been applied before" })
 
         }
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -229,15 +229,15 @@ router.patch("/passporting_c2/:id", async (req, res) => {
             sendMailMIAM1(companyData, clientData, messageBodyinfo);
             notifyCompany(companyData.email, clientData.clientName)
 
-            res.json({ "message": "Passporting form for C2 has been added" })
+            res.status(200).json({ "message": "Passporting form for C2 has been added" })
 
         }
         else {
-            res.json({ "message": "this from has been applied before" })
+            res.status(400).json({ "message": "this from has been applied before" })
 
         }
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -273,15 +273,15 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             sendMailMIAM1(companyData, clientData, messageBodyinfo);
             notifyCompany(companyData.email, clientData.clientName)
 
-            res.json({ "message": "Low income form for C2 has been added" })
+            res.status(200).json({ "message": "Low income form for C2 has been added" })
 
         }
         else {
-            res.json({ "message": "this from has been applied before" })
+            res.status(400).json({ "message": "this from has been applied before" })
 
         }
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 

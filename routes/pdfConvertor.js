@@ -42,7 +42,7 @@ router.post('/submit-form', async (req, res) => {
     // await saveToMongoDB(filePath, name, email, message);
 
     // Send a response with the file download link
-    res.json({ downloadLink: `/download/${fileName}` });
+    res.status(200).json({ downloadLink: `/download/${fileName}` });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

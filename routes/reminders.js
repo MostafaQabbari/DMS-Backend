@@ -21,7 +21,7 @@ router.patch('/addRemider', authMiddleware, async (req, res, next) => {
                 $push: { Reminders: { reminderTitle, startDate } }
             })
 
-            res.json({ 'res': "new reminder has been added" })
+            res.status(200).json({ 'res': "new reminder has been added" })
 
         }
 
@@ -33,7 +33,7 @@ router.patch('/addRemider', authMiddleware, async (req, res, next) => {
                 $push: { Reminders: { reminderTitle, startDate } }
             })
 
-            res.json({ 'res': "new reminder has been added" })
+            res.status(200).json({ 'res': "new reminder has been added" })
 
             // const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
             // const compID = mediatorCompanyData.companyId._id;
@@ -43,10 +43,10 @@ router.patch('/addRemider', authMiddleware, async (req, res, next) => {
         }
 
         else {
-            res.json({ 'message': "error in the role of token" })
+            res.status(400).json({ 'message': "error in the role of token" })
         }
     } catch (err) {
-        res.json({ message: err.message })
+        res.status(400).json({ message: err.message })
     }
 
 });
@@ -126,7 +126,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
 
 
-            res.json(Reminders)
+            res.status(200).json(Reminders)
 
         }
 
@@ -185,14 +185,14 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
 
 
-            res.json(Reminders)
+            res.status(200).json(Reminders)
         }
 
         else {
-            res.json({ 'message': "error in the role of token" })
+            res.status(400).json({ 'message': "error in the role of token" })
         }
     } catch (err) {
-        res.json({ message: err.message })
+        res.status(400).json({ message: err.message })
     }
 
 });
@@ -208,9 +208,9 @@ router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
                 obj.reminderTitle = reminderTitle;
                 obj.startDate = startDate;
                 selectedComp.save();
-                res.json({ 'res': "reminder has been updated" })
+                res.status(200).json({ 'res': "reminder has been updated" })
             } else {
-                res.json({ 'res': "you don't have access on this reminder" })
+                res.status(400).json({ 'res': "you don't have access on this reminder" })
             }
         }
 
@@ -223,18 +223,18 @@ router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
                 obj.reminderTitle = reminderTitle;
                 obj.startDate = startDate;
                 selectedMed.save();
-                res.json({ 'res': "reminder has been updated" })
+                res.status(200).json({ 'res': "reminder has been updated" })
             } else {
-                res.json({ 'res': "you don't have access on this reminder" })
+                res.status(400).json({ 'res': "you don't have access on this reminder" })
             }
 
         }
 
         else {
-            res.json({ 'message': "error in the role of token" })
+            res.status(400).json({ 'message': "error in the role of token" })
         }
     } catch (err) {
-        res.json({ message: err.message })
+        res.status(400).json({ message: err.message })
     }
 
 });
@@ -252,9 +252,9 @@ router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => 
             if (obj) {
                 selectedComp.Reminders.splice(selectedComp.Reminders.indexOf(obj), 1);
                 selectedComp.save();
-                res.json({ 'res': "you have deleted this reminder" })
+                res.status(200).json({ 'res': "you have deleted this reminder" })
             } else {
-                res.json({ 'res': "you don't have access on this reminder" })
+                res.status(400).json({ 'res': "you don't have access on this reminder" })
             }
 
         }
@@ -267,18 +267,18 @@ router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => 
             if (obj) {
                 selectedMed.Reminders.splice(selectedMed.Reminders.indexOf(obj), 1);
                 selectedMed.save();
-                res.json({ 'res': "you have deleted this reminder" })
+                res.status(200).json({ 'res': "you have deleted this reminder" })
             } else {
-                res.json({ 'res': "you don't have access on this reminder" })
+                res.status(400).json({ 'res': "you don't have access on this reminder" })
             }
 
         }
 
         else {
-            res.json({ 'message': "error in the role of token" })
+            res.status(400).json({ 'message': "error in the role of token" })
         }
     } catch (err) {
-        res.json({ message: err.message })
+        res.status(400).json({ message: err.message })
     }
 
 });

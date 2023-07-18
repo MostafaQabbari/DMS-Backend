@@ -33,7 +33,7 @@ router.post('/getDataFromCSV', (req, res) => {
 
     })
     .on('end', () => {
-      res.json(results);
+      res.status(200).json(results);
     })
     .on('error', (err) => {
       console.error('Error reading CSV file:', err);
@@ -80,10 +80,10 @@ router.post('/getDataFromAirtable', async (req, res) => {
 
 
 
-    res.json(fullcase);
+    res.status(200).json(fullcase);
   } catch (err) {
     console.error('Error:', err.message);
-    res.json({ error: 'An error occurred' });
+    res.status(400).json({ error: 'An error occurred' });
   }
 });
 
@@ -184,7 +184,7 @@ router.post('/addDummyCases', authMiddleware, async (req, res) => {
   // })
 
 
-  res.json(med.cases)
+  res.status(200).json(med.cases)
 })
 
 

@@ -61,7 +61,7 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
    
      messages.sort((a, b) => new Date(a.time) - new Date(b.time));
     // return messages;
-   res.json(messages)
+   res.status(200).json(messages)
  
    })
    
@@ -134,7 +134,7 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
         }
       }
       if(!CaseFoundID){
-        res.json("You don't access on this case")
+        res.status(400).json("You don't access on this case")
       }
       else{
       let CaseFound=  await Case.findById(CaseFoundID);
@@ -152,12 +152,12 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
             }
              else
             {
-              res.json("please make sure about the c1 phone number  ")
+              res.status(400).json("please make sure about the c1 phone number  ")
             }
             
       }
       else{
-        res.json("there is no phone number for c1 ")
+        res.status(400).json("there is no phone number for c1 ")
       }
     
       }
@@ -179,7 +179,7 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
           }
         }
         if(!CaseFoundID){
-          res.json("You don't access on this case")
+          res.status(400).json("You don't access on this case")
         }
         else{
         let CaseFound=  await Case.findById(CaseFoundID);
@@ -197,12 +197,12 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
               }
                else
               {
-                res.json("please make sure about the c1 phone number  ")
+                res.status(400).json("please make sure about the c1 phone number  ")
               }
               
         }
         else{
-          res.json("there is no phone number for c1 ")
+          res.status(400).json("there is no phone number for c1 ")
         }
       
         }
@@ -211,11 +211,11 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
       }
     else
     {
-      res.json("something wrong with auth ... ")
+      res.status(400).json("something wrong with auth ... ")
     }
 
   }catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 
@@ -240,7 +240,7 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
         }
       }
       if(!CaseFoundID){
-        res.json("You don't access on this case")
+        res.status(400).json("You don't access on this case")
       }
       else{
       let CaseFound=  await Case.findById(CaseFoundID);
@@ -258,12 +258,12 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
             }
              else
             {
-              res.json("please make sure about the c2 phone number  ")
+              res.status(400).json("please make sure about the c2 phone number  ")
             }
             
       }
       else{
-        res.json("there is no phone number for c2 ")
+        res.status(400).json("there is no phone number for c2 ")
       }
     
       }
@@ -285,7 +285,7 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
           }
         }
         if(!CaseFoundID){
-          res.json("You don't access on this case")
+          res.status(400).json("You don't access on this case")
         }
         else{
         let CaseFound=  await Case.findById(CaseFoundID);
@@ -303,12 +303,12 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
               }
                else
               {
-                res.json("please make sure about the c2 phone number  ")
+                res.status(400).json("please make sure about the c2 phone number  ")
               }
               
         }
         else{
-          res.json("there is no phone number for c2 ")
+          res.status(400).json("there is no phone number for c2 ")
         }
       
         }
@@ -317,11 +317,11 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
       }
     else
     {
-      res.json("something wrong with auth ... ")
+      res.status(400).json("something wrong with auth ... ")
     }
 
   }catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

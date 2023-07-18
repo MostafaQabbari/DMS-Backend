@@ -290,10 +290,10 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       }
       else {
-        res.json({ "message": "please add the mediator first" })
+        res.status(400).json({ "message": "please add the mediator first" })
       }
 
-      res.json({ caseID: newCaseID })
+      res.status(200).json({ caseID: newCaseID })
     }
 
 //     else if (req.userRole == 'mediator') {
@@ -352,10 +352,10 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 //     }
 
     else {
-      res.json({ 'message': "error in the role of token" })
+      res.status(400).json({ 'message': "error in the role of token" })
     }
   } catch (err) {
-    res.json({ message: err.message })
+    res.status(400).json({ message: err.message })
   }
 
 });
@@ -393,7 +393,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       }
 
 
-      res.json(casesList)
+      res.status(200).json(casesList)
 
     }
     else if (req.userRole == "mediator") {
@@ -415,14 +415,14 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       }
 
 
-      res.json(casesList)
+      res.status(200).json(casesList)
 
     }
     else {
-      res.json("error with auth role ")
+      res.status(400).json("error with auth role ")
     }
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 
@@ -495,10 +495,10 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
         }
 
-        res.json(CaseResponse)
+        res.status(200).json(CaseResponse)
       }
       else {
-        res.json(" you don't have the access on this case ")
+        res.status(400).json(" you don't have the access on this case ")
       }
 
     }
@@ -554,18 +554,18 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           caseTypeC2
         }
 
-        res.json(CaseResponse)
+        res.status(200).json(CaseResponse)
       }
       else {
-        res.json(" you don't have the access on this case ")
+        res.status(400).json(" you don't have the access on this case ")
       }
     }
     else {
-      res.json("err with user Auth")
+      res.status(400).json("err with user Auth")
     }
 
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

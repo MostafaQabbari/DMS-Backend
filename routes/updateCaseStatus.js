@@ -34,7 +34,7 @@ router.patch("/closeTheCase/:id", authMiddleware, async (req, res) => {
 
                 await Case.findByIdAndUpdate(req.params.id, { status: caseClosed, closed: true ,
                     $set: {'Reminders.statusRemider': statusRemider } })
-                res.json({ res: `Case Status updated to be ${caseClosed}` })
+                res.status(200).json({ res: `Case Status updated to be ${caseClosed}` })
 
             } 
 
@@ -56,20 +56,20 @@ router.patch("/closeTheCase/:id", authMiddleware, async (req, res) => {
                 }
                 await Case.findByIdAndUpdate(req.params.id, { status: caseClosed, closed: true ,  
                     $set: {'Reminders.statusRemider': statusRemider } })
-                res.json({ res: `Case Status updated to be ${caseClosed}` })
+                res.status(200).json({ res: `Case Status updated to be ${caseClosed}` })
 
             }
 
         }
 
         else {
-            res.json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
         }
 
 
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -106,7 +106,7 @@ router.patch("/updateCaseStatus/:id", authMiddleware, async (req, res) => {
 
                     }
                 })
-                res.json({ res: `Case Status updated to be ${newStatus}` })
+                res.status(200).json({ res: `Case Status updated to be ${newStatus}` })
 
             }
 
@@ -130,20 +130,20 @@ router.patch("/updateCaseStatus/:id", authMiddleware, async (req, res) => {
                 await Case.findByIdAndUpdate(req.params.id, { status: newStatus, closed: false ,
                    $set: {'Reminders.statusRemider': statusRemider }
                  })
-                res.json({ res: `Case Status updated to be ${newStatus}` })
+                res.status(200).json({ res: `Case Status updated to be ${newStatus}` })
 
             }
 
         }
 
         else {
-            res.json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
         }
 
 
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -164,7 +164,7 @@ router.patch("/converToprivate_C1/:id", authMiddleware, async (req, res) => {
             if (CaseFound) {
          
                 await Case.findByIdAndUpdate(req.params.id, { caseTypeC1:"Private"})
-                res.json({ res: `Case coverted to private funding` })
+                res.status(200).json({ res: `Case coverted to private funding` })
 
             } 
 
@@ -179,20 +179,20 @@ router.patch("/converToprivate_C1/:id", authMiddleware, async (req, res) => {
             }
             if (CaseFound) {
                 await Case.findByIdAndUpdate(req.params.id, { caseTypeC1:"Private"})
-                res.json({ res: `Case coverted to private funding` })
+                res.status(200).json({ res: `Case coverted to private funding` })
 
             }
 
         }
 
         else {
-            res.json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
         }
 
 
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 
@@ -213,7 +213,7 @@ router.patch("/converToprivate_C2/:id", authMiddleware, async (req, res) => {
             if (CaseFound) {
          
                 await Case.findByIdAndUpdate(req.params.id, { caseTypeC2:"Private"})
-                res.json({ res: `Case coverted to private funding` })
+                res.status(200).json({ res: `Case coverted to private funding` })
 
             } 
 
@@ -228,20 +228,20 @@ router.patch("/converToprivate_C2/:id", authMiddleware, async (req, res) => {
             }
             if (CaseFound) {
                 await Case.findByIdAndUpdate(req.params.id, { caseTypeC2:"Private"})
-                res.json({ res: `Case coverted to private funding` })
+                res.status(200).json({ res: `Case coverted to private funding` })
 
             }
 
         }
 
         else {
-            res.json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
         }
 
 
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 

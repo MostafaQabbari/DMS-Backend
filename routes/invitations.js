@@ -21,7 +21,7 @@ router.patch('/sendInvite_C1', authMiddleware, async (req, res, next) => {
                 $push: { Reminders: { reminderTitle, startDate } }
             })
 
-            res.json({ 'res': "new reminder has been added" })
+            res.status(200).json({ 'res': "new reminder has been added" })
 
         }
 
@@ -33,7 +33,7 @@ router.patch('/sendInvite_C1', authMiddleware, async (req, res, next) => {
                 $push: { Reminders: { reminderTitle, startDate } }
             })
 
-            res.json({ 'res': "new reminder has been added" })
+            res.status(200).json({ 'res': "new reminder has been added" })
 
             // const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
             // const compID = mediatorCompanyData.companyId._id;
@@ -43,10 +43,10 @@ router.patch('/sendInvite_C1', authMiddleware, async (req, res, next) => {
         }
 
         else {
-            res.json({ 'message': "error in the role of token" })
+            res.status(400).json({ 'message': "error in the role of token" })
         }
     } catch (err) {
-        res.json({ message: err.message })
+        res.status(400).json({ message: err.message })
     }
 
 });

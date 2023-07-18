@@ -111,15 +111,15 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
 
       sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 
-      res.json({ "message": "M1_C2 has been added " })
+      res.status(200).json({ "message": "M1_C2 has been added " })
 
     }
     else {
-      res.json({ "message": "this from has been applied before" })
+      res.status(400).json({ "message": "this from has been applied before" })
 
     }
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

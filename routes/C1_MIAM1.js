@@ -136,15 +136,15 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
       //console.log("client_data_fromDB", parsedClientData)
-      res.json({ "message": "M1_C1 has been added" })
+      res.status(200).json({ "message": "M1_C1 has been added" })
 
     }
     else {
-      res.json({ "message": "this from has been applied before" })
+      res.status(400).json({ "message": "this from has been applied before" })
 
     }
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

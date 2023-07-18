@@ -386,7 +386,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
      
       }
       else {
-        res.json({ "message": "something missed about case type" })
+        res.status(400).json({ "message": "something missed about case type" })
       }
 
 
@@ -400,10 +400,10 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
 
 
-      res.json({ "res": "C2 invitation form has been applies" })
+      res.status(200).json({ "res": "C2 invitation form has been applies" })
     }
     else {
-      res.json({ "res": "this case has been applied before or not suitable please check it out" })
+      res.status(400).json({ "res": "this case has been applied before or not suitable please check it out" })
     }
 
 
@@ -415,7 +415,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
 
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

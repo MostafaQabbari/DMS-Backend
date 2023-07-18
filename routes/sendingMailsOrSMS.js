@@ -323,10 +323,10 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
         messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
         sendSMS_M1C1(twillioInfo, clientNumber, messageBodyData)
 
-        res.json({ message: "MIAM 1 link has been sent " })
+        res.status(200).json({ message: "MIAM 1 link has been sent " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
@@ -354,10 +354,10 @@ router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
 
         sendMail_M1C1(companyData, clientData, messageBodyinfo)
 
-        res.json({ message: "MIAM 1 link has been sent " })
+        res.status(200).json({ message: "MIAM 1 link has been sent " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
@@ -397,16 +397,16 @@ router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${caseID}`;
             sendMail_C2Invitation(caseDetails, mediationDetails, messageInfo)
 
-            res.json({ message: "C2 Invitation link has been sent " })
+            res.status(200).json({ message: "C2 Invitation link has been sent " })
 
 
         }
         else {
-            res.json({ message: "please enter valid mail to send to ... " })
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 
@@ -440,16 +440,16 @@ router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${caseID}`;
             sendMail_C2Invitation(caseDetails, mediationDetails, messageInfo)
 
-            res.json({ message: "C2 Invitation link has been sent " })
+            res.status(200).json({ message: "C2 Invitation link has been sent " })
 
 
         }
         else {
-            res.json({ message: "please enter valid mail to send to ... " })
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 
@@ -490,10 +490,10 @@ router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, 
 
         sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
 
-        res.json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
+        res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
@@ -531,14 +531,14 @@ router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async
     
             sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
     
-            res.json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
+            res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
         }else
         {
-            res.json({ message: "Invalid Number to recieve the invitation by SMS" })
+            res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
@@ -561,16 +561,16 @@ router.post("/Resend_MailC2_M1", authMiddleware, async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
             sendMail_C2_M1(caseDetails, mediationDetails, messageInfo)
 
-            res.json({ message: "C2_M1 link has been sent " })
+            res.status(200).json({ message: "C2_M1 link has been sent " })
 
 
         }
         else {
-            res.json({ message: "please enter valid mail to send to ... " })
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 
@@ -611,14 +611,14 @@ router.post('/Resend_SMSC2_M1', authMiddleware, decryptTwillioData, async (req, 
     
             sendSMS_C2_M1(twillioInfo, clientNumber, messageBodyData)
     
-            res.json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
+            res.status(200).json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
         }else
         {
-            res.json({ message: "Invalid Number to recieve the invitation by SMS" })
+            res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });

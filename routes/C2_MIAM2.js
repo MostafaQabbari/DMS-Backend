@@ -133,10 +133,10 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                 })
            
 
-                res.json({ "message": " MIAM2 has been added and Inviation sent to C2" })
+                res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })
             }
             else {
-                res.json({ "message": "this MIAM2 has been added before" })
+                res.status(400).json({ "message": "this MIAM2 has been added before" })
             }
 
         } else {
@@ -163,10 +163,10 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                     MIAM2AddedData: true,
                     status: "Not suitable for mediation" ,Reference
                 })
-                res.json({ "message": " MIAM2 has been added with Not Suitable status " })
+                res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {
-                res.json({ "message": "this MIAM2 has been added before" })
+                res.status(400).json({ "message": "this MIAM2 has been added before" })
             }
 
         }
@@ -178,7 +178,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
     }
     catch (Err) {
-        res.json({ "err": Err.message })
+        res.status(400).json({ "err": Err.message })
     }
 
 });
