@@ -320,7 +320,7 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
         clientNumber = "+44 7476 544877"
         messageBodyData.companyName = compData.connectionData.companyID.companyName
         messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
-        messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
+        messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
         sendSMS_M1C1(twillioInfo, clientNumber, messageBodyData)
 
         res.json({ message: "MIAM 1 link has been sent " })
@@ -350,7 +350,7 @@ router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
         // console.log(clientData.email)
         companyData.companyName = compData.connectionData.companyID.companyName
         companyData.email = compData.connectionData.companyID.email
-        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
 
         sendMail_M1C1(companyData, clientData, messageBodyinfo)
 
@@ -558,7 +558,7 @@ router.post("/Resend_MailC2_M1", authMiddleware, async (req, res) => {
             mediationDetails.companyName = compData.connectionData.companyID.companyName
             const medData = await Case.findById(caseID).populate('connectionData.mediatorID');
             mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
-            messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.C2_M1}/${caseID}`;
+            messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
             sendMail_C2_M1(caseDetails, mediationDetails, messageInfo)
 
             res.json({ message: "C2_M1 link has been sent " })
@@ -605,7 +605,7 @@ router.post('/Resend_SMSC2_M1', authMiddleware, decryptTwillioData, async (req, 
     
             messageBodyData.companyName = compData.connectionData.companyID.companyName
             messageBodyData.clientName = `${MajorDataC2.fName} ${MajorDataC2.sName}`;
-            messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.C2_M1}/${caseID}`;
+            messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${caseID}`;
     
     
     

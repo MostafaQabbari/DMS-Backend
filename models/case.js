@@ -14,7 +14,8 @@ const caseSchema = new Schema({
     phoneNumber: { type: String },
     dateOfMAIM: { type: Date },
     location: { type: String },
-    caseType:{type:String , required:true}    //private , LegalAid , passporting , lowIncome
+    caseType:{type:String , required:true}  ,   //private , LegalAid , passporting , lowIncome
+    legalAidType:{type:String}
   },
   connectionData: {
     mediatorID: {
@@ -26,6 +27,9 @@ const caseSchema = new Schema({
       ref: "company"
     }
   },
+
+  caseTypeC1:{type:String},
+  caseTypeC2:{type:String},
 
 
   passporting_C1:{type: String},
@@ -44,6 +48,9 @@ const caseSchema = new Schema({
 
   C2invitation: { type: String },
   C2invitationApplied: { type: Boolean, default: false },
+  C2Agreement: { type: String },
+  C2AgreementApplied: { type: Boolean, default: false },
+
   
   availableTimes_C1:{
     whatDaysCanNotAttend:{types:String},
