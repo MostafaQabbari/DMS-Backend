@@ -269,7 +269,7 @@ router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => 
                 selectedMed.save();
                 res.status(200).json({ 'res': "you have deleted this reminder" })
             } else {
-                res.status(400).json({ 'res': "you don't have access on this reminder" })
+                res.status(200).json({ 'res': "you don't have access on this reminder" })
             }
 
         }
