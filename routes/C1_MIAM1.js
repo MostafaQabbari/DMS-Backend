@@ -107,7 +107,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     // GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
     
     //!currentCase.client1AddedData
-    if (true) {
+    if (!currentCase.client1AddedData) {
 
 
       let statusRemider = {
@@ -130,7 +130,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
       clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
       clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C1/${updatedCase._id}`;
 
       sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 

@@ -269,18 +269,18 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         if(req.body.caseType=='private')
         {
           messageBodyinfo.formType= "MIAM 1"
-          messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
           sendMailMIAM1(companyData, clientData, messageBodyinfo)
 
         }
         else if(req.body.legalAidType=='lowIncome' && req.body.caseType=='LegalAid'){
           messageBodyinfo.formType="low Income / No Income"
-          messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
           sendMailLowIncome(companyData, clientData, messageBodyinfo)
         }
         else if(req.body.legalAidType=='passporting' && req.body.caseType=='LegalAid'){
           messageBodyinfo.formType= 'Passporting'
-          messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C1/${newCase[0]._id}`;
           sendMailPassporting(companyData, clientData, messageBodyinfo)
         }
         else

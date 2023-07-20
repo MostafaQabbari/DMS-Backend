@@ -87,7 +87,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
     mediatorData.email = medEmail
 
     //!currentCase.client2AddedData
-    if (true) {
+    if (!currentCase.client2AddedData) {
 
 
       let statusRemider = {
@@ -107,7 +107,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
 
       clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
       clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C2/${updatedCase._id}`;
 
       sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 

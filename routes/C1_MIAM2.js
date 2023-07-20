@@ -124,7 +124,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
             const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
             //!currentCase.MIAM2AddedData
-            if (true) {
+            if (!currentCase.MIAM2AddedData) {
 
                 await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
@@ -164,7 +164,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
 
             const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
             //!currentCase.MIAM2AddedData
-            if (true) {
+            if (!currentCase.MIAM2AddedData) {
 
                 await Case.findByIdAndUpdate(req.params.id, {
                     $set: {

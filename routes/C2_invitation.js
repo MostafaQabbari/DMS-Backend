@@ -308,7 +308,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     }
 
     //currentCase.status == "MIAM Part 2-C2" && !currentCase.C2invitationApplied
-    if (true) {
+    if (!currentCase.C2invitationApplied) {
 
       let MajorDataC2 = {
         fName: C2invitation.firstName,
@@ -348,7 +348,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       if (req.body.privateOrLegailAid == "Private") {
 
         messageBodyinfo.formType = "MIAM 1"
-        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${updatedCase._id}`;
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
         sendMailMIAM1(companyData, clientData, messageBodyinfo);
       }
 
@@ -360,7 +360,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       ) {
 
         messageBodyinfo.formType = "low Income / No Income"
-        messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/${updatedCase._id}`;
+        messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C2/${updatedCase._id}`;
         sendMailLowIncome(companyData, clientData, messageBodyinfo);
       }
       else if (
@@ -370,7 +370,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       ) {
 
         messageBodyinfo.formType = "Passporting"
-        messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/${updatedCase._id}`;
+        messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C2/${updatedCase._id}`;
         sendMailPassporting(companyData, clientData, messageBodyinfo);
       }
       else if (
