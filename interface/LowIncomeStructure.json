@@ -1,0 +1,101 @@
+{
+  "pleaseConfirmThatYouHaveWatchedThisVideoAndYouHaveTheRequiredEvidence": "",
+  "evidence": {
+    "evidence(1)": ""
+  },
+  "personalDetails": {
+    "firstName": "",
+    "surname": "",
+    "isSurnameAtBirthDifferent": "",
+    "differentSurnameAtBirth": "",
+    "dateOfBirth": "",
+    "address": {
+      "street": "",
+      "city": "",
+      "postcode": "",
+      "country": ""
+    },
+    "nationalInsuranceNumber": "",
+    "telephoneNumber": "",
+    "emailAddress": "",
+    "findDMS": "",
+    "maritalStatus": "",
+    "IsYourCurrentPartnerListedOnTheSameBenefitsClaim": "Yes"
+  },
+  "currentPartnerEvidence": {
+    "evidence(1)": ""
+  },
+  "case": {
+    "caseAbout": "",
+    "familyHomeAndSavingsDiscussion": "",
+    "nameInDeedsProperty": "",
+    "lastMonthMortgagePayment": "",
+    "accommodationType": "",
+    "lastMonthRentPay": ""
+  },
+  "properties": [
+    {
+      "property One": {
+        "propertyWorth": "",
+        "outstandingMortgageProperty": "",
+        "isPropertyInJointNamesWithYourEx-partner": "",
+        "propertyShare": "",
+        "isPropertyDiscussion": "",
+        "isSecondProperty": ""
+      }
+    },
+    {
+      "property Two": {
+        "propertyWorth": "",
+        "outstandingMortgageProperty": "",
+        "isPropertyInJointNamesWithYourEx-partner": "",
+        "propertyShare": "",
+        "isPropertyDiscussion": "",
+        "isThirdProperty": ""
+      }
+    },
+    {
+      "property Three": {
+        "propertyWorth": "",
+        "outstandingMortgageProperty": "",
+        "isPropertyInJointNamesWithYourEx-partner": "",
+        "propertyShare": "",
+        "isPropertyDiscussion": ""
+      }
+    }
+  ],
+  "financialDetails": {
+    "savingsAmount": "",
+    "investmentsAmount": "",
+    "valuableItemsWorth": "",
+    "otherCapitalValue": ""
+  },
+  "otherDetails": {
+    "childrenLivingWithYouPermanently": "",
+    "childrenUnder15": "",
+    "childrenOver15": "",
+    "financiallyResponsibleForYourCurrentPartner": "",
+    "childMaintenancePayment": "",
+    "lastMonthMaintenancePayment": "",
+    "lastMonthChildCarePayment": "",
+    "criminalLegalAid": "",
+    "criminalLegalAidPerMonthPayment": ""
+  },
+  "partnerFinancialAssets": {
+    "savingsAmount": "",
+    "investmentsAmount": "",
+    "valuableItemsWorth": "",
+    "otherCapitalValue": ""
+  },
+  "previousRelationshipDetails": {
+    "otherPersonSurname": "",
+    "isMarriedTo": "",
+    "beenInMediationBefore": "",
+    "mediationType": ""
+  },
+  "clientDeclaration": {
+    "IUnderstandThatTheLegalAidAgencyMayCheckWhetherTheInformationAndDocumentationThatIProvideIsGenuineAndCorrect": "Yes",
+    "IUnderstandThatTheInformationObtainedWillBeUsedToDecideMyApplicationForLegalAidAndForRelatedPurposes": "Yes",
+    "IUnderstandThatProvidingInformationOrDocumentationThatIsNotGenuineAndOrCorrectWillResultInMyApplicationOrSubsequentApplicationsBeingRefusedAndMayLeadToMyProsecutionForACriminalOffence": "Yes"
+  }
+}

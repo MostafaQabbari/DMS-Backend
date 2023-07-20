@@ -5,54 +5,144 @@ const Case = require('../models/case');
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
 const nodemailer = require("nodemailer")
-const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
-const dateNow = require("../global/dateNow");
+
+const MailInviationToMediation = function (meetingDetails, clientDetials, companyDetails) {
+    /*
+
+    meetingDetails.dates
+    meetingDetails.location
+
+    clientDetials.email,
+    clientDetials.clientName
+
+    companyDetails.companyName
+     companyDetails.email
+    
+    */
+    let datesList = '';
+    for (const date of meetingDetails.dates) {
+        datesList += `<li>${date}</li>`;
+    }
+
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        starttls: {
+            enable: true
+        },
+        starttls: {
+            enable: true
+        },
+
+        secureConnection: false,
+
+        auth: {
+            user: config.companyEmail,
+            pass: config.appPassWord,
+        },
+
+    })
 
 
+    let info = transporter.sendMail({
+        from: config.companyEmail,
+        to: clientDetials.email,
+        subject: `MIAM Invitation`,
+        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+         <h1>Dear ${clientDetials.clientName}  </h1>
+        <p> We love to invite you to the meeting of your MIAM with our mediator by ${meetingDetails.location}</p>
+        <p>The following dates and times are available for your MIAM meeting</p>
+     
+        
+        <ul>${datesList}</ul>
+     
+        <h3>Direct Mediation Services</h3>
+        <h4>${companyDetails.companyName}</h4>
+        <h4>${companyDetails.email}</h4>
+         </div>`
 
-router.post("/MIAM1_Meeting_C1/:id", async (req, res) => {
 
+    });
+
+
+    transporter.sendMail(info, (error, info) => {
+        if (error) {
+            console.log('Error occurred while sending email:', error.message);
+
+        } else {
+            console.log('Email sent successfully:', info.messageId);
+        }
+    });
+
+
+}
+
+
+router.post("/MIAM1_Meeting_C1/:id", authMiddleware, async (req, res) => {
+    /*
+
+    {
+        dates:["",""],
+        location:""
+    }
+      
+
+    meetingDetails.dates
+    meetingDetails.location
+
+    clientDetials.email,
+    clientDetials.clientName
+
+    companyDetails.companyName
+     companyDetails.email
+    
+    
+    */
 
     try {
+        let meetingDetails={}, clientDetials={}, companyDetails={} ;
 
-        let currentCase = await Case.findById(req.params.id);
-        let lowIncome_C2 = req.body
-        const StringfyData = JSON.stringify(lowIncome_C2);
+        if (req.userRole == "company") {
 
-        if (!currentCase.lowIncome_C2) {
+            let cases = await Company.findById(req.user._id).populate('cases');
 
-            await Case.findByIdAndUpdate(req.params.id, {
-                lowIncome_C2: StringfyData
-            })
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
 
-            let companyData={} , clientData={},messageBodyinfo={}
-   
-            const currentComp = await Case.findById(currentCase._id).populate('connectionData.companyID');
-             companyData.email = currentComp.connectionData.companyID.email;
-             companyData.companyName = currentComp.connectionData.companyID.companyName;
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
 
 
-            const updatedCase = await Case.findById(req.params.id);
-            clientData.clientName = `${updatedCase.MajorDataC2.fName} ${updatedCase.MajorDataC2.sName}`
-            clientData.email = updatedCase.MajorDataC2.mail
+                meetingDetails.dates =req.body.dates
+                meetingDetails.location =req.body.location
 
-            messageBodyinfo.formType = "MIAM 1"
-            messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${req.params.id}`;
-            sendMailMIAM1(companyData, clientData, messageBodyinfo);
-            notifyCompany(companyData.email, clientData.clientName)
+                clientDetials.clientName=`${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+               // clientDetials.email = 'abdo.samir.7719@gmail.com'
+                clientDetials.email=CaseFound.MajorDataC1.mail
 
-            res.json({ "message": "Low income form for C2 has been added" })
+                companyDetails.companyName =req.user.companyName
+                companyDetails.email = req.user.email
+
+
+                MailInviationToMediation(meetingDetails, clientDetials, companyDetails)
+
+                res.status(200).json({'meesage':"Invitation Mail has been sent"})
+            }
+            else {
+                res.status(400).json(" you don't have the access on this case ")
+            }
 
         }
         else {
-            res.json({ "message": "this from has been applied before" })
-
+            res.status(400).json("err with user Auth")
         }
-    } catch (err) {
-        res.json(err.message)
-    }
 
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
 
 });
 
