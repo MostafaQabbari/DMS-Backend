@@ -30,8 +30,6 @@ const caseSchema = new Schema({
 
   caseTypeC1:{type:String},
   caseTypeC2:{type:String},
-
-
   passporting_C1:{type: String},
   lowIncome_C1:{type: String},
   client1data: { type: String },
@@ -93,14 +91,6 @@ const caseSchema = new Schema({
       startDate: { type: String }
     }
   },
-
-
-
-
-
-
-
-
 
 
 
