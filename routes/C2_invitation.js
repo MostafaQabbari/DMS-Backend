@@ -241,7 +241,7 @@ const confirmationAppliedMail = function (companyData, clientData) {
 
 }
 
-const notifyMediator = function (companyData, caseData) {
+const notifyCompany = function (companyData, caseData) {
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -399,7 +399,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       mediatorData.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
       mediatorData.MedMail = medEmail
       caseData.caseReference = updatedCase.Reference
-      notifyMediator(companyData, caseData)
+      notifyCompany(companyData, caseData)
 
 
 
