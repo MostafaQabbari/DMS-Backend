@@ -219,7 +219,7 @@ const confirmationAppliedMail = function (companyData, clientData) {
     html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you invitation form , but still we need to get more details about your funding process , 
-    please make sure to follow the redirect link </p>
+    please make sure to follow the redirect link to understand the process and contact us  </p>
     
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
@@ -241,7 +241,7 @@ const confirmationAppliedMail = function (companyData, clientData) {
 
 }
 
-const notifyMediator = function (mediatorData, caseData) {
+const notifyMediator = function (companyData, caseData) {
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -267,6 +267,9 @@ const notifyMediator = function (mediatorData, caseData) {
      mediatorData.MedMail
     mediationDetails.caseReference
 
+
+      companyData ={companyName , email}
+
          
   }
   */
@@ -274,11 +277,11 @@ const notifyMediator = function (mediatorData, caseData) {
 
   let info = transporter.sendMail({
     from: config.companyEmail,
-    to: mediatorData.MedMail,
+    to: companyData.email,
     subject: `C2 Invitation applied for  ${caseData.caseReference} `,
     html: `<body>
       <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-      <h1>Hello ${mediatorData.medName}  </h1>
+      <h1>Hello ${companyData.companyName}  </h1>
       <h3>We love to inform you that C2_Invitation of ${caseData.caseReference} case have been applied</h3>
       <p> Best Regards </p>
       <p>DMS's Team </p> 
@@ -345,7 +348,8 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       // mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
 
 
-      if (req.body.privateOrLegailAid == "Private") {
+      if (req.body.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No")
+       {
 
         messageBodyinfo.formType = "MIAM 1"
         messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
@@ -353,10 +357,10 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       }
 
       else if (
-        req.body.privateOrLegailAid == "Legal Aid" &&
-        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
-        req.body.specificBenefits == "No" &&
-        req.body.ConfirmationLegalAidIfEntitled == "No"
+        req.body.InvitationAccepted.privateOrLegal == "Legal Aid" &&
+        req.body.InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
+        req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "No" &&
+        req.body.InvitationAccepted.isEntitledToLegalAid == "Yes"
       ) {
 
         messageBodyinfo.formType = "low Income / No Income"
@@ -364,9 +368,9 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         sendMailLowIncome(companyData, clientData, messageBodyinfo);
       }
       else if (
-        req.body.privateOrLegailAid == "Legal Aid" &&
-        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
-        req.body.specificBenefits == "Yes"
+        req.body.InvitationAccepted.privateOrLegal == "Legal Aid" &&
+        req.body. InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
+        req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "Yes"
       ) {
 
         messageBodyinfo.formType = "Passporting"
@@ -374,11 +378,11 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         sendMailPassporting(companyData, clientData, messageBodyinfo);
       }
       else if (
-        req.body.privateOrLegailAid == "Legal Aid" &&
-        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
-        req.body.specificBenefits == "No" &&
-        req.body.entitledToLegalAid=="No" &&
-        req.body.ConfirmationLegalAidIfEntitled == "No"
+        req.body.InvitationAccepted.privateOrLegal == "Legal Aid" &&
+        req.body. InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
+        req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "No" &&
+        req.body.InvitationAccepted.isEntitledToLegalAid=="Yes" &&
+        req.body. InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid == "Yes"
       ) {
 
   
@@ -395,7 +399,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       mediatorData.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
       mediatorData.MedMail = medEmail
       caseData.caseReference = updatedCase.Reference
-      notifyMediator(mediatorData, caseData)
+      notifyMediator(companyData, caseData)
 
 
 
