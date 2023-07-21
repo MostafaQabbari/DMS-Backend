@@ -348,7 +348,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       // mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
 
 
-      if (req.body.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No")
+      if (req.body.InvitationAccepted.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No")
        {
 
         messageBodyinfo.formType = "MIAM 1"
