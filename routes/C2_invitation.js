@@ -313,7 +313,9 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     }
 
     //currentCase.status == "MIAM Part 2-C2" && !currentCase.C2invitationApplied
-    if (!currentCase.C2invitationApplied) {
+
+    //!currentCase.C2invitationApplied
+    if (true) {
 
       let MajorDataC2 = {
         fName: C2invitation.InvitationAnswer.firstName,
