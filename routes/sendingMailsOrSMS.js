@@ -490,7 +490,7 @@ router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
 
 
 })
-router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
+router.post("/Resend_MailC2Invitaion/:id", authMiddleware, async (req, res) => {
     /*{
                caseDetails.C2mail,
                caseDetails.C2name
@@ -503,7 +503,7 @@ router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
         }
         */
     try {
-        const { caseID } = req.body;
+        const  caseID  = req.params.id;
         const currentCase = await Case.findById(caseID);
         let caseDetails = {}, mediationDetails = {}, messageInfo = {};
         caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
@@ -575,7 +575,7 @@ router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, 
     }
 
 });
-router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/Resend_SMSC2Invitation/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -589,7 +589,7 @@ router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async
  //   console.log(twillioInfo)
 
     try {
-        const { caseID } = req.body;
+        const  caseID  = req.params.id;
         const selectedCase = await Case.findById(caseID);
         const MajorDataC2 = selectedCase.MajorDataC2
 
