@@ -54,6 +54,8 @@ const caseSchema = new Schema({
     whatDaysCanNotAttend:{types:String},
     appointmentTime:{types:String}
   },
+  
+  phoneCallAppointment_C2_C2reply:[{type: String}],
   availableTimes_C2:{
     whatDaysCanNotAttend:{types:String},
     appointmentTime:{types:String}
