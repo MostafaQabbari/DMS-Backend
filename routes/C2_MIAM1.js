@@ -99,7 +99,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       await Case.findByIdAndUpdate(req.params.id, {
         client2data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client2AddedData: true, MajorDataC2,availableTimes_C2status: "MIAM Part 1-C2"
+        }, Reference, client2AddedData: true, MajorDataC2,availableTimes_C2,status: "MIAM Part 1-C2"
       })
       const updatedCase = await Case.findById(req.params.id);
 

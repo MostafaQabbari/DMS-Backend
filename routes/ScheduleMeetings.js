@@ -146,6 +146,56 @@ router.post("/MIAM1_Meeting_C1/:id", authMiddleware, async (req, res) => {
 
 });
 
+router.post("/MIAM1_Meeting_C2/:id", authMiddleware, async (req, res) => {
+
+
+    try {
+        let meetingDetails={}, clientDetials={}, companyDetails={} ;
+
+        if (req.userRole == "company") {
+
+            let cases = await Company.findById(req.user._id).populate('cases');
+
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+
+
+                meetingDetails.dates =req.body.dates
+                meetingDetails.location =req.body.location
+
+                clientDetials.clientName=`${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+               // clientDetials.email = 'abdo.samir.7719@gmail.com'
+                clientDetials.email=CaseFound.MajorDataC2.mail
+
+                companyDetails.companyName =req.user.companyName
+                companyDetails.email = req.user.email
+
+
+                MailInviationToMediation(meetingDetails, clientDetials, companyDetails)
+
+                res.status(200).json({'meesage':"Invitation Mail has been sent"})
+            }
+            else {
+                res.status(400).json(" you don't have the access on this case ")
+            }
+
+        }
+        else {
+            res.status(400).json("err with user Auth")
+        }
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+});
+
+
 
 
 
