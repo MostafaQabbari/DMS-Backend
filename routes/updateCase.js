@@ -144,10 +144,12 @@ router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
                 }
             }
             if(CaseFound){
-                let MIAM2mediator = req.body
+                let MIAM2mediator = req.body;
+                let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
+
                 const StringfyData = JSON.stringify(MIAM2mediator)
         
-      await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
+      await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData ,Reference })
              //console.log(updatedCase)
                 res.status(200).json({ res: "Data of MIAM2-C1 has been updated" })
         
@@ -164,9 +166,10 @@ router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
             }
             if(CaseFound){
                 let MIAM2mediator = req.body
+                let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
                 const StringfyData = JSON.stringify(MIAM2mediator)
         
-                await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
+                await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData ,Reference })
         
                 res.status(200).json({ res: "Data of MIAM2-C1 has been updated" })
         
@@ -201,10 +204,12 @@ router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
                 }
             }
             if(CaseFound){
-                let MIAM2C2 = req.body
+                let MIAM2C2 = req.body;
+                let Reference = `${req.body.mediationDetails.otherPartySurname} & ${req.body.mediationDetails.clientSurName}`;
+
                 const StringfyData = JSON.stringify(MIAM2C2)
         
-      await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
+      await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData ,Reference })
              //console.log(updatedCase)
                 res.status(200).json({ res: "Data of MIAM2-C2 has been updated" })
         
@@ -220,10 +225,12 @@ router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
                 }
             }
             if(CaseFound){
-                let MIAM2C2 = req.body
+                let MIAM2C2 = req.body;
+                let Reference = `${req.body.mediationDetails.otherPartySurname} & ${req.body.mediationDetails.clientSurName}`;
+
                 const StringfyData = JSON.stringify(MIAM2C2)
         
-                await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
+                await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData ,Reference })
         
                 res.status(200).json({ res: "Data of MIAM2-C2 has been updated" })
         

@@ -135,7 +135,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C1_Date': MIAM_C1_Date, 
 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
+                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
                   
                 })
                 if (validationMail(caseDetails.C2mail)) {
