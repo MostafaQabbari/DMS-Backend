@@ -356,7 +356,9 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       // mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
 
       if (req.body.InvitationAnswer.willingToComeToMediation == "No") {
-        notifyCompanytoCall_C2Refused(companyData, clientData)
+        notifyCompanytoCall_C2Refused(companyData, clientData);
+
+        
 
       }
       else if (req.body.InvitationAccepted.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No") {

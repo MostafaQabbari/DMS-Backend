@@ -46,6 +46,10 @@ const caseSchema = new Schema({
 
   C2invitation: { type: String },
   C2invitationApplied: { type: Boolean, default: false },
+
+
+  C1Agreement: { type: String },
+  C1AgreementApplied: { type: Boolean, default: false },
   C2Agreement: { type: String },
   C2AgreementApplied: { type: Boolean, default: false },
 
@@ -117,11 +121,17 @@ module.exports = Case;
             "MIAM Part 2-C1"
             "MIAM Part 1-C2"
             "MIAM Part 2-C2"
+            "Invitation to C2 sent"
+
+
             "Proceeding with mediation"
             "Not Proceeding with mediation"
+
             "Mediation Session 1..n"
             "Agreed" / "Successful" / "Broken"
-            "Invitation to C2 sent"
+
+
+            
             "Not suitable for mediation"
             "Closed"
  */
