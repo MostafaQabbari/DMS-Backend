@@ -22,6 +22,7 @@ const legalAid_forms_C1 = require("./routes/legalAid_Forms_C1")
 
 const ScheduleMeetings = require('./routes/ScheduleMeetings')
 const agreementForm = require('./routes/agreementForm')
+const mediationSession=require('./routes/Mediation_Session')
 
 
 const updateCase = require("./routes/updateCase")
@@ -69,6 +70,7 @@ app.use(recieveSMS)
 app.use(legalAid_forms_C1)
 app.use(ScheduleMeetings)
 app.use(agreementForm)
+app.use(mediationSession)
 
 
 app.use((err, req, res, next) => {

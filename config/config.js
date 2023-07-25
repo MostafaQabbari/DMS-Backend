@@ -6,6 +6,7 @@ module.exports = {
   baseUrllowIncomeForm :'https://laa-low-income.vercel.app',
   baseUrlC2Invitation :'https://c2-reply-form.vercel.app',
   baseUrlC2AgreementForm :'https://https://agreement-to-mediate.vercel.app/',
+  baseUrlRecordSessionForm:'https://mediation-session.vercel.app/',
 
   companyEmail:"abdo.samir.7719@gmail.com",
   appPassWord:"evhxpzdevqnrrtpa",
@@ -19,6 +20,8 @@ module.exports = {
   AGREEMENT_FORM:"AGREEMENT_FORM",
   LOWINCOME_NOINCOME:'LOWINCOME_NOINCOME',
   PASSPORTING:'PASSPORTING',
+  RecordSessionForm:'RecordSessionForm',
+
 
 
 /*
@@ -33,6 +36,7 @@ LOWINCOME_NOINCOME/C1
 PASSPORTING/C1
 LOWINCOME_NOINCOME/C2
 PASSPORTING/C2
+RecordSessionForm
 */
 
 
