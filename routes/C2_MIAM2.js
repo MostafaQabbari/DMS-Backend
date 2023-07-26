@@ -151,7 +151,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
 
             const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
             //!currentCase.MIAM2AddedData
-            if (!currentCase.MIAM2AddedData) {
+            if (true) {
 
                 await Case.findByIdAndUpdate(req.params.id, {
                     $set: {

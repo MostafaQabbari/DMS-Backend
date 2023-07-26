@@ -339,7 +339,110 @@ router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
 });
 
 
+router.patch('/majorDataC1/:id', authMiddleware, async (req, res, next) => {
 
+    let CaseFound;
+
+
+    try {
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+            
+                let MajorDataC1 = req.body
+                await Case.findByIdAndUpdate(req.params.id, { MajorDataC1 })
+                res.status(200).json({ res: "Data of major data-C1 has been updated" })
+
+            }
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                let MajorDataC1 = req.body
+                await Case.findByIdAndUpdate(req.params.id, { MajorDataC1 })
+                res.status(200).json({ res: "Data of major data-C1 has been updated" })
+
+            }
+
+        }
+
+        else {
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+});
+router.patch('/majorDataC2/:id', authMiddleware, async (req, res, next) => {
+
+    let CaseFound;
+
+
+    try {
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+            
+                let MajorDataC2 = req.body
+                await Case.findByIdAndUpdate(req.params.id, { MajorDataC2 })
+                res.status(200).json({ res: "Data of major data-C2 has been updated" })
+
+            }
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                let MajorDataC2 = req.body
+                await Case.findByIdAndUpdate(req.params.id, { MajorDataC2 })
+                res.status(200).json({ res: "Data of major data-C2 has been updated" })
+
+            }
+
+        }
+
+        else {
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+});
 
 
 

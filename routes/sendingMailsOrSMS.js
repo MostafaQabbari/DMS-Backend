@@ -289,7 +289,22 @@ const validationMail = function (x) {
     }
 }
 
+/*
 
+/sendM1_sms_C1/:id
+/sendM1_mail_C1/:id
+/sendM1_mail_C2/:id
+/sendM1_sms_C2/:id
+
+/MailC2Invitaion/:id   C2mail=>in the body  
+/Resend_MailC2Invitaion/:id
+
+/SMSC2Invitation/:id    C2phoneNumber=>in the body
+/Resend_SMSC2Invitation/:id
+
+buttons to to send forms 👌👌👌
+
+*/
 
 
 router.post('/sendM1_sms_C1/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
@@ -438,10 +453,7 @@ router.post('/sendM1_sms_C2/:id', authMiddleware, decryptTwillioData, async (req
 
 });
 
-
-
-
-router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
+router.post("/MailC2Invitaion/:id", authMiddleware, async (req, res) => {
     /*{
                caseDetails.C2mail,
                caseDetails.C2name
@@ -454,7 +466,8 @@ router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
         }
         */
     try {
-        const { caseID, C2mail } = req.body;
+        const caseID = req.params.id
+        const  C2mail  = req.body;
         if (validationMail(C2mail)) {
             const currentCase = await Case.findById(caseID);
             let caseDetails = {}, mediationDetails = {}, messageInfo = {};
@@ -534,7 +547,7 @@ router.post("/Resend_MailC2Invitaion/:id", authMiddleware, async (req, res) => {
 
 })
 
-router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/SMSC2Invitation/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -548,7 +561,8 @@ router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, 
    // console.log(twillioInfo)
 
     try {
-        const { caseID, C2phoneNumber } = req.body;
+        const caseID = req.params.id
+        const  C2phoneNumber  = req.body;
         const selectedCase = await Case.findById(caseID);
         const MajorDataC2 = selectedCase.MajorDataC2
         //! here will go on with the client number
