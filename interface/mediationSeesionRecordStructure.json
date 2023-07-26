@@ -143,12 +143,12 @@
     "documentsPaths": [""]
   },
   "NextSteps": {
-    "isFurtherSessionPlanned": "",
+    "isFurtherSessionPlanned": "",     //   Yes or No => for next session
     "nextSessionIssues": "",
     "bothClientsAgreed": "",
     "returnToMediationDate": "",
     "appointmentTime": "",
-    "mediationFinishReason": "",
+    "mediationFinishReason": "",    // if No session => will get status from here    Broken  ,
     "isC100OrFormA": "",
     "documentsPaths": [""],
     "isTwoClientWantCopy": "",

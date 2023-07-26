@@ -53,10 +53,13 @@ const caseSchema = new Schema({
   C2Agreement: { type: String },
   C2AgreementApplied: { type: Boolean, default: false },
 
+  mediationRecords:[{type:String}],
+  mediationSessionsNo:{type:Number ,default:0},
+
   
   availableTimes_C1:{
-    whatDaysCanNotAttend:{types:String},
-    appointmentTime:{types:String}
+    whatDaysCanNotAttend:{type:String},
+    appointmentTime:{type:String}
   },
   
   phoneCallAppointment_C2_C2reply:[{type: String}],

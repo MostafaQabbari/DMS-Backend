@@ -6,6 +6,7 @@ const config = require("../config/config");
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
+const dateNow = require('../global/dateNow')
 
 const MailRecordFormToMed = function (mediatorData, caseData) {
 
@@ -98,5 +99,126 @@ router.post("/sendRecordFormToMediator/:id", authMiddleware, async (req, res) =>
 
 });
 
+router.patch("/addMediationRecord/:id", async (req, res) => {
+    try {
+
+
+        let currentCase = await Case.findById(req.params.id);
+        let mediationRecord = req.body;
+        const StringfyData = JSON.stringify(mediationRecord);
+
+
+        if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $inc: { mediationSessionsNo: 1 }
+            })
+            const updatedCase = await Case.findById(req.params.id);
+            console.log(updatedCase.mediationSessionsNo)
+
+            let statusRemider = {
+                reminderID: `${updatedCase._id}-statusRemider`,
+                reminderTitle: `${updatedCase.Reference}-Mediation Session ${updatedCase.mediationSessionsNo}`,
+                startDate: dateNow()
+            }
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $push: { mediationRecords: StringfyData },
+                $set: {
+                    'Reminders.statusRemider': statusRemider
+                }, status: `Mediation Session ${updatedCase.mediationSessionsNo}`
+            })
+
+        }
+
+        else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+            req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
+        ) {
+
+            let statusRemider = {
+                reminderID: `${updatedCase._id}-statusRemider`,
+                reminderTitle: `${updatedCase.Reference}-Broken`,
+                startDate: dateNow()
+            }
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $push: { mediationRecords: StringfyData },
+                $set: {
+                    'Reminders.statusRemider': statusRemider
+                }, status: `Broken`, closed: true
+            })
+
+        }
+
+
+        else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+            req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
+        ) {
+
+            let statusRemider = {
+                reminderID: `${updatedCase._id}-statusRemider`,
+                reminderTitle: `${updatedCase.Reference}-Agreed`,
+                startDate: dateNow()
+            }
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $push: { mediationRecords: StringfyData },
+                $set: {
+                    'Reminders.statusRemider': statusRemider
+                }, status: `Agreed`, closed: true
+            })
+
+        }
+        else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+            req.body.NextSteps.mediationFinishReason == "C - Successful - Parenting plan to be written" ||
+            req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
+            req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
+        ) {
+
+            let statusRemider = {
+                reminderID: `${updatedCase._id}-statusRemider`,
+                reminderTitle: `${updatedCase.Reference}-Successful`,
+                startDate: dateNow()
+            }
+
+            await Case.findByIdAndUpdate(req.params.id, {
+                $push: { mediationRecords: StringfyData },
+                $set: {
+                    'Reminders.statusRemider': statusRemider
+                }, status: `Successful`, closed: true
+            })
+
+        }
+
+
+
+
+
+        // const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+        //   const companyEmail = companyData.connectionData.companyID.email;
+        //  const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+        //  let mediatorData = {}, clientData = {}, messageBodyinfo = {};
+        //  mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
+        // const medEmail = medData.connectionData.mediatorID.email;
+        //  mediatorData.email = medEmail
+        //    const updatedCase = await Case.findById(req.params.id);
+
+        //    const parsedClientData = JSON.parse(updatedCase.client1data)
+
+        //    clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
+        //    clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
+        //    messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C1/${updatedCase._id}`;
+
+        res.status(200).json({ "message": "Mediation session record has been added" })
+
+
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+
+});
 
 module.exports = router
