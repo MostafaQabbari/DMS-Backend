@@ -87,7 +87,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
     mediatorData.email = medEmail
 
     //!currentCase.client2AddedData
-    if (!currentCase.client2AddedData) {
+    if (true) {
 
 
       let statusRemider = {

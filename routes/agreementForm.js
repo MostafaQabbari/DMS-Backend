@@ -304,7 +304,7 @@ router.patch("/addAgreement_C2/:id", async (req, res) => {
 
 
         //!currentCase.C2AgreementApplied
-        if (!currentCase.C2AgreementApplied) {
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 C2Agreement: StringfyData, C2AgreementApplied: true
@@ -344,7 +344,7 @@ router.patch("/addAgreement_C1/:id", async (req, res) => {
 
 
         //!currentCase.C1AgreementApplied
-        if (!currentCase.C1AgreementApplied) {
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 C1Agreement: StringfyData, C1AgreementApplied: true

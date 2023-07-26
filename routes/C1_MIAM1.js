@@ -107,7 +107,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     // GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
     
     //!currentCase.client1AddedData
-    if (!currentCase.client1AddedData) {
+    if (true) {
 
 
       let statusRemider = {

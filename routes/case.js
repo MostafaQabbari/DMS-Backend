@@ -431,7 +431,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
-  let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement
+  let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement , mediationRecords=[]
 
 
 
@@ -453,6 +453,17 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet";
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+
+        if (CaseFound.mediationRecords){
+          for(let i=0 ; i<CaseFound.mediationRecords.length ; i++)
+          {
+            mediationRecords.push(JSON.parse(CaseFound.mediationRecords[i]))
+          }
+        }
+        
+        else mediationRecords = "there is no mediation session yet";
+
+
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
 
         CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
@@ -491,7 +502,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           caseTypeC1,
           caseTypeC2 ,
            C1Agreement,
-           C2Agreement
+           C2Agreement,
+           mediationRecords
 
 
         }
@@ -519,6 +531,13 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
+        if (CaseFound.mediationRecords){
+          for(let i=0 ; i<CaseFound.mediationRecords.length ; i++)
+          {
+            mediationRecords.push(JSON.parse(CaseFound.mediationRecords[i]))
+          }
+        } else mediationRecords = "there is no mediation session yet";
+
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
 
         CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
@@ -557,7 +576,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           caseTypeC1,
           caseTypeC2,
           C1Agreement,
-          C2Agreement
+          C2Agreement,
+          mediationRecords
         }
 
         res.status(200).json(CaseResponse)
