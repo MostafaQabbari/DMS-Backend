@@ -11,7 +11,7 @@ const configureTwillio = require("./routes/configureTwillio")
 const getMediators = require("./routes/getMediators");
 const C1MIAM2 = require("./routes/C1_MIAM2")
 const getDataFromCSV = require("./routes/getDataFromCSV")
-const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
+const sendingForms_MailsOrSMS = require("./routes/sendingForms_MailsOrSMS")
 const reminders = require("./routes/reminders")
 const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
@@ -23,7 +23,7 @@ const legalAid_forms_C1 = require("./routes/legalAid_Forms_C1")
 const ScheduleMeetings = require('./routes/ScheduleMeetings')
 const agreementForm = require('./routes/agreementForm')
 const mediationSession=require('./routes/Mediation_Session')
-
+const sendManualSMS = require('./routes/sendmanualSMS')
 
 const updateCase = require("./routes/updateCase")
 const cors = require('cors');
@@ -58,7 +58,7 @@ app.use(C1MIAM1)
 app.use(getMediators)
 app.use(C1MIAM2)
 app.use(getDataFromCSV)
-app.use(sendingMailsOrSMS)
+app.use(sendingForms_MailsOrSMS)
 app.use(updateCase)
 app.use(updateCaseStatus)
 app.use(C2Invitation)
@@ -71,6 +71,7 @@ app.use(legalAid_forms_C1)
 app.use(ScheduleMeetings)
 app.use(agreementForm)
 app.use(mediationSession)
+app.use(sendManualSMS)
 
 
 app.use((err, req, res, next) => {
