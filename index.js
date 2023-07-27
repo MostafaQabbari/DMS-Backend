@@ -24,17 +24,17 @@ const ScheduleMeetings = require('./routes/ScheduleMeetings')
 const agreementForm = require('./routes/agreementForm')
 const mediationSession=require('./routes/Mediation_Session')
 const sendManualSMS = require('./routes/sendmanualSMS')
-
+const sendMails = require('./routes/sendMails')
 const updateCase = require("./routes/updateCase")
+const appointmentConf = require('./routes/appoinmentConformation')
+
+
 const cors = require('cors');
 require('dotenv')
 const PORT = process.env.PORT || 3007
 const app = express();
 
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
-app.use('/api-docs', swaggerUi.serve , swaggerUi.setup(swaggerDocument));
 
 
 mongoose.connect("mongodb+srv://mkabary8:O8uafwuq79PBkJoJ@cluster1.xnqqhnm.mongodb.net/users", { useNewUrlParser: true })
@@ -72,6 +72,8 @@ app.use(ScheduleMeetings)
 app.use(agreementForm)
 app.use(mediationSession)
 app.use(sendManualSMS)
+app.use(sendMails)
+app.use(appointmentConf)
 
 
 app.use((err, req, res, next) => {

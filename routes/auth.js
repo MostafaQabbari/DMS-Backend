@@ -96,7 +96,8 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       sharingGmail:sharingGmail,
       logo: logo,
       companyLogo: req.file ? req.file.filename : null,
-      twillioData:cryptedTwilioData
+      twillioData:cryptedTwilioData,
+      phoneNumberTwillio:req.body.twillioData.twillioNumber
     });
     // Check if sharingGmail is already present in any user within the company accounts
     const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
