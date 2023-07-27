@@ -125,178 +125,188 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
 }
 
 
-
-   /*
-    
-    
+ 
+/*
+ 
+ 
+=> 😒 send miam 1 link by mail
+ /sendMIAM1Link/:id , post   ,     {caseType:"Private || legalAid ", TargetClient:" C1 || C2"} 
+ 
+ 
+ => 😒 send sms with any body form user
+ /sendSMS , post   ,     {clientNumber:"+44 7476 544877",  messageBodyData:""} 
+ 
   
-    /sendMIAM1Link/:id , post   ,     {caseType:"Private || legalAid ", TargetClient:" C1 || C2"} 
-
-    => 😒😒 send miam 1 link by mail
-
-    /sendSMS , post   ,     {clientNumber:"+44 7476 544877",  messageBodyData:""} 
-
-      => 😒😒 send sms with any body form user
-     
+    => 😒 send sms invitation
     /sendSMSinvitation/:id , post   ,  {"Client":"C1 || C2"}
-
-     => 😒😒 send sms invitation
-
+ 
+ 
+    => 😒 send mail invitation
     /sendMailInvitation/:id , post   ,  {"Client":"C1 || C2"}
+ 
 
-     => 😒😒 send mail invitation
+   => 😒 send mediation update by sms
+   /sendMailInvitation/:id , post   ,  {"Client":"C1 || C2"}
+ 
+ 
+   => 😒 dates for mediation session
+   /BOOK_MEDIATION_SESSION/:id , post , {"dates":[" "," "],"location":" "}
+ 
+ 
+   => 😒 send mediation session record form to mediator
+    /sendRecordFormToMediator/:id , post
+ 
+  => 😒 send CIM for both cliens
+  /sendCIM_Mail/:id   => post  
 
-        /sendMailInvitation/:id , post   ,  {"Client":"C1 || C2"}
+   => 😒 send property for both cliens
+  /sendProperty_Mail/:id  => post  
 
-     => 😒😒 send mediation update by sms
-
-      /BOOK_MEDIATION_SESSION/:id , post , {"dates":[" "," "],"location":" "}
-
-       => 😒😒 dates for mediation session
-
-       /sendRecordFormToMediator/:id , post
-
-        => 😒😒 send mediation session record form to mediator
+   => 😒 send mediation update by sms
+  /sendSMSmediationUpdate/:id =>post  , {"Client":"C1 || C2"}  
+       
+ 
+ 
 
 
 
-      */
+*/
 
 
 router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
 
-    let CaseFound;
-    try {
-        const caseType = req.body.caseType;
-        const TargetClient = req.body.TargetClient;
-        let companyData = {}, clientData = {}, messageBodyinfo = {}
+let CaseFound;
+try {
+    const caseType = req.body.caseType;
+    const TargetClient = req.body.TargetClient;
+    let companyData = {}, clientData = {}, messageBodyinfo = {}
 
-        if (req.userRole == 'company') {
-            let cases = await Company.findById(req.user._id).populate('cases');
-            for (let i = 0; i < cases.cases.length; i++) {
-                if (cases.cases[i]._id == req.params.id) {
+    if (req.userRole == 'company') {
+        let cases = await Company.findById(req.user._id).populate('cases');
+        for (let i = 0; i < cases.cases.length; i++) {
+            if (cases.cases[i]._id == req.params.id) {
 
-                    CaseFound = (cases.cases[i])
-                }
+                CaseFound = (cases.cases[i])
             }
-            if (CaseFound) {
-                const currentComp = await Company.findById(req.user._id)
+        }
+        if (CaseFound) {
+            const currentComp = await Company.findById(req.user._id)
 
-                if (TargetClient == "C1") {
-                    clientData.email = CaseFound.MajorDataC1.mail;
-                    // clientData.email = 'abdosamir023023@gmail.com'
-                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                    companyData.companyName = currentComp.companyName
-                    companyData.email = currentComp.email
-                    messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
-                    if (caseType == 'Private') {
-                   
-                        sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-                    if (caseType == 'legalAid') {
-                        sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
+            if (TargetClient == "C1") {
+                clientData.email = CaseFound.MajorDataC1.mail;
+                // clientData.email = 'abdosamir023023@gmail.com'
+                clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                companyData.companyName = currentComp.companyName
+                companyData.email = currentComp.email
+                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
+                if (caseType == 'Private') {
 
-
+                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                 }
-                else if (TargetClient == "C2") {
-                    clientData.email = CaseFound.MajorDataC2.mail;
-                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                    companyData.companyName = currentComp.companyName
-                    companyData.email = currentComp.email
-                    messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
-                    if (caseType == 'Private') {
-                        sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-                    if (caseType == 'legalAid') {
-                        sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
+                if (caseType == 'legalAid') {
+                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                }
 
 
+            }
+            else if (TargetClient == "C2") {
+                clientData.email = CaseFound.MajorDataC2.mail;
+                clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                companyData.companyName = currentComp.companyName
+                companyData.email = currentComp.email
+                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
+                if (caseType == 'Private') {
+                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                 }
-                else {
-                    res.status(400).json({ "message": "error with data ... " })
+                if (caseType == 'legalAid') {
+                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                 }
+
 
             }
             else {
-                res.status(400).json({ "message": "no case found ... " })
+                res.status(400).json({ "message": "error with data ... " })
             }
 
         }
-        else if (req.userRole == 'mediator') {
-            let cases = await mediator.findById(req.user._id).populate('cases');
-            for (let i = 0; i < cases.cases.length; i++) {
-                if (cases.cases[i]._id == req.params.id) {
-
-                    CaseFound = (cases.cases[i])
-                }
-            }
-            if (CaseFound) {
-
-                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-                let currentComp_ =  mediatorCompanyData.companyId
-
-                if (TargetClient == "C1") {
-                    clientData.email = CaseFound.MajorDataC1.mail;
-                    //clientData.email = "abdosamir023023@gmail.com"
-                  
-                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email
-                    messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
-                    if (caseType == 'Private') {
-                      
-                        sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-                    if (caseType == 'legalAid') {
-                        sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-
-
-                }
-                else if (TargetClient == "C2") {
-                    clientData.email = CaseFound.MajorDataC2.mail;
-                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email
-                    messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
-                    if (caseType == 'Private') {
-                        sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-                    if (caseType == 'legalAid') {
-                        sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                        res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                    }
-
-
-                }
-                else {
-                    res.status(400).json({ "message": "error with data ... " })
-                }
-            }
-            else {
-                res.status(400).json({ "message": "no case found ... " })
-            }
-
-        }
-
         else {
-            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ "message": "no case found ... " })
         }
 
-
-
-    } catch (err) {
-        res.status(400).json(err.message)
     }
+    else if (req.userRole == 'mediator') {
+        let cases = await mediator.findById(req.user._id).populate('cases');
+        for (let i = 0; i < cases.cases.length; i++) {
+            if (cases.cases[i]._id == req.params.id) {
+
+                CaseFound = (cases.cases[i])
+            }
+        }
+        if (CaseFound) {
+
+            const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+            let currentComp_ = mediatorCompanyData.companyId
+
+            if (TargetClient == "C1") {
+                clientData.email = CaseFound.MajorDataC1.mail;
+                //clientData.email = "abdosamir023023@gmail.com"
+
+                clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                companyData.companyName = currentComp_.companyName
+                companyData.email = currentComp_.email
+                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
+                if (caseType == 'Private') {
+
+                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                }
+                if (caseType == 'legalAid') {
+                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                }
+
+
+            }
+            else if (TargetClient == "C2") {
+                clientData.email = CaseFound.MajorDataC2.mail;
+                clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                companyData.companyName = currentComp_.companyName
+                companyData.email = currentComp_.email
+                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
+                if (caseType == 'Private') {
+                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                }
+                if (caseType == 'legalAid') {
+                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
+                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                }
+
+
+            }
+            else {
+                res.status(400).json({ "message": "error with data ... " })
+            }
+        }
+        else {
+            res.status(400).json({ "message": "no case found ... " })
+        }
+
+    }
+
+    else {
+        res.status(400).json({ res: "there is an arror with getting case access for the user" })
+    }
+
+
+
+} catch (err) {
+    res.status(400).json(err.message)
+}
 
 });
 

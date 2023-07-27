@@ -93,6 +93,8 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
            clientDetails.name,
            clientDetails.email
           compnayDetails.phone
+          compnayDetails.email
+           compnayDetails.name
 
     }
     */
@@ -103,12 +105,53 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
         to: clientDetails.email,
         subject: `Invitation Mail`,
         html: `<body>
-        <div style="text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style="direction: ltr;">
       
-        <h3>Dear ${clientDetails.name}</h3>
-        <h4> You've been sent an inviation to family mediation by email/post .
-        Please call our office on ${compnayDetails.phone}.
-        Look forward to hearing from you.</h4>
+        <h3>Dear <span style="color : blue">${clientDetails.name}</span>   </h3>
+ <p>We are writing to introduce our family mediation service, which is accredited with the <span style="color : blue"> Family Mediation Council </span>.
+  We want to let you know that  <span style="color : red">${clientDetails.name}</span>    has come to us to see about the possibility
+   of mediation to sort out arrangements between you both. At this point, they attended
+    a Mediation Information & Assessment Meeting <span style="color : blue"> (MIAM) </span> with us. This is the 
+    first stage of starting family mediation and allows participants to see whether they feel it is appropriate, 
+    and of course for us to assess whether we feel the matter is suitable for mediation. Having met with <span style="color : red">${clientDetails.name}</span>    and listened 
+    to their account of the issues faced, it appears that there may be a benefit to using mediation. In view of this, I would like to invite you to a MIAM, 
+    so you can give your account of what has been happening and learn more about the mediation process. At this confidential meeting,
+     <span style="color : red">${clientDetails.name}</span>    will not be there, or be informed of any of the discussions we have.</p>
+
+
+     <p>It is important for you to understand that mediation is a voluntary process, but it is strongly encouraged by the Family Court for people to attempt it. 
+     However, if you do not engage, I must let you know that we will be obliged to issue a certificate to  <span style="color : red">${clientDetails.name}</span>  stating that mediation is not going ahead. They may then use this certificate, if they decide to make a court application.</p>
+
+     <p>It is a requirement to attend a MIAM before making an application to court, save for a number of specific <span style="color : blue"> exemptions </span>. If you have reasons why you feel you cannot attend mediation, you may wish to explain them in a MIAM and discuss them with a mediator. Your mediator can offer support and guidance and conduct an assessment as to the suitability of mediation. If the mediator finds mediation to be unsuitable, you will also get a certificate verifying that you have attempted mediation yourself as well.</p>
+
+     <p>On the other hand, if you are unwilling to try mediation, and a court case ensues, you may have to explain to the court why you did not engage in mediation when invited.</p>
+
+     <p>  I understand that this letter may be a little unsettling; I would like to reassure you that we do not represent <span style="color : red">${clientDetails.name}</span> and represent both of you as equal participants. Additionally, you may not know much about mediation,
+      so please do refer to the useful guidance on our website, which may help you with your decision making: <span style="color : blue"> Direct Mediation Services.</span>
+  </p>
+
+<p>Finally, I understand that you will want to have absolute transparency in respect of fees and there is full information on the website:</p>
+
+<ul>
+<li>MIAM: £130 (inc. VAT)</li>
+<li> Mediation Sessions: £130 per person per hour (inc. vat)</li>
+<p>Additionally, there are funding options available including:</p>
+<li><span style="color : blue">Legal Aid</span>  (if you receive income-based welfare benefits or low income)</li>
+<li> <span style="color : blue"> Family Mediation</span> Voucher Scheme (a one off voucher of £500 applied to cases relating to child arrangements which is available to all participants. Only available for mediation sessions, not MIAMs).</li>
+</ul>
+
+<p>You will only pay for your own fees, not the other participant’s. If you would like further information on Legal Aid eligibility, please contact the office and ensure to inform of your funding status when booking your MIAM.</p>
+<p>The easiest and quickest way to respond to your invitation to mediation is by filling our reply to the mediation form that can be accessed by clicking  <span style="color : blue">HERE</span>.</p>
+<p>I would be grateful if I could have your response to this invitation no later than a week from the date of this letter either by email or telephone ${compnayDetails.phone}. In the event that you require a little longer, or require any further guidance in making your decision, then we encourage you to get in touch as soon as possible to let us know.
+ If we don’t hear from you, we will assume that you do not wish to engage in mediation</p>
+<p>I look forward to hearing from you</p>
+
+<p>Regards</p>
+<p>Direct Mediation Services</p>
+
+<p>${compnayDetails.name}</p>
+<p>${compnayDetails.email}</p>
+
 
         </div>
         </body>`,
@@ -202,7 +245,7 @@ router.post('/sendSMSmediationUpdate/:id', authMiddleware, decryptTwillioData, a
         if (req.body.Client === "C1") {
    
             clientData.clientNumber = currentCase.MajorDataC1.phoneNumber;
-             clientData.clientNumber = "+44 7476 544877"
+       
             clientData.clientName = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`;
 
             
@@ -212,7 +255,7 @@ router.post('/sendSMSmediationUpdate/:id', authMiddleware, decryptTwillioData, a
 
         }
         else if (req.body.Client === "C2") {
-            // clientNumber = "+44 7476 544877"
+       
             clientData.clientNumber = currentCase.MajorDataC1.phoneNumber;
             clientData.clientName = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
             sendSMS_mediationUpdate(twillioInfo, clientData)
@@ -291,13 +334,15 @@ router.post('/sendMailInvitation/:id', authMiddleware, async (req, res) => {
             const currentComp = await company.findById(req.user._id)
 
             let clientDetails = {}, compnayDetails = {};
+            compnayDetails.email=currentComp.email
+            compnayDetails.name = currentComp.companyName
 
             if (req.body.Client === "C1") {
 
                 clientDetails.email = currentCase.MajorDataC1.mail;
                 clientDetails.name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`;
 
-
+                clientDetails.email ='abdosamir023023@gmail.com'
                 compnayDetails.phone = currentComp.phoneNumberTwillio;
 
                 sendMail_Invitation(clientDetails, compnayDetails)
@@ -322,16 +367,21 @@ router.post('/sendMailInvitation/:id', authMiddleware, async (req, res) => {
 
         }
         else if (req.userRole == "mediator") {
+       
 
             let clientDetails = {}, compnayDetails = {};
+        
+
             const currentCase = await Case.findById(req.params.id);
             const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
              compnayDetails.phone = mediatorCompanyData.companyId.phoneNumberTwillio;
+             compnayDetails.email=mediatorCompanyData.companyId.email
+             compnayDetails.name = mediatorCompanyData.companyId.companyName
 
             if (req.body.Client === "C1") {
 
                 clientDetails.email = currentCase.MajorDataC1.mail;
-                clientDetails.email ='abdosamir023023@gmail.com'
+               
 
                 clientDetails.name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`;
 
