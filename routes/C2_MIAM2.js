@@ -56,7 +56,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1sName,
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C2_Date': MIAM_C2_Date, 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C2",Reference
+                    }, MIAM2C2: stringfyMIAM2Data, MIAM2C2AddedData: true, status: "MIAM Part 2-C2",Reference
                 })
            
 
@@ -85,9 +85,9 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                         'MajorDataC2.sName': MajorDataC2.sName,
                         'MajorDataC2.mail': MajorDataC2.mail,
                         'MajorDataC1.sName': MajorDataC1sName,
-                    }, MIAM2mediator: stringfyMIAM2Data,
-                    MIAM2AddedData: true,
-                    status: "Not suitable for mediation" ,Reference
+                    }, MIAM2C2: stringfyMIAM2Data,
+                    MIAM2C2AddedData: true,
+                    status: "Not suitable for mediation" ,Reference,closed:true
                 })
                 res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
