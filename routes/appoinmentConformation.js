@@ -10,14 +10,13 @@ const mediator = require('../models/mediator');
 
 
 
-const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo) {
+const sendAppointment = function (companyData, clientData, bodyDetails) {
 
     /*
   
      companyData ={companyName , email}
      clientData = {clientName ,email}
-     messageBodyinfo = {formUrl}
-  
+  bodyDetails = {caseType , dates ,location}
     */
 
     let transporter = nodemailer.createTransport({
@@ -39,76 +38,39 @@ const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo)
 
     })
 
+    let datesList = '';
+    for (const date of bodyDetails.dates) {
+        datesList += `<li>${date}</li>`;
+    }
+
 
     let info = transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
-        subject: " MIAM I Form",
-        html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
-       <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Thanks for booking your MIAM. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Please click on the link below </h2>
-      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-      <h3>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</h3>
-      <h3>Direct Mediation Services.</h3>
-      <h3>${companyData.companyName}</h3>
-      <h3>${companyData.email}</h3>
-       </div>`,
+        subject: ` Appointment Mail ${bodyDetails.caseType} case`,
+        html: ` <div style="padding: 2vw; direction: ltr">
+         <h2>Dear ${clientData.clientName} </h2>
 
+         <p>Thank you for attending your Mediation Information & Assessments Meetings (MIAM). You have both agreed that you wish to attend mediation.</p>
 
-    });
+         <p>The next step is for you both to choose a time and date when you are available to attend mediation.
+          Your first mediation session will be conducted over <span style="color:blue" >${bodyDetails.location}</span> for the duration of<span style="color:blue" > 2 Hours</span>. 
+          If you are unable to use <span style="color:blue" >${bodyDetails.location}</span>, please let me know so that we can explore other options available. </p>
+       <p>I can confirm that the application for the Family Mediation Voucher Scheme was successful and there is also Legal Aid funding applied to your case. Due to this, there is no charge payable by either of you for this session.</p>
 
+        <p>The following dates and times are available for your session. If you are able to attend more than one of these sessions then do inform me of this as it improves chances of a time that works for all of us.</p>
+   
+        <ul style="list-style: decimal inside; font-family: 'Arial', sans-serif; color: red;  font-size: 18px; ">${datesList}</ul>
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+        <p>Please respond to this email <strong> within 5 working days</strong>  confirming the appointment slots that you are able to attend.
+         If you are unable to attend any of the appointment slots, please let me know ASAP so that I can review diaries. </p>
+        <p>If you have any questions, please let me know.</p>
+        <h3>Direct Mediation Services</h3>
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+        <h4>${companyData.companyName}</h4>
+        <h4>${companyData.email}</h4>
+         </div>`
 
-}
-const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo) {
-    /*
-    
-       companyData ={companyName , email}
-       clientData = {clientName ,email}
-       messageBodyinfo = {formUrl}
-    
-      */
-
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        starttls: {
-            enable: true
-        },
-        starttls: {
-            enable: true
-        },
-
-        secureConnection: false,
-
-        auth: {
-            user: config.companyEmail,
-            pass: config.appPassWord,
-        },
-
-    })
-
-    let info = transporter.sendMail({
-        from: config.companyEmail,
-        to: clientData.email,
-        subject: "MIAM I Form",
-        html: ` <div style="text-align: center; padding: 5vw; width: 75%; margin: auto;">
-       <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Your application for Legal Aid was SUCCESSFUL. BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. AFTER you have filled and SUBMITTED this form, 
-      a member of our team will get back to you to book your appointment. Please click on the link below: </h2>
-      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-      <h3>Direct Mediation Services.</h3>
-      <h3>${companyData.companyName}</h3>
-      <h3>${companyData.email}</h3>
-       </div>`,
 
     });
 
@@ -125,7 +87,6 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
 }
 
 
- 
 /*
  
  
@@ -164,6 +125,10 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
 
    => 😒 send mediation update by sms
   /sendSMSmediationUpdate/:id =>post  , {"Client":"C1 || C2"}  
+
+  => 😒 send appointment mail
+  /sendAppointment/:id => post ,{"targetClient":"C1" , "caseType":"private"  , "eventType":"med session" , "dates":["next friday" , " saturday"] , "location" :"zoom"}
+    
        
  
  
@@ -173,140 +138,131 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
 */
 
 
-router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
+router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
 
-let CaseFound;
-try {
-    const caseType = req.body.caseType;
-    const TargetClient = req.body.TargetClient;
-    let companyData = {}, clientData = {}, messageBodyinfo = {}
-
-    if (req.userRole == 'company') {
-        let cases = await Company.findById(req.user._id).populate('cases');
-        for (let i = 0; i < cases.cases.length; i++) {
-            if (cases.cases[i]._id == req.params.id) {
-
-                CaseFound = (cases.cases[i])
-            }
+    let CaseFound;
+    try {
+        /*
+        {
+         targetClient:"" , caseType:""  , eventType:"" , dates:["" , ""] , location :""
         }
-        if (CaseFound) {
-            const currentComp = await Company.findById(req.user._id)
+    
+            
+      
+      bodyDetails = {caseType , dates ,location}
+        
+        
+        */
+        const appointmentData = req.body;
+        let companyData = {}, clientData = {}, bodyDetails = {};
 
-            if (TargetClient == "C1") {
-                clientData.email = CaseFound.MajorDataC1.mail;
-                // clientData.email = 'abdosamir023023@gmail.com'
-                clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                companyData.companyName = currentComp.companyName
-                companyData.email = currentComp.email
-                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
-                if (caseType == 'Private') {
+        bodyDetails.caseType = req.body.caseType
+        bodyDetails.dates = req.body.dates
+        bodyDetails.location = req.body.location
 
-                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
                 }
-                if (caseType == 'legalAid') {
-                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                }
-
-
             }
-            else if (TargetClient == "C2") {
-                clientData.email = CaseFound.MajorDataC2.mail;
-                clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                companyData.companyName = currentComp.companyName
-                companyData.email = currentComp.email
-                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
-                if (caseType == 'Private') {
-                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                }
-                if (caseType == 'legalAid') {
-                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                }
+            if (CaseFound) {
+                const currentComp = await Company.findById(req.user._id)
 
+                if (req.body.targetClient == "C1") {
+                    clientData.email = CaseFound.MajorDataC1.mail;
+                    clientData.email = 'abdosamir023023@gmail.com'
+                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                    companyData.companyName = currentComp.companyName
+                    companyData.email = currentComp.email;
+
+                    sendAppointment(companyData, clientData, bodyDetails);
+                    res.status(200).json({ "message": "appointment email has been sent ... " })
+
+
+                }
+                else if (req.body.targetClient == "C2") {
+                    clientData.email = CaseFound.MajorDataC2.mail;
+                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                    companyData.companyName = currentComp.companyName
+                    companyData.email = currentComp.email;
+
+                    sendAppointment(companyData, clientData, bodyDetails);
+                    res.status(200).json({ "message": "appointment email has been sent ... " })
+
+
+                }
+                else {
+                    res.status(400).json({ "message": "error with data ... " })
+                }
 
             }
             else {
-                res.status(400).json({ "message": "error with data ... " })
+                res.status(400).json({ "message": "no case found ... " })
             }
 
         }
-        else {
-            res.status(400).json({ "message": "no case found ... " })
-        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
 
-    }
-    else if (req.userRole == 'mediator') {
-        let cases = await mediator.findById(req.user._id).populate('cases');
-        for (let i = 0; i < cases.cases.length; i++) {
-            if (cases.cases[i]._id == req.params.id) {
-
-                CaseFound = (cases.cases[i])
+                    CaseFound = (cases.cases[i])
+                }
             }
-        }
-        if (CaseFound) {
+            if (CaseFound) {
 
-            const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-            let currentComp_ = mediatorCompanyData.companyId
+                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+                let currentComp_ = mediatorCompanyData.companyId
 
-            if (TargetClient == "C1") {
-                clientData.email = CaseFound.MajorDataC1.mail;
-                //clientData.email = "abdosamir023023@gmail.com"
+                if (req.body.targetClient == "C1") {
+                    clientData.email = CaseFound.MajorDataC1.mail;
+                    //clientData.email = "abdosamir023023@gmail.com"
 
-                clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                companyData.companyName = currentComp_.companyName
-                companyData.email = currentComp_.email
-                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/$CaseFound._id}`;
-                if (caseType == 'Private') {
+                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                    companyData.companyName = currentComp_.companyName
+                    companyData.email = currentComp_.email
 
-                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+
+                    sendAppointment(companyData, clientData, bodyDetails)
+                    res.status(200).json({ "message": "appointment email has been sent ... " })
+
+
                 }
-                if (caseType == 'legalAid') {
-                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                else if (req.body.targetClient == "C2") {
+                    clientData.email = CaseFound.MajorDataC2.mail;
+                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                    companyData.companyName = currentComp_.companyName
+                    companyData.email = currentComp_.email;
+
+
+                    sendAppointment(companyData, clientData, bodyDetails);
+                    res.status(200).json({ "message": "appointment email has been sent ... " })
+
+
                 }
-
-
-            }
-            else if (TargetClient == "C2") {
-                clientData.email = CaseFound.MajorDataC2.mail;
-                clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                companyData.companyName = currentComp_.companyName
-                companyData.email = currentComp_.email
-                messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/$CaseFound._id}`;
-                if (caseType == 'Private') {
-                    sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
+                else {
+                    res.status(400).json({ "message": "error with data ... " })
                 }
-                if (caseType == 'legalAid') {
-                    sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
-                    res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
-                }
-
-
             }
             else {
-                res.status(400).json({ "message": "error with data ... " })
+                res.status(400).json({ "message": "no case found ... " })
             }
+
         }
+
         else {
-            res.status(400).json({ "message": "no case found ... " })
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
         }
 
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
     }
-
-    else {
-        res.status(400).json({ res: "there is an arror with getting case access for the user" })
-    }
-
-
-
-} catch (err) {
-    res.status(400).json(err.message)
-}
 
 });
 

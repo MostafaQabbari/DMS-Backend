@@ -27,7 +27,8 @@ const sendManualSMS = require('./routes/sendmanualSMS')
 const sendMails = require('./routes/sendMails')
 const updateCase = require("./routes/updateCase")
 const appointmentConf = require('./routes/appoinmentConformation')
-const cim = require('./routes/porperty&CIMmail')
+const cim = require('./routes/porperty&CIMmail');
+const courtForm = require ('./routes/sendCourtForm')
 
 
 const cors = require('cors');
@@ -76,6 +77,9 @@ app.use(sendManualSMS)
 app.use(sendMails)
 app.use(appointmentConf)
 app.use(cim)
+app.use(courtForm)
+
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
