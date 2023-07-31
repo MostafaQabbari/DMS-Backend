@@ -76,7 +76,7 @@ router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
     try {
         
         const TargetClient = req.body.TargetClient;
-        let companyData = {}, clientData = {}, messageBodyinfo = {}
+        let companyData = {}, clientData = {}
 
         if (req.userRole == 'company') {
             let cases = await Company.findById(req.user._id).populate('cases');

@@ -227,7 +227,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
                     companyData.email = currentComp_.email
 
 
-                    sendAppointment(companyData, clientData, bodyDetails)
+                    s(companyData, clientData, bodyDetails)
                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
