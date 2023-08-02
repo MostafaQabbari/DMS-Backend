@@ -214,9 +214,12 @@ const notifyCompanytoCall_C2Refused = function (companyData, clientData) {
   }
   */
   let timesList = '';
+  if (clientData.C2callTimes) {
     for (const date of clientData.C2callTimes) {
-        timesList += `<li>${date}</li>`;
+      timesList += `<li>${date}</li>`;
     }
+  }
+
 
   let info = transporter.sendMail({
     from: config.companyEmail,
@@ -268,9 +271,14 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
   }
   */
   let timesList = '';
+
+  if(caseData.C2callTimes)
+  {
+
     for (const date of caseData.C2callTimes) {
-        timesList += `<li>${date}</li>`;
+      timesList += `<li>${date}</li>`;
     }
+  }
 
   let info = transporter.sendMail({
     from: config.companyEmail,
@@ -334,7 +342,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
           'MajorDataC2.mail': MajorDataC2.mail,
           'MajorDataC2.phoneNumber': MajorDataC2.phoneNumber,
           'Reminders.statusRemider': statusRemider
-        }, C2invitation: StringfyData, C2invitationApplied: true, Reference,phoneCallAppointment_C2_C2reply, status: "Invitation to C2 sent"
+        }, C2invitation: StringfyData, C2invitationApplied: true, Reference, phoneCallAppointment_C2_C2reply, status: "Invitation to C2 sent"
       })
 
 
@@ -347,8 +355,8 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       clientData.email = MajorDataC2.mail
       clientData.clientName = `${MajorDataC2.fName} ${MajorDataC2.sName}`;
 
-      clientData.caseReference=Reference;
-      clientData.C2callTimes= phoneCallAppointment_C2_C2reply
+      clientData.caseReference = Reference;
+      clientData.C2callTimes = phoneCallAppointment_C2_C2reply
 
       // const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
       // const medEmail = medData.connectionData.mediatorID.email;
@@ -358,16 +366,16 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       if (req.body.InvitationAnswer.willingToComeToMediation == "No") {
         notifyCompanytoCall_C2Refused(companyData, clientData);
 
-        
+
 
       }
       else if (req.body.InvitationAccepted.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No") {
 
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2:"Private"
+          caseTypeC2: "Private"
         })
-         messageBodyinfo.formType = "MIAM 1"
-         messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
+        messageBodyinfo.formType = "MIAM 1"
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
         sendMailMIAM1(companyData, clientData, messageBodyinfo);
       }
 
@@ -378,7 +386,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         req.body.InvitationAccepted.isEntitledToLegalAid == "Yes"
       ) {
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2:"Legal Aid - low Income / No Income"
+          caseTypeC2: "Legal Aid - low Income / No Income"
         })
         // messageBodyinfo.formType = "low Income / No Income"
         // messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C2/${updatedCase._id}`;
@@ -391,7 +399,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       ) {
 
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2:"Legal Aid - Passporting"
+          caseTypeC2: "Legal Aid - Passporting"
         })
         // messageBodyinfo.formType = "Passporting"
         // messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C2/${updatedCase._id}`;

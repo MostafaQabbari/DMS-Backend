@@ -107,7 +107,7 @@ const sendAppointment = function (companyData, clientData, bodyDetails) {
  
 
    => 😒 send mediation update by sms
-   /sendMailInvitation/:id , post   ,  {"Client":"C1 || C2"}
+   /sendSMSmediationUpdate/:id , post   ,  {"Client":"C1 || C2"}
  
  
    => 😒 dates for mediation session
