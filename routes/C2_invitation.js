@@ -214,7 +214,7 @@ const notifyCompanytoCall_C2Refused = function (companyData, clientData) {
   }
   */
   let timesList = '';
-    for (const date of caseData.C2callTimes) {
+    for (const date of clientData.C2callTimes) {
         timesList += `<li>${date}</li>`;
     }
 
@@ -321,7 +321,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         fName: C2invitation.InvitationAnswer.firstName,
         sName: C2invitation.InvitationAnswer.surname,
         mail: C2invitation.InvitationAnswer.email,
-        phoneNumber: C2invitation.InvitationAccepted.phone
+        //phoneNumber: C2invitation.InvitationAccepted.phone
       }
       let Reference = `${currentCase.MajorDataC1.sName}& ${C2invitation.InvitationAnswer.surname}`;
 
