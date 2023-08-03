@@ -342,7 +342,7 @@ router.post('/sendMailInvitation/:id', authMiddleware, async (req, res) => {
                 clientDetails.email = currentCase.MajorDataC1.mail;
                 clientDetails.name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`;
 
-                clientDetails.email ='abdosamir023023@gmail.com'
+                //clientDetails.email ='abdosamir023023@gmail.com'
                 compnayDetails.phone = currentComp.phoneNumberTwillio;
 
                 sendMail_Invitation(clientDetails, compnayDetails)

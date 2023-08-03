@@ -341,8 +341,8 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
                 
-                clientDetials.c2email = 'abdo.samir.55@gmail.com'
-                 clientDetials.c1email = 'abdosamir023023@gmail.com'
+               // clientDetials.c2email = 'abdo.samir.55@gmail.com'
+                 //clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = mediatorCompanyData.companyId.companyName
                 companyDetails.email = mediatorCompanyData.companyId.email
