@@ -116,10 +116,12 @@ const MediationSessionMail = function (meetingDetails, clientDetials, companyDet
 
     })
 
+    let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
+console.log("👆👆👆👆",mailList)
 
     let info = transporter.sendMail({
         from: config.companyEmail,
-        to: `${clientDetials.c1email}, ${clientDetials.c2email} `,
+        to:`${mailList}`,
         subject: `Mediation Session Invitation`,
         html: ` <div style="padding: 2vw; direction: ltr">
          <h2>Dear ${clientDetials.c1clientName} & ${clientDetials.c2clientName}  </h2>
@@ -309,14 +311,14 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
 
+                console.log("🙌🙌",meetingDetails,"🙌🙌", clientDetials,"🙌🙌", companyDetails)
+
 
                 MediationSessionMail(meetingDetails, clientDetials, companyDetails)
 
                 res.status(200).json({ 'meesage': "Invitation Mail to the mediation session has been sent" })
             }
-            else {
-                res.status(400).json(" you don't have the access on this case ")
-            }
+  
 
         }
         if (req.userRole == "mediator") {
@@ -357,9 +359,7 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
             }
 
         }
-        else {
-            res.status(400).json("err with user Auth")
-        }
+    
 
     } catch (err) {
         res.status(400).json(err.message)

@@ -44,10 +44,11 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails) {
 
     })
 
+    let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
 
     let info = transporter.sendMail({
         from: config.companyEmail,
-        to: `${clientDetials.c1email}, ${clientDetials.c2email} `,
+        to: `${mailList}` ,
         subject: `CIM Information`,
         html: ` <div style="padding: 2vw; direction: ltr">
          <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
@@ -120,10 +121,10 @@ const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) 
 
     })
 
-
+let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
     let info = transporter.sendMail({
         from: config.companyEmail,
-        to: `${clientDetials.c1email}, ${clientDetials.c2email} `,
+        to: `${mailList}` ,
         subject: `Property & Finance`,
         html: ` <div style="padding: 2vw; direction: ltr">
          <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
