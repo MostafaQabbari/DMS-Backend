@@ -173,7 +173,7 @@ router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
                         sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
-                    if (aseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
+                    if (caseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
                         sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
@@ -216,7 +216,7 @@ router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
                         sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
-                    if (aseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
+                    if (caseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
                         sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
@@ -233,7 +233,7 @@ router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
                         sendMIAM1Linkprivate(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
-                    if (aseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
+                    if (caseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
                         sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
