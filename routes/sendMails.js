@@ -174,6 +174,7 @@ router.post('/sendMIAM1Link/:id', authMiddleware, async (req, res, next) => {
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }
                     if (caseType == 'Legal Aid - Passporting' || caseType == 'Legal Aid - low Income / No Income') {
+                        console.log(clientData)
                         sendMIAM1LinklegalAid(companyData, clientData, messageBodyinfo)
                         res.status(200).json({ res: "MIAM 1 Link has been sent ..." })
                     }

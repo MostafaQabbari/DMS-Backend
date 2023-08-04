@@ -256,8 +256,8 @@ router.post('/sendSMSmediationUpdate/:id', authMiddleware, decryptTwillioData, a
         }
         else if (req.body.Client === "C2") {
        
-            clientData.clientNumber = currentCase.MajorDataC1.phoneNumber;
-            clientData.clientName = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
+            clientData.clientNumber = currentCase.MajorDataC2.phoneNumber;
+            clientData.clientName = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
             sendSMS_mediationUpdate(twillioInfo, clientData)
             res.status(200).json({ message: "SMS has been sent " })
 
