@@ -327,7 +327,7 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
            
 
                 sendPropertyMail(mediatorData, clientDetials, companyDetails);
-                res.status(200).json({ "message": "CIM information mail has been  sent ... " })
+                res.status(200).json({ "message": "Property mail has been  sent ... " })
             }
             else {
                 res.status(400).json({ "message": "no case found ... " })
