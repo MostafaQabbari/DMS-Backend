@@ -10,7 +10,9 @@ const { PDFDocument } = require("pdf-lib");
 const { gmail } = require('googleapis/build/src/apis/gmail');
 const crypto = require("crypto");
 const drive = google.drive('v3');
-const dateNow = require("../global/dateNow")
+const dateNow = require("../global/dateNow");
+const fs = require('fs');
+const path = require('path');
 const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
   let transporter = nodemailer.createTransport({
@@ -61,7 +63,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+    GoogleFunctions.createEvent(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
@@ -75,7 +77,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     let MajorDataC2 = {
       fName: req.body.otherParty.otherPartyFirstName,
       sName: req.body.otherParty.otherPartySurname,
-      mail: req.body.otherParty.otherPartyEmail,
+      mail: req.body.otherParty.otherPartyEmail, 
       phoneNumber: req.body.otherParty.otherPartyPhone,
     }
 
@@ -86,7 +88,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyEmail = companyData.connectionData.companyID.email;
 
-    await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+    // await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
 
     
 
@@ -149,9 +151,17 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 //this function create pdf and folder and then upload it to that google drive folder 
 async function createMIAM1Upload(client1data, folderName , email , caseID) {
   try {
+
+    // const filePath = path.join(__dirname, '../uploads/pdfs/templateMIAM-1.pdf');
+    
+    // const pdfTemplateBytes = fs.readFileSync(filePath);
+    // const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+
     // Create a new PDF document
     const pdfDoc = await PDFDocument.create();
 
+    // const pages = pdfDoc.getPages();
+    // const firstPage = pages[0];
     // Add a new page to the document
     const page = pdfDoc.addPage();
 
@@ -159,6 +169,19 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
     const font = await pdfDoc.embedFont('Helvetica');
     page.setFont(font);
     page.setFontSize(12);
+
+
+
+      // // Add the question text inside the box
+      // firstPage.drawText(client1data.personalContactAndCaseInfo.firstName, {
+      //   x: 150 ,
+      //   y: 600,
+      //   font: 'Helvetica',
+      //   size: 12,
+      //   // color: rgb(0, 0, 0), // Set the text color (black in this example)
+      // });
+
+
 
     // Add client data to the PDF document
     page.drawText(`First name: ${client1data.personalContactAndCaseInfo.firstName}`, { x: 50, y: 600 });
@@ -244,7 +267,7 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, email , companyServiceAccount , privatekey1 );//the gmail sharing account that belong to the company 
+    // shareWithPersonalAccount(folderId, "abdo.samir.7719@gmail.com" , companyServiceAccount , privatekey1 );//the gmail sharing account that belong to the company 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {

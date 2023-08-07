@@ -23,8 +23,13 @@ module.exports = {
  
 
   projectID: "direct-mediation-services",
-  credentialFile: '../DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json'
- 
+  credentialFile: '../DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json',
+
+  projectID1: "direct-mediation-services",
+  credentialFile1: '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json'
+
+  
+
  // appPassWord:"dffswebwucuxpayy" // app password for abdosamir2022.2022@gmail.com
   // refreshTokenSecret: "myrefreshsecretkey",
   // generateRefreshToken

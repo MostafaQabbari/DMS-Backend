@@ -1,8 +1,84 @@
 const express = require('express');
 const { PDFDocument } = require('pdf-lib');
 const fs = require('fs');
+const multer = require('multer');
 const path = require('path');
+const config = require("../config/config");
+const Case = require('../models/case');
 const router = express.Router();
+
+
+
+
+// Set up the storage for multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Set the destination folder for uploads (you can customize this)
+    cb(null, './uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+// Create the multer middleware to handle file uploads
+const upload = multer({ storage });
+
+// Function to authenticate the service account and get the Drive API client
+async function getDriveApiClient() {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: '../credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json', // Replace with the path to your service account key file
+    scopes: ['https://www.googleapis.com/auth/drive'],
+  });
+
+  const drive = google.drive({
+    version: 'v3',
+    auth: await auth.getClient(),
+  });
+
+  return drive;
+}
+
+// Endpoint to handle file uploads
+router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) => {
+  try {
+    const { caseID } = req.params;
+    const files = req.files;
+
+    // Get the Google Drive case folder ID from the database based on the caseID
+    const caseFolderID = Case.findById(caseID).FolderID; // Replace with your code to get the folder ID from the database
+
+    // Get the Google Drive API client
+    const drive = await getDriveApiClient();
+
+    // Upload each file to the case folder on Google Drive
+    for (const file of files) {
+      const fileMetadata = {
+        name: file.originalname,
+        parents: [caseFolderID],
+      };
+
+      const media = {
+        mimeType: file.mimetype,
+        body: fs.createReadStream(file.path),
+      };
+
+      await drive.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: 'id',
+      });
+
+      // Delete the uploaded file from the server (optional)
+      // fs.unlinkSync(file.path);
+    }
+
+    res.json({ message: 'Files uploaded successfully' });
+  } catch (error) {
+    console.error('Error uploading files:', error.message);
+    res.status(500).json({ message: 'Failed to upload files' });
+  }
+});
 
 // Define a route to handle the form submission
 router.post('/submit-form', async (req, res) => {
