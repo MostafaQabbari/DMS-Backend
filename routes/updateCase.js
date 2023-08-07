@@ -173,7 +173,7 @@ router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
             }
             if (CaseFound) {
                 let MIAM2mediator = req.body;
-                let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
+                let Reference = `${req.body.mediationDetails.clientSurName} & ${req.body.mediationDetails.clientSurName}`;
                 const StringfyData = JSON.stringify(MIAM2mediator);
                 let MajorDataC1 = {
                     fName: req.body.mediationDetails.clientFirstName,
