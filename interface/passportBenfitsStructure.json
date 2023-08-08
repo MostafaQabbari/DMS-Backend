@@ -1,0 +1,97 @@
+{
+  "typeOfApplication": {
+    "benefitReceiving": "",
+    "PleaseConfirmThatYouHaveWatchedThisVideoAndYouHaveTheRequiredEvidence.": ""
+  },
+  "evidence": {
+    "evidence(1)": "path"
+  },
+  "personalDetails": {
+    "firstName": "",
+    "surname": "",
+    "isSurnameAtBirthDifferent": "",
+    "differentSurnameAtBirth": "",
+    "dateOfBirth": "",
+    "address": {
+      "street": "",
+      "city": "",
+      "postcode": "",
+      "country": ""
+    },
+    "nationalInsuranceNumber": "",
+    "telephoneNumber": "",
+    "emailAddress": "",
+    "findDMS": "",
+    "maritalStatus": "",
+    "IsYourCurrentPartnerListedOnTheSameBenefitsClaim": "Yes"
+  },
+  "case": {
+    "caseAbout": "",
+    "discussFinancialIssues": "",
+    "discussOtherPArtyPROPERTY&FINANCES": ""
+  },
+  "accommodation": {
+    "ownProperty": "",
+    "accommodationLiveInType": "",
+    "lastMonthMortgagePay": "",
+    "accommodationRentType": "",
+    "lastMonthRentPay": ""
+  },
+  "properties": [
+    {
+      "propertyWorth": "",
+      "outstandingMortgageProperty": "",
+      "isPropertyInJointNamesWithYourEx-partner": "",
+      "propertyShare": "",
+      "isPropertyDiscussion": "",
+      "isSecondProperty": ""
+    },
+    {
+      "propertyWorth": "",
+      "outstandingMortgageProperty": "",
+      "isPropertyInJointNamesWithYourEx-partner": "",
+      "propertyShare": "",
+      "isThirdProperty": ""
+    },
+    {
+      "propertyWorth": "",
+      "outstandingMortgageProperty": "",
+      "isPropertyInJointNamesWithYourEx-partner": "",
+      "propertyShare": ""
+    }
+  ],
+  "assets": {
+    "backAccountSavingDiscussion": "",
+    "backAccountSavingAmount": "",
+    "investmentsInvolvingDiscussions": "",
+    "investmentsAmount": "",
+    "valuableItemsDiscussions": "",
+    "valuableItemsAmount": "",
+    "pensionsDiscussions": "",
+    "pensionsValue": "",
+    "otherPartyPensionValue": ""
+  },
+  "notIncludedInFinancialAssets": {
+    "savingsAmount": "",
+    "investmentsAmount": "",
+    "valuableItemsWorth": "",
+    "otherCapitalValue": ""
+  },
+  "partnerFinancialAssets": {
+    "savingsAmount": "",
+    "investmentsAmount": "",
+    "valuableItemsWorth": "",
+    "otherCapitalValue": ""
+  },
+  "previousRelationshipDetails": {
+    "otherPersonSurname": "",
+    "isMarriedTo": "",
+    "beenInMediationBefore": "",
+    "mediationType": ""
+  },
+  "clientDeclaration": {
+    "IUnderstandThatTheLegalAidAgencyMayCheckWhetherTheInformationAndDocumentationThatIProvideIsGenuineAndCorrect": "Yes",
+    "IUnderstandThatTheInformationObtainedWillBeUsedToDecideMyApplicationForLegalAidAndForRelatedPurposes": "Yes",
+    "IUnderstandThatProvidingInformationOrDocumentationThatIsNotGenuineAndOrCorrectWillResultInMyApplicationOrSubsequentApplicationsBeingRefusedAndMayLeadToMyProsecutionForACriminalOffence": "Yes"
+  }
+}

@@ -113,8 +113,8 @@ router.patch("/passporting_c1/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let passporting_C1 = req.body
         const StringfyData = JSON.stringify(passporting_C1);
-
-        if (!currentCase.passporting_C1) {
+//!currentCase.passporting_C1
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 passporting_C1: StringfyData
@@ -158,8 +158,8 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let lowIncome_C1 = req.body
         const StringfyData = JSON.stringify(lowIncome_C1);
-
-        if (!currentCase.lowIncome_C1) {
+       // !currentCase.lowIncome_C1
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 lowIncome_C1: StringfyData
@@ -206,8 +206,8 @@ router.patch("/passporting_c2/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let passporting_C2 = req.body
         const StringfyData = JSON.stringify(passporting_C2);
-
-        if (!currentCase.passporting_C2) {
+//!currentCase.passporting_C2
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 passporting_C2: StringfyData
@@ -250,8 +250,8 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let lowIncome_C2 = req.body
         const StringfyData = JSON.stringify(lowIncome_C2);
-
-        if (!currentCase.lowIncome_C2) {
+//!currentCase.lowIncome_C2
+        if (true) {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 lowIncome_C2: StringfyData

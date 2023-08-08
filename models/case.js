@@ -30,8 +30,6 @@ const caseSchema = new Schema({
 
   caseTypeC1:{type:String},
   caseTypeC2:{type:String},
-
-
   passporting_C1:{type: String},
   lowIncome_C1:{type: String},
   client1data: { type: String },
@@ -48,14 +46,23 @@ const caseSchema = new Schema({
 
   C2invitation: { type: String },
   C2invitationApplied: { type: Boolean, default: false },
+
+
+  C1Agreement: { type: String },
+  C1AgreementApplied: { type: Boolean, default: false },
   C2Agreement: { type: String },
   C2AgreementApplied: { type: Boolean, default: false },
 
+  mediationRecords:[{type:String}],
+  mediationSessionsNo:{type:Number ,default:0},
+
   
   availableTimes_C1:{
-    whatDaysCanNotAttend:{types:String},
-    appointmentTime:{types:String}
+    whatDaysCanNotAttend:{type:String},
+    appointmentTime:{type:String}
   },
+  
+  phoneCallAppointment_C2_C2reply:[{type: String}],
   availableTimes_C2:{
     whatDaysCanNotAttend:{types:String},
     appointmentTime:{types:String}
@@ -96,14 +103,6 @@ const caseSchema = new Schema({
 
 
 
-
-
-
-
-
-
-
-
   status: { type: String, default: "MIAM Part 1-C1" },
   closed: { type: Boolean, default: false },
   folderID:{type: String},
@@ -125,11 +124,17 @@ module.exports = Case;
             "MIAM Part 2-C1"
             "MIAM Part 1-C2"
             "MIAM Part 2-C2"
+            "Invitation to C2 sent"
+
+
             "Proceeding with mediation"
             "Not Proceeding with mediation"
+
             "Mediation Session 1..n"
             "Agreed" / "Successful" / "Broken"
-            "Invitation to C2 sent"
+
+
+            
             "Not suitable for mediation"
             "Closed"
  */

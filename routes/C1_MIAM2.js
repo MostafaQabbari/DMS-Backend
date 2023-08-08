@@ -135,7 +135,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C1_Date': MIAM_C1_Date, 
 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1"
+                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
                   
                 })
                 if (validationMail(caseDetails.C2mail)) {
@@ -143,7 +143,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
                 }
                 else {
-                    res.status(400).json({ "message": "Client 2 did not add valid email to recieve the invitation " })
+                    res.status(200).json({ "message": "MIAM2 added but Client 2 did not add valid email to recieve the invitation " })
                 }
 
                 res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })

@@ -1,0 +1,352 @@
+const express = require('express');
+const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
+const Case = require('../models/case');
+const decryptTwillioData = require('../middleware/getDataFromTwilio');
+const nodemailer = require("nodemailer");
+const Company = require("../models/company");
+const config = require("../config/config");
+const mediator = require('../models/mediator');
+
+
+
+const sendCIMMail = function (mediatorData, clientDetials, companyDetails) {
+    /*
+
+    mediatorData.name
+
+    clientDetials.c1.email,
+    clientDetials.c1.clientName
+    clientDetials.c2.email,
+    clientDetials.c2.clientName
+
+     companyDetails.companyName
+     companyDetails.email
+    
+    */
+   
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        starttls: {
+            enable: true
+        },
+        starttls: {
+            enable: true
+        },
+
+        secureConnection: false,
+
+        auth: {
+            user: config.companyEmail,
+            pass: config.appPassWord,
+        },
+
+    })
+
+    let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
+
+    let info = transporter.sendMail({
+        from: config.companyEmail,
+        to: `${mailList}` ,
+        subject: `CIM Information`,
+        html: ` <div style="padding: 2vw; direction: ltr">
+         <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
+
+         <p>I hope this email finds you well.</p>
+
+         <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for Child 1 and Child 2.
+         Together with this email, you will find a Child Inclusive Mediation - Information sheet for parents, 
+         which explains the process of CIM. Please have a read of the document as it contains very important information about CIM.
+         We have appointed mediator <span style ="color:blue">${mediatorData.name}</span>  trained to conduct CIM. Adele will be in touch with you after you both have signed the Parental Consent Form. 
+         This document will be sent to each of you in a separate email from DropboxSign asking for your electronic signature.</p>
+
+        <p>If you have any questions at this point, please do not hesitate to contact us.</p>
+   
+
+        <p>Kind Regards</p>
+        <h3>Direct Mediation Services</h3>
+
+        <h4>${companyDetails.companyName}</h4>
+        <h4>${companyDetails.email}</h4>
+         </div>`
+
+
+    });
+
+
+    transporter.sendMail(info, (error, info) => {
+        if (error) {
+            console.log('Error occurred while sending email:', error.message);
+
+        } else {
+            console.log('Email sent successfully:', info.messageId);
+        }
+    });
+
+
+}
+
+const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) {
+    /*
+
+    mediatorData.name
+
+    clientDetials.c1.email,
+    clientDetials.c1.clientName
+    clientDetials.c2.email,
+    clientDetials.c2.clientName
+
+     companyDetails.companyName
+     companyDetails.email
+    
+    */
+   
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        starttls: {
+            enable: true
+        },
+        starttls: {
+            enable: true
+        },
+
+        secureConnection: false,
+
+        auth: {
+            user: config.companyEmail,
+            pass: config.appPassWord,
+        },
+
+    })
+
+let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
+    let info = transporter.sendMail({
+        from: config.companyEmail,
+        to: `${mailList}` ,
+        subject: `Property & Finance`,
+        html: ` <div style="padding: 2vw; direction: ltr">
+         <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
+
+         <p>I hope this email finds you well.</p>
+
+         <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for Child 1 and Child 2.
+         Together with this email, you will find a Child Inclusive Mediation - Information sheet for parents, 
+         which explains the process of CIM. Please have a read of the document as it contains very important information about CIM.
+         We have appointed mediator <span style ="color:blue">${mediatorData.name}</span>  trained to conduct CIM. Adele will be in touch with you after you both have signed the Parental Consent Form. 
+         This document will be sent to each of you in a separate email from DropboxSign asking for your electronic signature.</p>
+
+        <p>If you have any questions at this point, please do not hesitate to contact us.</p>
+   
+
+        <p>Kind Regards</p>
+        <h3>Direct Mediation Services</h3>
+
+        <h4>${companyDetails.companyName}</h4>
+        <h4>${companyDetails.email}</h4>
+         </div>`
+
+
+    });
+
+
+    transporter.sendMail(info, (error, info) => {
+        if (error) {
+            console.log('Error occurred while sending email:', error.message);
+
+        } else {
+            console.log('Email sent successfully:', info.messageId);
+        }
+    });
+
+
+}
+
+router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
+
+    let CaseFound;
+    try {
+ 
+        let companyDetails = {}, clientDetials = {}, mediatorData = {}
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+
+                const currentComp = await Company.findById(req.user._id);
+                const currentMediator = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+                mediatorData.name = `${currentMediator.connectionData.mediatorID.firstName} ${currentMediator.connectionData.mediatorID.lastName} `;
+
+            
+                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                clientDetials.c2email = CaseFound.MajorDataC2.mail
+                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                clientDetials.c1email = CaseFound.MajorDataC1.mail
+                
+                 //clientDetials.c2email = 'abdosamir023023@gmail.com'
+              //  clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+                companyDetails.companyName = currentComp.companyName
+                companyDetails.email = currentComp.email;
+
+          
+
+                sendCIMMail(mediatorData, clientDetials, companyDetails);
+                res.status(200).json({ "message": "CIM information mail has been  sent ... " })
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+                const currentMediator = await mediator.findById(req.user._id);
+                console.log(currentMediator)
+                mediatorData.name = `${currentMediator.firstName} ${currentMediator.lastName} `;
+
+            
+                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                clientDetials.c2email = CaseFound.MajorDataC2.mail
+                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                clientDetials.c1email = CaseFound.MajorDataC1.mail
+                
+              //   clientDetials.c2email = 'abdosamir023023@gmail.com'
+                //clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+                companyDetails.companyName = mediatorCompanyData.companyId.companyName
+                companyDetails.email = mediatorCompanyData.companyId.email;
+
+           
+
+                sendCIMMail(mediatorData, clientDetials, companyDetails);
+                res.status(200).json({ "message": "CIM information mail has been  sent ... " })
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+
+        else {
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+});
+
+router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => {
+
+    let CaseFound;
+    try {
+ 
+        let companyDetails = {}, clientDetials = {}, mediatorData = {}
+
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+
+                const currentComp = await Company.findById(req.user._id);
+                const currentMediator = await Case.findById(req.params.id).populate('connectionData.mediatorID');
+                mediatorData.name = `${currentMediator.connectionData.mediatorID.firstName} ${currentMediator.connectionData.mediatorID.lastName} `;
+
+            
+                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                clientDetials.c2email = CaseFound.MajorDataC2.mail
+                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                clientDetials.c1email = CaseFound.MajorDataC1.mail
+                
+                 //clientDetials.c2email = 'abdosamir023023@gmail.com'
+              //  clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+                companyDetails.companyName = currentComp.companyName
+                companyDetails.email = currentComp.email;
+
+          
+
+                sendPropertyMail(mediatorData, clientDetials, companyDetails);
+                res.status(200).json({ "message": "CIM information mail has been  sent ... " })
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+                const currentMediator = await mediator.findById(req.user._id);
+                console.log(currentMediator)
+                mediatorData.name = `${currentMediator.firstName} ${currentMediator.lastName} `;
+
+            
+                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                clientDetials.c2email = CaseFound.MajorDataC2.mail
+                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                clientDetials.c1email = CaseFound.MajorDataC1.mail
+                
+              //   clientDetials.c2email = 'abdosamir023023@gmail.com'
+                //clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+                companyDetails.companyName = mediatorCompanyData.companyId.companyName
+                companyDetails.email = mediatorCompanyData.companyId.email;
+
+           
+
+                sendPropertyMail(mediatorData, clientDetials, companyDetails);
+                res.status(200).json({ "message": "Property mail has been  sent ... " })
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+
+        else {
+            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+        }
+
+
+
+    } catch (err) {
+        res.status(400).json(err.message)
+    }
+
+});
+
+
+
+module.exports = router

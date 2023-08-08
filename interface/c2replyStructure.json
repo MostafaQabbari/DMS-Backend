@@ -1,0 +1,20 @@
+{
+  "InvitationAnswer": {
+    "willingToComeToMediation": "",
+    "firstName": "",
+    "surname": "",
+    "email": "",
+    "otherPersonFirstName": "",
+    "otherPersonSurname": "",
+    "reasonsNotToCome": ""
+  },
+  "InvitationAccepted": {
+    "privateOrLegal": "",
+    "willingToMakeLegalAidApplication": "",
+    "isReceiptOfAnyOfTheseSpecificBenefits": "",
+    "isEntitledToLegalAid": "",
+    "isStillLikeToMakeAnApplicationForLegalAid": "",
+    "phone": ""
+  },
+  "phoneCallAppointment": ""
+}

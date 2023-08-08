@@ -11,29 +11,32 @@ const configureTwillio = require("./routes/configureTwillio")
 const getMediators = require("./routes/getMediators");
 const C1MIAM2 = require("./routes/C1_MIAM2")
 const getDataFromCSV = require("./routes/getDataFromCSV")
-const sendingMailsOrSMS = require("./routes/sendingMailsOrSMS")
+const sendingForms_MailsOrSMS = require("./routes/sendingForms_MailsOrSMS")
 const reminders = require("./routes/reminders")
 const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
 const C2MIAM1= require("./routes/C2_MIAM1");
 const C2MIAM2 = require("./routes/C2_MIAM2");
-const invitations = require("./routes/invitations");
 const recieveSMS = require("./routes/receiveSMS")
 const legalAid_forms_C1 = require("./routes/legalAid_Forms_C1")
 
 const ScheduleMeetings = require('./routes/ScheduleMeetings')
-
-
+const agreementForm = require('./routes/agreementForm')
+const mediationSession=require('./routes/Mediation_Session')
+const sendManualSMS = require('./routes/sendmanualSMS')
+const sendMails = require('./routes/sendMails')
 const updateCase = require("./routes/updateCase")
+const appointmentConf = require('./routes/appoinmentConformation')
+const cim = require('./routes/porperty&CIMmail');
+const courtForm = require ('./routes/sendCourtForm')
+
+
 const cors = require('cors');
 require('dotenv')
 const PORT = process.env.PORT || 3007
 const app = express();
 
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
-app.use('/api-docs', swaggerUi.serve , swaggerUi.setup(swaggerDocument));
 
 
 mongoose.connect("mongodb+srv://mkabary8:O8uafwuq79PBkJoJ@cluster1.xnqqhnm.mongodb.net/users", { useNewUrlParser: true })
@@ -57,17 +60,24 @@ app.use(C1MIAM1)
 app.use(getMediators)
 app.use(C1MIAM2)
 app.use(getDataFromCSV)
-app.use(sendingMailsOrSMS)
+app.use(sendingForms_MailsOrSMS)
 app.use(updateCase)
 app.use(updateCaseStatus)
 app.use(C2Invitation)
 app.use(reminders)
 app.use(C2MIAM1)
 app.use(C2MIAM2)
-app.use(invitations)
+
 app.use(recieveSMS)
 app.use(legalAid_forms_C1)
 app.use(ScheduleMeetings)
+app.use(agreementForm)
+app.use(mediationSession)
+app.use(sendManualSMS)
+app.use(sendMails)
+app.use(appointmentConf)
+app.use(cim)
+app.use(courtForm)
 
 
 
