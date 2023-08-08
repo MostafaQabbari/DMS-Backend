@@ -6,7 +6,15 @@ const config = require("../config/config");
 const dateNow = require("../global/dateNow")
 
 
-const sendMailC2_M1 = function (caseDetails, mediationDetails, messageInfo) {
+const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl ,caseType}
+
+  */
 
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -27,39 +35,212 @@ const sendMailC2_M1 = function (caseDetails, mediationDetails, messageInfo) {
 
   })
 
-  /*{
-         caseDetails.C2mail,
-         caseDetails.C2name
-         caseDetails.C1name
 
-          mediationDetails.companyName
-          mediationDetails.medName
+  let info = transporter.sendMail({
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
+     we need you to complete an online form records basic information about you and your situation. </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px;"> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
 
-         messageInfo.formUrl
-  }
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
+}
+const sendMailPassporting = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
   */
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
 
 
   let info = transporter.sendMail({
     from: config.companyEmail,
-    to: caseDetails.C2mail,
-    subject: `Invitation to mediation by ${mediationDetails.companyName} `,
-    html: `<body>
-      <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-      <h1>Hello ${caseDetails.C2name}  </h1>
-      <h3>Thanks for applying you invitation to mediation with your partner  ${caseDetails.C1name} and that's your link to apply your MIAM form </h3>
-      <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
- 
-      <p> Best Regards </p>
-      <p>${mediationDetails.companyName}'s Team </p>
-      <p> Mediator : ${mediationDetails.medName} Team </p>
-      
-      </div>
-      </body>`,
+    to: clientData.email,
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you MIAM booking you MIAM  , here is your passporting form </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
+
 
   });
 
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
 }
+const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  */
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
+
+
+  let info = transporter.sendMail({
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: `Applying To ${messageBodyinfo.formType} Form`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you MIAM , here is your low income / no income form </p>
+     <p> Please click on the link below :</p>
+    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
+
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
+}
+
+const confirmationAppliedMail = function (companyData, clientData) {
+
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  */
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
+
+
+  let info = transporter.sendMail({
+    from: config.companyEmail,
+    to: clientData.email,
+    subject: `Mediation process`,
+    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+     <h1>Dear ${clientData.clientName}  </h1>
+    <p> Thanks for booking you invitation form , but still we need to get more details about your funding process , 
+    please make sure to follow the redirect link </p>
+    
+    <h3>Direct Mediation Services</h3>
+    <h4>${companyData.companyName}</h4>
+    <h4>${companyData.email}</h4>
+     </div>`
+
+
+  });
+
+
+  transporter.sendMail(info, (error, info) => {
+    if (error) {
+      console.log('Error occurred while sending email:', error.message);
+
+    } else {
+      console.log('Email sent successfully:', info.messageId);
+    }
+  });
+
+}
+
 const notifyMediator = function (mediatorData, caseData) {
 
   let transporter = nodemailer.createTransport({
@@ -111,8 +292,10 @@ const notifyMediator = function (mediatorData, caseData) {
 
 
 
+
+
 router.patch("/C2_invitation/:id", async (req, res) => {
-  let caseDetails = {}, mediationDetails = {}, messageInfo = {};
+  let companyData = {}, clientData = {}, messageBodyinfo = {};
 
   try {
 
@@ -148,23 +331,67 @@ router.patch("/C2_invitation/:id", async (req, res) => {
       })
 
 
-      const companyData = await Case.findById(req.params.id).populate('connectionData.companyID');
-      const companyEmail = companyData.connectionData.companyID.email;
+      const currentComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+      const companyEmail = currentComp.connectionData.companyID.email;
       const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
       const medEmail = medData.connectionData.mediatorID.email;
 
+      clientData.email = MajorDataC2.mail
+      clientData.clientName = `${MajorDataC2.fName} ${MajorDataC2.sName}`
+      companyData.companyName = `${currentComp.connectionData.companyID.companyName}`;
+      companyData.email = companyEmail
 
-      caseDetails.C2mail = MajorDataC2.mail
-      caseDetails.C2name = `${MajorDataC2.fName} ${MajorDataC2.sName}`
-      caseDetails.C1name = `${updatedCase.MajorDataC1.fName} ${updatedCase.MajorDataC1.sName}`
+      // caseDetails.C1name = `${updatedCase.MajorDataC1.fName} ${updatedCase.MajorDataC1.sName}`
+      // mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
 
-      mediationDetails.companyName = `${companyData.connectionData.companyID.companyName}`;
-      mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
 
-      messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.C2_M1}/${updatedCase._id}`;
-      sendMailC2_M1(caseDetails, mediationDetails, messageInfo);
+      if (req.body.privateOrLegailAid == "Private") {
 
-      let mediatorData={}, caseData={};
+        messageBodyinfo.formType = "MIAM 1"
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${updatedCase._id}`;
+        sendMailMIAM1(companyData, clientData, messageBodyinfo);
+      }
+
+      else if (
+        req.body.privateOrLegailAid == "Legal Aid" &&
+        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
+        req.body.specificBenefits == "No" &&
+        req.body.ConfirmationLegalAidIfEntitled == "No"
+      ) {
+
+        messageBodyinfo.formType = "low Income / No Income"
+        messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/${updatedCase._id}`;
+        sendMailLowIncome(companyData, clientData, messageBodyinfo);
+      }
+      else if (
+        req.body.privateOrLegailAid == "Legal Aid" &&
+        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
+        req.body.specificBenefits == "Yes"
+      ) {
+
+        messageBodyinfo.formType = "Passporting"
+        messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/${updatedCase._id}`;
+        sendMailPassporting(companyData, clientData, messageBodyinfo);
+      }
+      else if (
+        req.body.privateOrLegailAid == "Legal Aid" &&
+        req.body.makeMediationLegalaidForTheFamilly == "Yes" &&
+        req.body.specificBenefits == "No" &&
+        req.body.entitledToLegalAid=="No" &&
+        req.body.ConfirmationLegalAidIfEntitled == "No"
+      ) {
+
+  
+        confirmationAppliedMail(companyData, clientData);
+     
+      }
+      else {
+        res.status(400).json({ "message": "something missed about case type" })
+      }
+
+
+
+      let mediatorData = {}, caseData = {};
       mediatorData.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
       mediatorData.MedMail = medEmail
       caseData.caseReference = updatedCase.Reference
@@ -173,10 +400,10 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
 
 
-      res.json({ "res": "C2 invitation form has been applies" })
+      res.status(200).json({ "res": "C2 invitation form has been applies" })
     }
     else {
-      res.json({ "res": "this case has been applied before or not suitable please check it out" })
+      res.status(400).json({ "res": "this case has been applied before or not suitable please check it out" })
     }
 
 
@@ -188,7 +415,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
 
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

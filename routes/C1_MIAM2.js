@@ -143,13 +143,13 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
                 }
                 else {
-                    res.json({ "message": "Client 2 did not add valid email to recieve the invitation " })
+                    res.status(400).json({ "message": "Client 2 did not add valid email to recieve the invitation " })
                 }
 
-                res.json({ "message": " MIAM2 has been added and Inviation sent to C2" })
+                res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })
             }
             else {
-                res.json({ "message": "this MIAM2 has been added before" })
+                res.status(400).json({ "message": "this MIAM2 has been added before" })
             }
 
         } else {
@@ -176,10 +176,10 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     MIAM2AddedData: true,
                     status: "Not suitable for mediation"
                 })
-                res.json({ "message": " MIAM2 has been added with Not Suitable status " })
+                res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {
-                res.json({ "message": "this MIAM2 has been added before" })
+                res.status(400).json({ "message": "this MIAM2 has been added before" })
             }
 
         }
@@ -191,7 +191,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
 
     }
     catch (Err) {
-        res.json({ "err": Err.message })
+        res.status(400).json({ "err": Err.message })
     }
 
 });

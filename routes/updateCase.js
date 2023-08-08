@@ -32,7 +32,7 @@ router.patch('/updateC1M1/:id', authMiddleware, async (req, res, next) => {
         
              await Case.findByIdAndUpdate(req.params.id, { client1data: StringfyData, Reference })
             // console.log(updatedCase)
-                res.json({ res: "Data of MIAM1-C1 has been updated" })
+                res.status(200).json({ res: "Data of MIAM1-C1 has been updated" })
         
             }
 
@@ -52,20 +52,20 @@ router.patch('/updateC1M1/:id', authMiddleware, async (req, res, next) => {
         
                 await Case.findByIdAndUpdate(req.params.id, { client1data: StringfyData, Reference })
         
-                res.json({ res: "Data of MIAM1-C1 has been updated" })
+                res.status(200).json({ res: "Data of MIAM1-C1 has been updated" })
         
             }
 
         }
 
         else{
-            res.json({res : "there is an arror with getting case access for the user"})
+            res.status(400).json({res : "there is an arror with getting case access for the user"})
         }
 
     
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 });
@@ -92,7 +92,7 @@ router.patch('/updateC2M1/:id', authMiddleware, async (req, res, next) => {
         
       await Case.findByIdAndUpdate(req.params.id, { client2data: StringfyData })
              //console.log(updatedCase)
-                res.json({ res: "Data of MIAM1-C2 has been updated" })
+                res.status(200).json({ res: "Data of MIAM1-C2 has been updated" })
         
             }
 
@@ -111,20 +111,20 @@ router.patch('/updateC2M1/:id', authMiddleware, async (req, res, next) => {
         
                 await Case.findByIdAndUpdate(req.params.id, { client2data: StringfyData })
         
-                res.json({ res: "Data of MIAM1-C2 has been updated" })
+                res.status(200).json({ res: "Data of MIAM1-C2 has been updated" })
         
             }
 
         }
 
         else{
-            res.json({res : "there is an arror with getting case access for the user"})
+            res.status(400).json({res : "there is an arror with getting case access for the user"})
         }
 
     
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 });
@@ -149,7 +149,7 @@ router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
         
       await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
              //console.log(updatedCase)
-                res.json({ res: "Data of MIAM2-C1 has been updated" })
+                res.status(200).json({ res: "Data of MIAM2-C1 has been updated" })
         
             }
 
@@ -168,20 +168,20 @@ router.patch('/updateC1M2/:id', authMiddleware, async (req, res, next) => {
         
                 await Case.findByIdAndUpdate(req.params.id, { MIAM2mediator: StringfyData })
         
-                res.json({ res: "Data of MIAM2-C1 has been updated" })
+                res.status(200).json({ res: "Data of MIAM2-C1 has been updated" })
         
             }
 
         }
 
         else{
-            res.json({res : "there is an arror with getting case access for the user"})
+            res.status(400).json({res : "there is an arror with getting case access for the user"})
         }
 
     
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 });
@@ -206,7 +206,7 @@ router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
         
       await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
              //console.log(updatedCase)
-                res.json({ res: "Data of MIAM2-C2 has been updated" })
+                res.status(200).json({ res: "Data of MIAM2-C2 has been updated" })
         
             }
 
@@ -225,20 +225,20 @@ router.patch('/updateC2M2/:id', authMiddleware, async (req, res, next) => {
         
                 await Case.findByIdAndUpdate(req.params.id, { MIAM2C2: StringfyData })
         
-                res.json({ res: "Data of MIAM2-C2 has been updated" })
+                res.status(200).json({ res: "Data of MIAM2-C2 has been updated" })
         
             }
 
         }
 
         else{
-            res.json({res : "there is an arror with getting case access for the user"})
+            res.status(400).json({res : "there is an arror with getting case access for the user"})
         }
 
     
 
     } catch (err) {
-        res.json(err.message)
+        res.status(400).json(err.message)
     }
 
 });

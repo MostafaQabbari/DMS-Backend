@@ -6,7 +6,9 @@ surName:"",
 C2mail:" ",
 otherPartyFirstName:" ",
 otherPartySurName:" ",
-privateOrLegailAid:" ",
+
+
+privateOrLegailAid:" ",   
 makeMediationLegalaidForTheFamilly:"yes",
 specificBenefits:"",
 entitledToLegalAid:"",

@@ -198,10 +198,22 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
   try {
     if (req.userRole == 'company') {
-      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail , caseType } = req.body;
+      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail , caseType ,legalAidType} = req.body;
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
+
+      let case_type ;
+      if(caseType=="private")
+      {
+        case_type = 'Private'
+      }
+      else if (caseType=="LegalAid" && legalAidType =="passporting"){
+        case_type = 'Legal Aid ( Passporting) '
+      }
+      else if (caseType=="LegalAid" && legalAidType =="lowIncome"){
+        case_type = 'Legal Aid ( Low Income / No Income) '
+      }
 
       let Reference = `${surName} `;
       let newCaseID;
@@ -210,9 +222,10 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
  
         let newCase = await Case.insertMany(
           {
-            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location ,caseType },
+            client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location ,caseType ,legalAidType },
             startDate: dateOfMAIM,
             status: `New Case`,
+            caseTypeC1: case_type,
             Reference,
             MajorDataC1: {
               fName: firstName,
@@ -256,31 +269,31 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         if(req.body.caseType=='private')
         {
           messageBodyinfo.formType= "MIAM 1"
-          messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${newCase[0]._id}`;
           sendMailMIAM1(companyData, clientData, messageBodyinfo)
 
         }
-        else if(req.body.caseType=='lowIncome'){
+        else if(req.body.legalAidType=='lowIncome' && req.body.caseType=='LegalAid'){
           messageBodyinfo.formType="low Income / No Income"
-          messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME_client1}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/${newCase[0]._id}`;
           sendMailLowIncome(companyData, clientData, messageBodyinfo)
         }
-        else if(req.body.caseType=='passporting'){
+        else if(req.body.legalAidType=='passporting' && req.body.caseType=='LegalAid'){
           messageBodyinfo.formType= 'Passporting'
-          messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING_client1}/${newCase[0]._id}`;
+          messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/${newCase[0]._id}`;
           sendMailPassporting(companyData, clientData, messageBodyinfo)
         }
         else
         {
-          res.json({ "message": "please confirm case type" })
+          res.status(400).json({ "message": "please confirm case type" })
         }
 
       }
       else {
-        res.json({ "message": "please add the mediator first" })
+        res.status(400).json({ "message": "please add the mediator first" })
       }
 
-      res.json({ caseID: newCaseID })
+      res.status(200).json({ caseID: newCaseID })
     }
 
 //     else if (req.userRole == 'mediator') {
@@ -330,7 +343,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
 //       clientData.email = email;
 //       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-//       messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${newCase[0]._id}`;
+//       messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${newCase[0]._id}`;
 
 //       companyData.companyName = mediatorCompanyData.companyId.companyName
 //       companyData.email = mediatorCompanyData.companyId.email
@@ -339,10 +352,10 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 //     }
 
     else {
-      res.json({ 'message': "error in the role of token" })
+      res.status(400).json({ 'message': "error in the role of token" })
     }
   } catch (err) {
-    res.json({ message: err.message })
+    res.status(400).json({ message: err.message })
   }
 
 });
@@ -380,7 +393,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       }
 
 
-      res.json(casesList)
+      res.status(200).json(casesList)
 
     }
     else if (req.userRole == "mediator") {
@@ -402,14 +415,14 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       }
 
 
-      res.json(casesList)
+      res.status(200).json(casesList)
 
     }
     else {
-      res.json("error with auth role ")
+      res.status(400).json("error with auth role ")
     }
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 
@@ -421,7 +434,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
-  let Reminders, MIAMDates;
+  let Reminders, MIAMDates ,availableTimes_C1,availableTimes_C2 ,caseTypeC1 ,caseTypeC2
   //let Reference , client1ContactDetails , client1data , MIAM2mediator , client2data , MIAM2C2;
 
 
@@ -446,6 +459,14 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
 
+        CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
+        CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
+
+        CaseFound.caseTypeC1? caseTypeC1= CaseFound.caseTypeC1: caseTypeC1= "Case type with client1 still ignored"
+        CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
+
+        
+
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
@@ -465,14 +486,19 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC2,
           C2invitation,
           Reminders,
-          MIAMDates
+          MIAMDates,
+          availableTimes_C1,
+          availableTimes_C2,
+          caseTypeC1,
+          caseTypeC2
+          
 
         }
 
-        res.json(CaseResponse)
+        res.status(200).json(CaseResponse)
       }
       else {
-        res.json(" you don't have the access on this case ")
+        res.status(400).json(" you don't have the access on this case ")
       }
 
     }
@@ -493,10 +519,16 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
-        console.log(CaseFound.MIAMDates)
+
+        CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
+        CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
+
+        CaseFound.caseTypeC1? caseTypeC1= CaseFound.caseTypeC1: caseTypeC1= "Case type with client1 still ignored"
+        CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
+
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
-        console.log(CaseFound.Reminders)
+        
 
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
 
@@ -515,21 +547,25 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           MajorDataC2,
           C2invitation,
           Reminders,
-          MIAMDates
+          MIAMDates,
+          availableTimes_C1,
+          availableTimes_C2,
+          caseTypeC1,
+          caseTypeC2
         }
 
-        res.json(CaseResponse)
+        res.status(200).json(CaseResponse)
       }
       else {
-        res.json(" you don't have the access on this case ")
+        res.status(400).json(" you don't have the access on this case ")
       }
     }
     else {
-      res.json("err with user Auth")
+      res.status(400).json("err with user Auth")
     }
 
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

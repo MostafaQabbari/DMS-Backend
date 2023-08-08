@@ -18,17 +18,17 @@ router.get("/getMediators", authMiddleware, async (req, res) => {
             }
             console.log(response)
 
-            res.json(response)
+            res.status(200).json(response)
 
         }
         else if (req.userRole == 'mediator') {
-            res.json({ "Err": "mediator account does not have mediators" })
+            res.status(400).json({ "Err": "mediator account does not have mediators" })
         }
         else {
-            res.json({ "Err": "error with account role" })
+            res.status(400).json({ "Err": "error with account role" })
         }
     } catch (err) {
-        res.json({ "Err": err.message })
+        res.status(400).json({ "Err": err.message })
     }
 
 

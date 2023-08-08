@@ -31,9 +31,9 @@ router.patch("/addTwillio", authMiddleware, verifyTwillio, async (req, res) => {
          console.log("xxx")
         console.log(cryptedTwilioData)
         await company.findByIdAndUpdate(userID, { "twillioData": cryptedTwilioData })
-        res.json({ "message": " data added to DB with Encryption " })
+        res.status(200).json({ "message": " data added to DB with Encryption " })
       } else {
-        res.json({ "message": " not found this email of the company " })
+        res.status(404).json({ "message": " not found this email of the company " })
       }
 
 
@@ -46,7 +46,7 @@ router.patch("/addTwillio", authMiddleware, verifyTwillio, async (req, res) => {
 
   }
   catch (err) {
-    res.json({ err:err.message })
+    res.status(400).json({ err:err.message })
   }
 })
 
