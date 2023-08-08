@@ -65,6 +65,10 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       mail: req.body.personalContactAndCaseInfo.email,
       phoneNumber: req.body.personalContactAndCaseInfo.phoneNumber
     }
+    let availableTimes_C2={
+      whatDaysCanNotAttend:req.body.personalContactAndCaseInfo.whatDaysCanNotAttend,
+      appointmentTime:req.body.personalContactAndCaseInfo.appointmentTime,
+    }
 
 
     const StringfyData = JSON.stringify(client2data)
@@ -95,7 +99,7 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       await Case.findByIdAndUpdate(req.params.id, {
         client2data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client2AddedData: true, MajorDataC2, status: "MIAM Part 1-C2"
+        }, Reference, client2AddedData: true, MajorDataC2,availableTimes_C2,status: "MIAM Part 1-C2"
       })
       const updatedCase = await Case.findById(req.params.id);
 
@@ -103,19 +107,19 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
 
       clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
       clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
-      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/${updatedCase._id}`;
+      messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C2/${updatedCase._id}`;
 
       sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 
-      res.json({ "message": "M1_C2 has been added " })
+      res.status(200).json({ "message": "M1_C2 has been added " })
 
     }
     else {
-      res.json({ "message": "this from has been applied before" })
+      res.status(400).json({ "message": "this from has been applied before" })
 
     }
   } catch (err) {
-    res.json(err.message)
+    res.status(400).json(err.message)
   }
 
 

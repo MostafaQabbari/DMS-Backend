@@ -3,7 +3,7 @@ const Company = require('../models/company');
 const Case = require('../models/case');
 
 //, client2Email
-module.exports = async function createEvent(caseId, mediatorEmail, client1Email) {
+ async function createEvent(caseId, mediatorEmail, client1Email) {
   try {
     // // Retrieve the necessary data from the database
     // const currentCase = await Case.findById(caseId);
@@ -20,7 +20,7 @@ module.exports = async function createEvent(caseId, mediatorEmail, client1Email)
     const plainParsed = JSON.parse(plain);
     const privatekey1 = plainParsed.private_key;
 
-
+    // await impersonateServiceAccount("mkabary8@gmail.com" , )
 
     // Create the JWT auth client
     const auth = new google.auth.JWT({
@@ -65,3 +65,62 @@ module.exports = async function createEvent(caseId, mediatorEmail, client1Email)
     throw new Error('Failed to create event');
   }
 }
+
+// async function impersonateServiceAccount(targetEmail, serviceAccount , serviceAccountKey) {
+//   // Create the JWT auth client
+//   const auth = new google.auth.GoogleAuth({
+//     email: companyServiceAccount,
+//     key: privatekey1,
+//     scopes: ['https://www.googleapis.com/auth/calendar.events'],
+//   });
+  
+  
+//   // const auth = new google.auth.GoogleAuth({
+//   //   credentials,
+//   //   scopes: ['https://www.googleapis.com/auth/calendar.events'],
+//   // });
+
+//   // Get an access token for the target email
+//   const client = await auth.getClient();
+//   const accessToken = await client.getAccessToken();
+
+//   // Create a calendar instance for the target user
+//   const calendar = google.calendar({
+//     version: 'v3',
+//     auth,
+//   });
+
+//   // Use the calendar instance to perform actions on behalf of the target user
+//   // For example, create an event and send invitations
+//   const event = {
+//     // Event details
+//     summary: 'Sample Event',
+//     start: {
+//       dateTime: '2022-01-01T10:00:00Z',
+//       timeZone: 'America/New_York',
+//     },
+//     end: {
+//       dateTime: '2022-01-01T12:00:00Z',
+//       timeZone: 'America/New_York',
+//     },
+//     // Attendees
+//     attendees: [
+//       { email: 'attendee1@example.com' },
+//       { email: 'attendee2@example.com' },
+//     ],
+//   };
+
+//   // Create the event on behalf of the target user and send invitations
+//   const response = await calendar.events.insert({
+//     calendarId: 'primary',
+//     resource: event,
+//     sendNotifications: true,
+//   });
+
+//   console.log('Event created:', response.data);
+// }
+
+module.exports = { createEvent };
+
+
+// module.exports = GoogleAPIs;

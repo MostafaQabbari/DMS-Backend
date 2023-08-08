@@ -1,0 +1,161 @@
+{
+  "clientData": {
+    "clientOneFullName": "",
+    "clientTwoFullName": "",
+    "mediatorName": "",
+    "sessionDate": "",
+    "caseType": "",
+    "specifyLocation": "",
+    "mediationSessionNumber": "",
+    "sessionLength": ""
+  },
+  "keyFacts": {
+    "clientsAgreedToAttendMediationChildAndFiance": "",
+    "clientsAgreedToAttendMediationChild": "",
+    "children": [
+      {
+        "Child One": {
+          "ChildFirstName": "",
+          "ChildDateOfBirth": "",
+          "bothHaveParentalResponsibilityForChild": "",
+          "ChildParentalResponsibility": "",
+          "secondChildCheck": ""
+        },
+        "Child Two": {
+          "ChildFirstName": "",
+          "ChildDateOfBirth": "",
+          "bothHaveParentalResponsibilityForChild": "",
+          "ChildParentalResponsibility": "",
+          "thirdChildCheck": ""
+        },
+        "Child Three": {
+          "ChildFirstName": "",
+          "ChildDateOfBirth": "",
+          "bothHaveParentalResponsibilityForChild": "",
+          "ChildParentalResponsibility": "",
+          "fourthChildCheck": ""
+        },
+        "Child Four": {
+          "ChildFirstName": "",
+          "ChildDateOfBirth": "",
+          "bothHaveParentalResponsibilityForChild": "",
+          "ChildParentalResponsibility": ""
+        }
+      }
+    ]
+  },
+  "recordOfMattersDiscussed": {
+    "mediationType": "",
+    "clientsAgreedToMediate": "",
+    "agendaListPoints": ""
+  },
+  "discussions": [
+    {
+      "Discussion One": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "secondAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Two": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "thirdAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Three": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "fourthAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Four": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "fifthAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Five": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "sixthAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Six": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "seventhAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Seven": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": "",
+        "eighthAgendaCheck": ""
+      }
+    },
+    {
+      "Discussion Eight": {
+        "agendaPointDiscussed": "",
+        "issuesIdentified": "",
+        "optionsDiscussed": "",
+        "anyAgreementsReached": "",
+        "agreedBulletsPoints": "",
+        "clientsActionPoints": ""
+      }
+    }
+  ],
+  "documentUpload": {
+    "additionalDocumentsToUpload": "",
+    "documentsPaths": [""]
+  },
+  "NextSteps": {
+    "isFurtherSessionPlanned": "",     //   Yes or No => for next session
+    "nextSessionIssues": "",
+    "bothClientsAgreed": "",
+    "returnToMediationDate": "",
+    "appointmentTime": "",
+    "mediationFinishReason": "",    // if No session => will get status from here    Broken  ,
+    "isC100OrFormA": "",
+    "documentsPaths": [""],
+    "isTwoClientWantCopy": "",
+    "clientOneEmail": "",
+    "clientTwoEmail": "",
+    "isMediatorWantCopy": "",
+    "mediatorEmail": "",
+    "Mediator'sComments": ""
+  }
+}

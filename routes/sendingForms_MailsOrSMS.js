@@ -39,7 +39,6 @@ const sendSMS_M1C1 = function (twillioInfo, clientNumber, messageBodyData) {
     });
 
 }
-
 const sendMail_M1C1 = function (companyData, clientData, messageBodyinfo) {
 
     /*
@@ -162,8 +161,6 @@ const sendMail_C2Invitation = function (caseDetails, mediationDetails, messageIn
     });
 
 }
-
-
 const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyData) {
 
     /*
@@ -192,24 +189,6 @@ const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyDat
 
 }
 
-const validNumber = function (x) {
-
-    if (!isNaN(Number(x))) {
-        return true
-    } else {
-        return false
-    }
-}
-
-const validationMail = function (x) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (emailRegex.test(x)) {
-        return true
-    } else {
-        return false
-    }
-}
 const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
 
     let transporter = nodemailer.createTransport({
@@ -264,8 +243,6 @@ const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
     });
 
 }
-
-
 const sendSMS_C2_M1 = function (twillioInfo, clientNumber, messageBodyData) {
 
     /*
@@ -294,9 +271,43 @@ const sendSMS_C2_M1 = function (twillioInfo, clientNumber, messageBodyData) {
 
 }
 
+const validNumber = function (x) {
+
+    if (!isNaN(Number(x))) {
+        return true
+    } else {
+        return false
+    }
+}
+const validationMail = function (x) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailRegex.test(x)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+/*
+
+/sendM1_sms_C1/:id
+/sendM1_mail_C1/:id
+/sendM1_mail_C2/:id
+/sendM1_sms_C2/:id
+
+/MailC2Invitaion/:id   C2mail=>in the body  
+/Resend_MailC2Invitaion/:id
+
+/SMSC2Invitation/:id    C2phoneNumber=>in the body
+/Resend_SMSC2Invitation/:id
+
+buttons to to send forms 👌👌👌
+
+*/
 
 
-router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/sendM1_sms_C1/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -311,59 +322,138 @@ router.post('/sendMIAM1sms', authMiddleware, decryptTwillioData, async (req, res
     console.log(twillioInfo)
 
     try {
-        const { caseID } = req.body;
+        const  caseID  = req.params.id;
         const selectedCase = await Case.findById(caseID);
-        const client1ContactDetails = selectedCase.client1ContactDetails
+        const client1ContactDetails = selectedCase.MajorDataC1
         const compData = await Case.findById(caseID).populate('connectionData.companyID');
 
-        //  clientNumber = client1ContactDetails.phoneNumber;
-        clientNumber = "+44 7476 544877"
+        //clientNumber = "+44 7476 544877"
+        clientNumber = client1ContactDetails.phoneNumber;
         messageBodyData.companyName = compData.connectionData.companyID.companyName
-        messageBodyData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
-        messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
+        messageBodyData.clientName = `${client1ContactDetails.fName} ${client1ContactDetails.sName}`;
+        messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${caseID}`;
         sendSMS_M1C1(twillioInfo, clientNumber, messageBodyData)
 
-        res.json({ message: "MIAM 1 link has been sent " })
+        res.status(200).json({ message: "MIAM 1 link has been sent " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
 
 
-router.post('/sendMIAM1mail', authMiddleware, async (req, res, next) => {
+router.post('/sendM1_mail_C1/:id', authMiddleware, async (req, res, next) => {
 
     let clientData = {};
     let companyData = {};
     let messageBodyinfo = {};
 
     try {
-        const { caseID } = req.body;
+        const caseID = req.params.id;
         const selectedCase = await Case.findById(caseID);
-        const client1ContactDetails = selectedCase.client1ContactDetails
+        const client1ContactDetails = selectedCase.MajorDataC1
         const compData = await Case.findById(caseID).populate('connectionData.companyID');
         // console.log(client1ContactDetails)
 
-        clientData.clientName = `${client1ContactDetails.firstName} ${client1ContactDetails.surName}`;
-        clientData.email = client1ContactDetails.email
+        clientData.clientName = `${client1ContactDetails.fName} ${client1ContactDetails.sName}`;
+        clientData.email = client1ContactDetails.mail
         // console.log(clientData.email)
         companyData.companyName = compData.connectionData.companyID.companyName
         companyData.email = compData.connectionData.companyID.email
-        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1_client1}/${caseID}`;
+        messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${caseID}`;
 
         sendMail_M1C1(companyData, clientData, messageBodyinfo)
 
-        res.json({ message: "MIAM 1 link has been sent " })
+        res.status(200).json({ message: "MIAM 1 link has been sent " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
 
 
-router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
+router.post("/sendM1_mail_C2/:id", authMiddleware, async (req, res) => {
+    try {
+        const caseID  = req.params.id;
+        const currentCase = await Case.findById(caseID);
+        let caseDetails = {}, mediationDetails = {}, messageInfo = {};
+        caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
+        caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
+        caseDetails.C2mail = currentCase.MajorDataC2.mail
+        if (validationMail(caseDetails.C2mail)) {
+
+            const compData = await Case.findById(caseID).populate('connectionData.companyID');
+            mediationDetails.companyName = compData.connectionData.companyID.companyName
+            const medData = await Case.findById(caseID).populate('connectionData.mediatorID');
+            mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
+            messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${caseID}`;
+            sendMail_C2_M1(caseDetails, mediationDetails, messageInfo)
+
+            res.status(200).json({ message: "C2_M1 link has been sent " })
+
+
+        }
+        else {
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
+        }
+
+    } catch (err) {
+        res.status(400).json({ message: "error with the end point" })
+    }
+
+
+
+})
+ 
+router.post('/sendM1_sms_C2/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
+
+    /*
+      twillioInfo={twillioSID , twillioToken , twillioNumber}
+      clientNumber = {clientNumber}
+      messageBodyData = {clientName ,companyName, formLink   }
+    */
+
+    let twillioInfo = req.twillioInfo;
+    let clientNumber;
+    let messageBodyData = {};
+ //   console.log(twillioInfo)
+
+    try {
+        const caseID  = req.params.id;
+        const selectedCase = await Case.findById(caseID);
+        const MajorDataC2 = selectedCase.MajorDataC2
+
+        if(validNumber(selectedCase.MajorDataC2.phoneNumber)){
+
+            //! here will go on with the client number
+            //clientNumber = "+44 7476 544877";
+            
+            clientNumber = selectedCase.MajorDataC2.phoneNumber;
+            const compData = await Case.findById(caseID).populate('connectionData.companyID');
+    
+            messageBodyData.companyName = compData.connectionData.companyID.companyName
+            messageBodyData.clientName = `${MajorDataC2.fName} ${MajorDataC2.sName}`;
+            messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${caseID}`;
+    
+    
+    
+            sendSMS_C2_M1(twillioInfo, clientNumber, messageBodyData)
+    
+            res.status(200).json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
+        }else
+        {
+            res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
+        }
+
+    } catch (err) {
+        res.status(400).json({ message: "error with the end point" })
+    }
+
+});
+
+router.post("/MailC2Invitaion/:id", authMiddleware, async (req, res) => {
     /*{
                caseDetails.C2mail,
                caseDetails.C2name
@@ -376,7 +466,8 @@ router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
         }
         */
     try {
-        const { caseID, C2mail } = req.body;
+        const caseID = req.params.id
+        const  C2mail  = req.body;
         if (validationMail(C2mail)) {
             const currentCase = await Case.findById(caseID);
             let caseDetails = {}, mediationDetails = {}, messageInfo = {};
@@ -397,22 +488,22 @@ router.post("/MailC2Invitaion", authMiddleware, async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${caseID}`;
             sendMail_C2Invitation(caseDetails, mediationDetails, messageInfo)
 
-            res.json({ message: "C2 Invitation link has been sent " })
+            res.status(200).json({ message: "C2 Invitation link has been sent " })
 
 
         }
         else {
-            res.json({ message: "please enter valid mail to send to ... " })
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 
 
 })
-router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
+router.post("/Resend_MailC2Invitaion/:id", authMiddleware, async (req, res) => {
     /*{
                caseDetails.C2mail,
                caseDetails.C2name
@@ -425,7 +516,7 @@ router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
         }
         */
     try {
-        const { caseID } = req.body;
+        const  caseID  = req.params.id;
         const currentCase = await Case.findById(caseID);
         let caseDetails = {}, mediationDetails = {}, messageInfo = {};
         caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
@@ -440,23 +531,23 @@ router.post("/Resend_MailC2Invitaion", authMiddleware, async (req, res) => {
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${caseID}`;
             sendMail_C2Invitation(caseDetails, mediationDetails, messageInfo)
 
-            res.json({ message: "C2 Invitation link has been sent " })
+            res.status(200).json({ message: "C2 Invitation link has been sent " })
 
 
         }
         else {
-            res.json({ message: "please enter valid mail to send to ... " })
+            res.status(400).json({ message: "please enter valid mail to send to ... " })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 
 
 })
 
-router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/SMSC2Invitation/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -470,12 +561,13 @@ router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, 
    // console.log(twillioInfo)
 
     try {
-        const { caseID, C2phoneNumber } = req.body;
+        const caseID = req.params.id
+        const  C2phoneNumber  = req.body;
         const selectedCase = await Case.findById(caseID);
         const MajorDataC2 = selectedCase.MajorDataC2
         //! here will go on with the client number
-        //  clientNumber = C2phoneNumber;
-        clientNumber = "+44 7476 544877";
+         clientNumber = C2phoneNumber;
+       // clientNumber = "+44 7476 544877";
 
         const compData = await Case.findById(caseID).populate('connectionData.companyID');
 
@@ -490,14 +582,14 @@ router.post('/SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, 
 
         sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
 
-        res.json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
+        res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
-router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/Resend_SMSC2Invitation/:id', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -511,15 +603,15 @@ router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async
  //   console.log(twillioInfo)
 
     try {
-        const { caseID } = req.body;
+        const  caseID  = req.params.id;
         const selectedCase = await Case.findById(caseID);
         const MajorDataC2 = selectedCase.MajorDataC2
 
         if(validNumber(selectedCase.MajorDataC2.phoneNumber)){
 
             //! here will go on with the client number
-            //  clientNumber = selectedCase.MajorDataC2.phoneNumber;
-            clientNumber = "+44 7476 544877";
+              clientNumber = selectedCase.MajorDataC2.phoneNumber;
+           // clientNumber = "+44 7476 544877";
     
             const compData = await Case.findById(caseID).populate('connectionData.companyID');
     
@@ -531,96 +623,20 @@ router.post('/Resend_SMSC2Invitation', authMiddleware, decryptTwillioData, async
     
             sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
     
-            res.json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
+            res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
         }else
         {
-            res.json({ message: "Invalid Number to recieve the invitation by SMS" })
+            res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
         }
 
     } catch (err) {
-        res.json({ message: "error with the end point" })
+        res.status(400).json({ message: "error with the end point" })
     }
 
 });
 
 
-router.post("/Resend_MailC2_M1", authMiddleware, async (req, res) => {
-    try {
-        const { caseID } = req.body;
-        const currentCase = await Case.findById(caseID);
-        let caseDetails = {}, mediationDetails = {}, messageInfo = {};
-        caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
-        caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
-        caseDetails.C2mail = currentCase.MajorDataC2.mail
-        if (validationMail(caseDetails.C2mail)) {
-
-            const compData = await Case.findById(caseID).populate('connectionData.companyID');
-            mediationDetails.companyName = compData.connectionData.companyID.companyName
-            const medData = await Case.findById(caseID).populate('connectionData.mediatorID');
-            mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`
-            messageInfo.formUrl = `${config.baseUrlMIAM1}/${config.C2_M1}/${caseID}`;
-            sendMail_C2_M1(caseDetails, mediationDetails, messageInfo)
-
-            res.json({ message: "C2_M1 link has been sent " })
 
 
-        }
-        else {
-            res.json({ message: "please enter valid mail to send to ... " })
-        }
-
-    } catch (err) {
-        res.json({ message: "error with the end point" })
-    }
-
-
-
-})
- 
-router.post('/Resend_SMSC2_M1', authMiddleware, decryptTwillioData, async (req, res, next) => {
-
-    /*
-      twillioInfo={twillioSID , twillioToken , twillioNumber}
-      clientNumber = {clientNumber}
-      messageBodyData = {clientName ,companyName, formLink   }
-    */
-
-    let twillioInfo = req.twillioInfo;
-    let clientNumber;
-    let messageBodyData = {};
- //   console.log(twillioInfo)
-
-    try {
-        const { caseID } = req.body;
-        const selectedCase = await Case.findById(caseID);
-        const MajorDataC2 = selectedCase.MajorDataC2
-
-        if(validNumber(selectedCase.MajorDataC2.phoneNumber)){
-
-            //! here will go on with the client number
-            //  clientNumber = selectedCase.MajorDataC2.phoneNumber;
-            clientNumber = "+44 7476 544877";
-    
-            const compData = await Case.findById(caseID).populate('connectionData.companyID');
-    
-            messageBodyData.companyName = compData.connectionData.companyID.companyName
-            messageBodyData.clientName = `${MajorDataC2.fName} ${MajorDataC2.sName}`;
-            messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.C2_M1}/${caseID}`;
-    
-    
-    
-            sendSMS_C2_M1(twillioInfo, clientNumber, messageBodyData)
-    
-            res.json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
-        }else
-        {
-            res.json({ message: "Invalid Number to recieve the invitation by SMS" })
-        }
-
-    } catch (err) {
-        res.json({ message: "error with the end point" })
-    }
-
-});
 
 module.exports = router;

@@ -24,14 +24,14 @@ const getDataFromTwillio = async function (user, role ,res) {
     }
    else{
     console.log({"err" : "company does not twilio account yet"})
-    res.json({"err" : "company does not twilio account yet"})
+    res.status(400).json({"err" : "company does not twilio account yet"})
    }
   
 
   }
   else {
     console.log({ message: "something wrong with twilio data " })
-    res.json({ "err": "something wrong with twilio data " })
+    res.status(400).json({ "err": "something wrong with twilio data " })
   }
 }
 

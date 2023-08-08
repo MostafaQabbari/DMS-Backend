@@ -96,7 +96,8 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       sharingGmail:sharingGmail,
       logo: logo,
       companyLogo: req.file ? req.file.filename : null,
-      twillioData:cryptedTwilioData
+      twillioData:cryptedTwilioData,
+      phoneNumberTwillio:req.body.twillioData.twillioNumber
     });
     // Check if sharingGmail is already present in any user within the company accounts
     const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
@@ -344,13 +345,17 @@ router.post("/refresh-token", async (req, res, next) => {
     const { refreshToken } = req.body;
     const decoded = jwt.verify(refreshToken, config.jwtSecret);
 
+    if (decoded.type === "access") {
+      return res.status(401).json({ message: "Invalid token this an access token it must be a refresh token" });
+    } 
+
     let user = await Company.findById(decoded.id);
     if (!user) {
       user = await Mediator.findById(decoded.id);
       if (!user) {
         user = await Admin.findById(decoded.id);
         if (!user) {
-          return res.status(401).json({ message: "Invalid token" });
+          return res.status(401).json({ message: "Invalid token user not found " });
         }
       }
     }
@@ -508,12 +513,12 @@ function generateResetToken() {
 
 async function createServiceAccount(accountName , companyID) {
   const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
+    keyFile: config.credentialFile1,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
   });
 
   const iam = google.iam('v1');
-  const projectId = config.projectID;
+  const projectId = config.projectID1;
 
   const request = {
     name: `projects/${projectId}`,
@@ -547,12 +552,12 @@ async function createServiceAccount(accountName , companyID) {
 
 async function createServiceAccountKey(serviceAccountEmail , companyID) {
   const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile,
+    keyFile: config.credentialFile1,
     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
   });
 
   const iam = google.iam('v1');
-  const projectId = 'direct-mediation-services';
+  const projectId = config.projectID1;
 
 
   const request = {
