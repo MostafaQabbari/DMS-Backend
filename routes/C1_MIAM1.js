@@ -89,11 +89,16 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const StringfyData = JSON.stringify(client1data)
 
 
-    const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+    // const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
-    const companyEmail = companyData.connectionData.companyID.email;
+    // const companyEmail = companyData.connectionData.companyID.email;
 
-    // await createMIAM1Upload(client1data , Reference ,companyEmail , req.params.id );
+    await createMIAM1Upload(client1data , Reference , req.params.id );//put email parameter
+
+
+    generateAndSavePDF(client1data)
+    .then(message => console.log(message))
+    .catch(error => console.error('Error:', error));
 
     
 
@@ -153,77 +158,125 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 })
 
 
+
+
+// // Function to authenticate the service account and get the Drive API client
+// async function getDriveApiClient() {
+//   const auth = new google.auth.GoogleAuth({
+//     keyFile: config.credentialFile1, 
+//     scopes: ['https://www.googleapis.com/auth/drive'],
+//   });
+
+//   const drive = google.drive({
+//     version: 'v3',
+//     auth: await auth.getClient(),
+//   });
+
+//   return drive;
+// }
+
+
+
+
 //this function create pdf and folder and then upload it to that google drive folder 
 async function createMIAM1Upload(client1data, folderName , email , caseID) {
   try {
 
-    // const filePath = path.join(__dirname, '../uploads/pdfs/templateMIAM-1.pdf');
+    const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-1-temp.pdf');
     
-    // const pdfTemplateBytes = fs.readFileSync(filePath);
-    // const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    const pdfTemplateBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
 
-    // Create a new PDF document
-    const pdfDoc = await PDFDocument.create();
+    // // Create a new PDF document
+    // const pdfDoc = await PDFDocument.create();
 
-    // const pages = pdfDoc.getPages();
-    // const firstPage = pages[0];
-    // Add a new page to the document
-    const page = pdfDoc.addPage();
+    const pages = pdfDoc.getPages();
+    const Page1 = pages[0];
+    const Page2 = pages[1];
+
+    // // Add a new page to the document
+    // const page = pdfDoc.addPage();
 
     // Set the font and font size
     const font = await pdfDoc.embedFont('Helvetica');
-    page.setFont(font);
-    page.setFontSize(12);
+    Page1.setFont(font);
+    Page1.setFontSize(12);
+    Page2.setFont(font);
+    Page2.setFontSize(12);
 
+    const personalContactAndCaseInfo = client1data.personalContactAndCaseInfo;
 
+    // // Add client1 data to the PDF document"first page" 
+    Page1.drawText("Yes" , { x: 350, y: 545 });//Do you Agree to GDPR Policy
+    Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
+    Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
+    Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
+    Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
+    Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
+    Page1.drawText(
+      `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
+      { x: 350, y: 365 }
+    );//loctaion is address or not 
+    Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
+    Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
+    Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
+    // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
+    Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
+    Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+    
 
-      // // Add the question text inside the box
-      // firstPage.drawText(client1data.personalContactAndCaseInfo.firstName, {
-      //   x: 150 ,
-      //   y: 600,
-      //   font: 'Helvetica',
-      //   size: 12,
-      //   // color: rgb(0, 0, 0), // Set the text color (black in this example)
-      // });
-
-
-
-    // Add client data to the PDF document
-    page.drawText(`First name: ${client1data.personalContactAndCaseInfo.firstName}`, { x: 50, y: 600 });
-    page.drawText(`Sur name: ${client1data.personalContactAndCaseInfo.surName}`, { x: 50, y: 650 });
-    page.drawText(`Birthday: ${client1data.personalContactAndCaseInfo.dateOfBirth}`, { x: 50, y: 700 });
-    page.drawText(`Phone: ${client1data.personalContactAndCaseInfo.phoneNumber}`, { x: 50, y: 750 });
-    page.drawText(`email: ${client1data.personalContactAndCaseInfo.email}`, { x: 50, y: 800 });
+    //the second page 
+    Page2.drawText(personalContactAndCaseInfo.firstName , { x: 350, y: 775 });//submit at
+    Page2.drawText("Yes" , { x: 350, y: 545 });//Do you Agree to GDPR Policy
+    Page2.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
+    Page2.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
+    Page2.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
+    Page2.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
+    Page2.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
+    Page2.drawText(
+      `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
+      { x: 350, y: 365 }
+    );//loctaion is address or not 
+    Page2.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
+    Page2.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
+    Page2.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
+    // Page2.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
+    Page2.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
+    Page2.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+    
 
     // Save the PDF document to a buffer
     const pdfBytes = await pdfDoc.save();
 
-    const companyData = await Case.findById(caseID).populate('connectionData.companyID');
- 
-    const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
-    const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
+    // const companyData = await Case.findById(caseID).populate('connectionData.companyID');
+
+
+    // //getting the service account from the email
+    // const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
+    // const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
     
 
   
-    const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
+    // const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
     
 
 
-    const plainParsed = JSON.parse(plain);
-    const privatekey1 = plainParsed.private_key;
-
-  
+    // const plainParsed = JSON.parse(plain);
+    // const privatekey1 = plainParsed.private_key;
 
     const auth = await google.auth.getClient({
-      credentials: {
-        client_email: companyServiceAccount ,
-        private_key: privatekey1,
-      },
+      
+      keyFile: config.credentialFile1,
+
       scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
     });
 
+  
 
     const drive = google.drive({ version: "v3", auth });
+
+
+    // const drive = await getDriveApiClient();
 
     // Get the folder ID using the reference object (folder name)
     const response = await drive.files.list({
@@ -272,7 +325,7 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
 
 
     // Call the function with the folder ID and personal account email
-    // shareWithPersonalAccount(folderId, "abdo.samir.7719@gmail.com" , companyServiceAccount , privatekey1 );//the gmail sharing account that belong to the company 
+    shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );//the gmail sharing account that belong to the company 
 
     console.log("PDF created and uploaded successfully");
   } catch (error) {
@@ -283,16 +336,14 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
 
 
 
-async function shareWithPersonalAccount(folderId, personalAccountEmail , Semail , Skey ) {
+async function shareWithPersonalAccount(folderId, personalAccountEmail  ) {
 
   const authClient = await google.auth.getClient({
-    credentials: {
-      client_email: Semail ,
-      private_key: Skey,
-    },
+    keyFile: config.credentialFile1,
     scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
   });
 
+  // const auth = await getDriveApiClient();
   // Set the permissions for the folder or file
   const permission = {
     type: 'user',
@@ -310,5 +361,164 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail , Semail 
   console.log('Folder shared successfully!');
 }
  
+
+const generateAndSavePDF = async (client1data) => {
+  try {
+    const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-1-temp.pdf');
+    const pdfTemplateBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+
+    const pages = pdfDoc.getPages();
+    const Page1 = pages[0];
+    const Page2 = pages[1];
+    const Page3 = pages[2];
+    const Page4 = pages[3];
+    const Page5 = pages[4];
+    const Page6 = pages[5];
+    const Page7 = pages[6];
+
+    const font = await pdfDoc.embedFont('Helvetica');
+    Page1.setFont(font);
+    Page1.setFontSize(12);
+    Page2.setFont(font);
+    Page2.setFontSize(12);
+    Page3.setFont(font);
+    Page3.setFontSize(12);
+    Page4.setFont(font);
+    Page4.setFontSize(12);
+    Page5.setFont(font);
+    Page5.setFontSize(12);
+    Page6.setFont(font);
+    Page6.setFontSize(12);
+    Page7.setFont(font);
+    Page7.setFontSize(12);
+
+    const personalContactAndCaseInfo = client1data.personalContactAndCaseInfo;
+    const otherParty = client1data.otherParty;
+    const children= client1data.children;
+    const previousRelationshipDetails = client1data.previousRelationshipDetails;
+
+    // Rest of your code to draw text on pages...
+   // // Add client1 data to the PDF document"first page" 
+   Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
+   Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
+   Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
+   Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
+   Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
+   Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
+   Page1.drawText(
+     `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
+     { x: 350, y: 365 }
+   );//loctaion is address or not 
+   Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
+   Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
+   Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
+   // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
+   Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
+   Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+   
+
+   //the second page 
+   Page2.drawText(personalContactAndCaseInfo.areChangesToServicesRequired , { x: 350, y: 725 });
+   Page2.drawText(personalContactAndCaseInfo.changesRequired ||"" , { x: 350, y: 685 });
+   Page2.drawText(personalContactAndCaseInfo.willSupporterAttendMediation, { x: 350, y: 635 });
+   Page2.drawText(personalContactAndCaseInfo.supporterNameAndRelation || "", { x: 350, y: 575 });
+   Page2.drawText(personalContactAndCaseInfo.ethnicOrigin, { x: 350, y: 505 });
+   Page2.drawText(personalContactAndCaseInfo.hasBritishPassport , { x: 350, y: 445 });
+   Page2.drawText(personalContactAndCaseInfo.immigrationStatus || "" , { x: 350, y: 380 });
+  //  Page2.drawText(personalContactAndCaseInfo., { x: 350, y: 305 });//leave it empty in the form
+   Page2.drawText(personalContactAndCaseInfo.howClientFoundDMS, { x: 350, y: 265});
+   Page2.drawText(personalContactAndCaseInfo.facedIssue, { x: 350, y: 215 });
+   Page2.drawText(personalContactAndCaseInfo.isThereDaysCanNotAttend, { x: 350, y: 185 });
+   Page2.drawText(personalContactAndCaseInfo.whatDaysCanNotAttend || "", { x: 350, y: 125 });
+
+
+
+  //the third page 
+  Page3.drawText(personalContactAndCaseInfo.appointmentTime , { x: 350, y: 735 });
+  Page3.drawText(personalContactAndCaseInfo.otherParty , { x: 350, y: 675 });
+  Page3.drawText(otherParty.otherPartyFirstName, { x: 350, y: 625 });
+  Page3.drawText(otherParty.otherPartySurname, { x: 350, y: 585 });
+  Page3.drawText(otherParty.otherPartyDateOfBirth, { x: 350, y: 535 });
+  Page3.drawText(otherParty.otherPartyEmail, { x: 350, y: 505 });
+  Page3.drawText(otherParty.otherPartyPhone , { x: 350, y: 475 });
+  Page3.drawText(otherParty.otherPartyAddressKnown, { x: 350, y: 445 });//do you know the other party's adderss not found in the clinet1data
+  if (otherParty || otherParty.otherPartyStreet || otherParty.otherPartyCity ||
+    otherParty.otherPartyCountry || otherParty.otherPartyPostalCode) {
+  Page3.drawText(
+    `${otherParty.otherPartyStreet}, ${otherParty.otherPartyCity}, ${otherParty.otherPartyCountry}, ${otherParty.otherPartyPostalCode}`,
+    { x: 350, y: 415 }
+  );
+}
+  Page3.drawText(previousRelationshipDetails.separationDate, { x: 350, y: 385});
+  Page3.drawText(previousRelationshipDetails.relationshipPeriod, { x: 350, y: 345 });
+  Page3.drawText(previousRelationshipDetails.isMarried, { x: 350, y: 290 });
+  Page3.drawText(previousRelationshipDetails.marriageDate || "", { x: 350, y: 225 });
+
+  Page3.drawText(children[0]["Child One"].firstChildFirstName || "" , { x: 350, y: 175});
+  Page3.drawText(children[0]["Child One"].firstChildSurName || "", { x: 350, y: 145 });
+  Page3.drawText(children[0]["Child One"].firstChildGender || "" , { x: 350, y: 115 });
+  Page3.drawText(children[0]["Child One"].firstChildLivingWith || "", { x: 350, y: 85 });
+  
+
+    //the forth page 
+    Page4.drawText(children[0]["Child One"].firstChildDateOfBirth , { x: 350, y: 745 });
+    Page4.drawText(children[0]["Child One"].isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
+    Page4.drawText(children[0]["Child One"].firstChildResponsibility, { x: 350, y: 640 });
+    Page4.drawText(children[0]["Child One"].secondChildCheck || "", { x: 350, y: 585 });
+    Page4.drawText(children[1]["Child Two"].secondChildFirstName || "", { x: 350, y: 535 });
+    Page4.drawText(children[1]["Child Two"].secondChildSurName || "" , { x: 350, y: 505 });
+    Page4.drawText(children[1]["Child Two"].secondChildGender || "" , { x: 350, y: 475 });
+    Page4.drawText(children[1]["Child Two"].secondChildLivingWith || "", { x: 350, y: 445 });
+    Page4.drawText(children[1]["Child Two"].secondChildDateOfBirth || "", { x: 350, y: 415});
+    Page4.drawText(children[1]["Child Two"].issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
+    Page4.drawText(children[1]["Child Two"].secondChildResponsibility || "", { x: 350, y: 315 });
+    Page4.drawText(children[1]["Child Two"].thirdChildCheck || "", { x: 350, y: 250 });
+    Page4.drawText(children[2]["Child Three"].thirdChildFirstName || "" , { x: 350, y: 215});
+    Page4.drawText(children[2]["Child Three"].thirdChildSurName || "", { x: 350, y: 185 });
+    Page4.drawText(children[2]["Child Three"].thirdChildGender || "" , { x: 350, y: 155 });
+    Page4.drawText(children[2]["Child Three"].thirdChildLivingWith || "", { x: 350, y: 125 });
+    Page4.drawText(children[2]["Child Three"].thirdChildDateOfBirth || "" , { x: 350, y: 95 });
+   
+    //the fifth page 
+    Page5.drawText(children[2]["Child Three"].isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 745 });
+    Page5.drawText(children[2]["Child Three"].thirdChildResponsibility ||"" , { x: 350, y: 705 });
+    Page5.drawText(children[2]["Child Three"].fourthChildCheck, { x: 350, y: 640 });
+    Page5.drawText(children[3]["Child Four"].forthChildFirstName || "", { x: 350, y: 585 });
+    Page5.drawText(children[3]["Child Four"].forthChildSurName || "", { x: 350, y: 535 });
+    Page5.drawText(children[3]["Child Four"].forthChildGender || "" , { x: 350, y: 505 });
+    Page5.drawText(children[3]["Child Four"].forthChildLivingWith || "" , { x: 350, y: 475 });
+    Page5.drawText(children[3]["Child Four"].forthChildDateOfBirth || "", { x: 350, y: 445 });
+    Page5.drawText(children[3]["Child Four"].isforthChildHaveSpecialNeeds || "", { x: 350, y: 415});
+    Page5.drawText(children[3]["Child Four"].forthChildResponsibility || "", { x: 350, y: 365 });
+    Page5.drawText(children[3]["Child Four"].fifthChildCheck || "", { x: 350, y: 315 });
+    Page5.drawText(children[4]["Child Five"].fifthChildFirstName || "", { x: 350, y: 250 });
+    Page5.drawText(children[4]["Child Five"].fifthChildSurName || "" , { x: 350, y: 215});
+    Page5.drawText(children[4]["Child Five"].fifthChildGender|| "", { x: 350, y: 185 });
+    Page5.drawText(children[4]["Child Five"].fifthChildLivingWith || "" , { x: 350, y: 155 });
+    Page5.drawText(children[4]["Child Five"].fifthChildDateOfBirth  || "", { x: 350, y: 125 });
+   
+   
+
+
+    // Save the PDF document to a buffer
+    const pdfBytes = await pdfDoc.save();
+
+    // Save the PDF to the "uploads" folder
+    const pdfSavePath = path.join(__dirname, '../uploads/generated.pdf');
+    fs.writeFileSync(pdfSavePath, pdfBytes);
+
+
+
+    return 'PDF generated and saved successfully';
+  } catch (error) {
+    console.error('Error generating and saving PDF:', error);
+    throw error;
+  }
+};
+
+
+
+
 
 module.exports = router;

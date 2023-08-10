@@ -117,13 +117,13 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       await user.save();
 
       // Other code for creating service account, generating refresh token, and storing it
-      await createServiceAccount(companyName, user._id);
+      // await createServiceAccount(companyName, user._id);
 
       const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
       await Company.findByIdAndUpdate(user._id, { refreshToken });
 
       // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-      res.status(201).json({ refreshToken, message: "Company account and its service account created successfully" });
+      res.status(201).json({ refreshToken, message: "Company account created successfully" });
     } catch (error) {
       if (error.code === 11000) {
         // Duplicate key error
@@ -511,83 +511,83 @@ function generateResetToken() {
 
 
 
-async function createServiceAccount(accountName , companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile1,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
+// async function createServiceAccount(accountName , companyID) {
+//   const auth = new google.auth.GoogleAuth({
+//     keyFile: config.credentialFile1,
+//     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+//   });
 
-  const iam = google.iam('v1');
-  const projectId = config.projectID1;
+//   const iam = google.iam('v1');
+//   const projectId = config.projectID1;
 
-  const request = {
-    name: `projects/${projectId}`,
-    requestBody: {
-      accountId: accountName,
-      serviceAccount: {
-        displayName: accountName,
-      },
-    },
-    auth,
-  };
+//   const request = {
+//     name: `projects/${projectId}`,
+//     requestBody: {
+//       accountId: accountName,
+//       serviceAccount: {
+//         displayName: accountName,
+//       },
+//     },
+//     auth,
+//   };
 
-  try {
-    const response = await iam.projects.serviceAccounts.create(request);
-    const { email  } = response.data;
+//   try {
+//     const response = await iam.projects.serviceAccounts.create(request);
+//     const { email  } = response.data;
     
    
 
-    await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
+//     await Company.findByIdAndUpdate(companyID, { serviceAccount: email  });
     
-    //save the service email in the company model
-    await createServiceAccountKey(email , companyID);
+//     //save the service email in the company model
+//     await createServiceAccountKey(email , companyID);
       
 
-    console.log(`Service Account created. Credentials saved in the database`);
-  } catch (error) {
-    console.error('Error creating Service Account:', error.message);
-  }
-}
+//     console.log(`Service Account created. Credentials saved in the database`);
+//   } catch (error) {
+//     console.error('Error creating Service Account:', error.message);
+//   }
+// }
 
 
-async function createServiceAccountKey(serviceAccountEmail , companyID) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: config.credentialFile1,
-    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-  });
+// async function createServiceAccountKey(serviceAccountEmail , companyID) {
+//   const auth = new google.auth.GoogleAuth({
+//     keyFile: config.credentialFile1,
+//     scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+//   });
 
-  const iam = google.iam('v1');
-  const projectId = config.projectID1;
+//   const iam = google.iam('v1');
+//   const projectId = config.projectID1;
 
 
-  const request = {
-    name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
-    requestBody: {
-      privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
-    },
-    auth,
-  };
+//   const request = {
+//     name: `projects/${projectId}/serviceAccounts/${serviceAccountEmail}`,
+//     requestBody: {
+//       privateKeyType: 'TYPE_GOOGLE_CREDENTIALS_FILE',
+//     },
+//     auth,
+//   };
 
-  try {
-    const response = await iam.projects.serviceAccounts.keys.create(request);
-    const { privateKeyData } = response.data;
+//   try {
+//     const response = await iam.projects.serviceAccounts.keys.create(request);
+//     const { privateKeyData } = response.data;
 
-    const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
+//     const plain = Buffer.from(privateKeyData, 'base64').toString('utf8');
 
     
-    const plainParsed = JSON.parse(plain);
-    const serviceAccountId = plainParsed.client_id;
+//     const plainParsed = JSON.parse(plain);
+//     const serviceAccountId = plainParsed.client_id;
     
 
-    await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
+//     await Company.findByIdAndUpdate(companyID, { serviceAccountKey: privateKeyData , serviceAccountID: serviceAccountId });
 
 
 
-    console.log(`Key created and saved in the database.`);
-  } catch (error) {
-    console.error('Error creating service account key:', error.message);
-  }
-}
+//     console.log(`Key created and saved in the database.`);
+//   } catch (error) {
+//     console.error('Error creating service account key:', error.message);
+//   }
+// }
 
 
 

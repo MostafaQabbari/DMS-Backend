@@ -6,6 +6,7 @@ const path = require('path');
 const config = require("../config/config");
 const Case = require('../models/case');
 const router = express.Router();
+const { google } = require("googleapis");
 
 
 
@@ -14,7 +15,7 @@ const router = express.Router();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Set the destination folder for uploads (you can customize this)
-    cb(null, './uploads/');
+    cb(null, './uploads/pdfs');
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -27,7 +28,7 @@ const upload = multer({ storage });
 // Function to authenticate the service account and get the Drive API client
 async function getDriveApiClient() {
   const auth = new google.auth.GoogleAuth({
-    keyFile: '../credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json', // Replace with the path to your service account key file
+    keyFile: config.credentialFile1, // Replace with the path to your service account key file
     scopes: ['https://www.googleapis.com/auth/drive'],
   });
 
@@ -46,8 +47,8 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
     const files = req.files;
 
     // Get the Google Drive case folder ID from the database based on the caseID
-    const caseFolderID = Case.findById(caseID).FolderID; // Replace with your code to get the folder ID from the database
-
+    // const caseFolderID = Case.findById(caseID).folderID; // Replace with your code to get the folder ID from the database
+    const caseFolderID = '13jKPZEZFnVsOtSV89CPSpjk1VzriMqtK';
     // Get the Google Drive API client
     const drive = await getDriveApiClient();
 
@@ -73,12 +74,46 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
       // fs.unlinkSync(file.path);
     }
 
-    res.json({ message: 'Files uploaded successfully' });
+    
+    shareWithPersonalAccount(caseFolderID, "mkabary8@gmail.com" );
+
+
+    res.json({ message: `Files uploaded successfully ${caseFolderID}` });
   } catch (error) {
     console.error('Error uploading files:', error.message);
     res.status(500).json({ message: 'Failed to upload files' });
   }
 });
+
+
+
+async function shareWithPersonalAccount(folderId, personalAccountEmail  ) {
+
+  const authClient = await google.auth.getClient({
+    keyFile: config.credentialFile1,
+    scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+  });
+
+  // const auth = await getDriveApiClient();
+  const drive = await getDriveApiClient();
+  // Set the permissions for the folder or file
+  const permission = {
+    type: 'user',
+    role: 'writer', // Adjust the role as needed
+    emailAddress: personalAccountEmail,
+  };
+
+  // Share the folder or file with the personal account
+  await drive.permissions.create({
+    auth: authClient,
+    fileId: folderId, // The ID of the folder or file to share
+    requestBody: permission,
+  });
+
+  console.log('Folder shared successfully!');
+}
+
+
 
 // Define a route to handle the form submission
 router.post('/submit-form', async (req, res) => {

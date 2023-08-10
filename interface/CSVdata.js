@@ -81,94 +81,77 @@ module.exports = function airTableData(data) {
                 marriageDate: data["What was the date of your marriage/civil partnership?"]
             },
             children: [{
-                childOne: {
-                    childFirstName: data["Name Child 1"],
-                    childSurName: data["Surname Child 1"],
-                    childGender: data["Child 1 gender"],
-                    childLivingWith: data["Child 1 living with?"],
-                    childDateOfBirth: data["Child 1 DoB"],
-                    isChildHaveSpecialNeeds: data["Child 1 has special needs?"],
-                    childSpecialNeeds: data["Child 1 special needs info"],
-                    childResponsibility: data["Child 1 parental responsibility?"],
+                "Child One": {
+                    firstChildFirstName: data["Name Child 1"],
+                    firstChildSurName: data["Surname Child 1"],
+                    firstChildGender: data["Child 1 gender"],
+                    firstChildLivingWith: data["Child 1 living with?"],
+                    firstChildDateOfBirth: data["Child 1 DoB"],
+                    isfirstChildHaveSpecialNeeds: data["Child 1 has special needs?"],
+                    firstChildSpecialNeeds: data["Child 1 special needs info"],
+                    firstChildResponsibility: data["Child 1 parental responsibility?"],
                     secondChildCheck: data["Is there a 2nd child?"]
                 }},
 
 
-             { childTwo: {
-                    childFirstName: data["Name Child 2"],
-                    childSurName: data["Surname Child 2"],
-                    childGender: data["Child 2 gender"],
-                    childLivingWith: data["Child 2 living with?"],
-                    childDateOfBirth: data["Child 2 DoB"],
-
-                    isChildHaveSpecialNeeds: data["Child 2 has special needs?"],
-
-                    childSpecialNeeds: data["Child 2 special needs info"],
-
-                    childResponsibility: data["Child 2 parental responsibility?"],
+             { "Child Two": {
+                    secondChildFirstName: data["Name Child 2"],
+                    secondChildSurName: data["Surname Child 2"],
+                    secondChildGender: data["Child 2 gender"],
+                    secondChildLivingWith: data["Child 2 living with?"],
+                    secondChildDateOfBirth: data["Child 2 DoB"],
+                    issecondChildHaveSpecialNeeds: data["Child 2 has special needs?"],
+                    secondChildSpecialNeeds: data["Child 2 special needs info"],
+                    secondChildResponsibility: data["Child 2 parental responsibility?"],
                     thirdChildCheck: data["Is there a 3rd child?"]
                 }},
 
-                {childThree: {
-                    childFirstName: data["Name Child 3"],
-                    childSurName: data["Surname Child 3"],
-                    childGender: data["Child 3 gender"],
-                    childLivingWith: data["Child 3 living with?"],
-                    childDateOfBirth: data["Child 3 DoB"],
-
-                    isChildHaveSpecialNeeds: data["Child 3 has special needs?"],
-
-                    childSpecialNeeds: data["Child 3 special needs info"],
-
-                    childResponsibility: data["Child 3 parental responsibility?"],
+                {"Child Three": {
+                    thirdChildFirstName: data["Name Child 3"],
+                    thirdChildSurName: data["Surname Child 3"],
+                    thirdChildGender: data["Child 3 gender"],
+                    thirdChildLivingWith: data["Child 3 living with?"],
+                    thirdChildDateOfBirth: data["Child 3 DoB"],
+                    isthirdChildHaveSpecialNeeds: data["Child 3 has special needs?"],
+                    thirdChildSpecialNeeds: data["Child 3 special needs info"],
+                    thirdChildResponsibility: data["Child 3 parental responsibility?"],
                     fourthChildCheck: data["Is there a 4th child?"]
                 }},
 
-                {childFour: {
-                    childFirstName: data["Name Child 4"],
-                    childSurName: data["Surname Child 4"],
-                    childGender: data["Child 4 gender"],
-                    childLivingWith: data["Child 4 living with?"],
-                    childDateOfBirth: data["Child 4 DoB"],
-
-                    isChildHaveSpecialNeeds: data["Child 4 has special needs?"],
-
-                    childSpecialNeeds: data["Child 4 special needs info"],
-
-
-                    childResponsibility: data["Child 4 parental responsibility?"],
+                {"Child Four": {
+                    forthChildFirstName: data["Name Child 4"],
+                    forthChildSurName: data["Surname Child 4"],
+                    forthChildGender: data["Child 4 gender"],
+                    forthChildLivingWith: data["Child 4 living with?"],
+                    forthChildDateOfBirth: data["Child 4 DoB"],
+                    isforthChildHaveSpecialNeeds: data["Child 4 has special needs?"],
+                    forthChildSpecialNeeds: data["Child 4 special needs info"],
+                    forthChildResponsibility: data["Child 4 parental responsibility?"],
                     fifthChildCheck: data["Is there a 5th child?"]
                 }},
 
-                {child5: {
-                    childFirstName: data["Name Child 5"],
-                    childSurName: data["Surname Child 5"],
-                    childGender: data["Child 5 gender"],
-                    childLivingWith: data["Child 5 living with?"],
-                    childDateOfBirth: data["Child 5 DoB"],
-
-                    isChildHaveSpecialNeeds: data["Child 5 has special needs?"],
-
-                    childSpecialNeeds: data["Child 5 special needs info"],
-
-                    childResponsibility: data["Child 5 parental responsibility?"],
+                {"Child Five": {
+                    fifthChildFirstName: data["Name Child 5"],
+                    fifthChildSurName: data["Surname Child 5"],
+                    fifthChildGender: data["Child 5 gender"],
+                    fifthChildLivingWith: data["Child 5 living with?"],
+                    fifthChildDateOfBirth: data["Child 5 DoB"],
+                    isfifthChildHaveSpecialNeeds: data["Child 5 has special needs?"],
+                    fifthChildSpecialNeeds: data["Child 5 special needs info"],
+                    fifthChildResponsibility: data["Child 5 parental responsibility?"],
                     sixthChildCheck: data["Is there a 6th child?"]
                 }},
 
 
-               { childSix: {
-                    childFirstName: data["Name Child 6"],
-                    childSurName: data["Surname Child 6"],
-                    childGender: data["Child 6 gender"],
-                    childLivingWith: data["Child 6 living with?"],
-                    childDateOfBirth: data["Child 6 DoB"],
-
-                    isChildHaveSpecialNeeds: data["Child 6 has special needs?"],
-
-                    childSpecialNeeds: data["Child 6 special needs info"],
-
-                    childResponsibility: data["Child 6 parental responsibility?"],
-
+               { "Child Six": {
+                    sixthChildFirstName: data["Name Child 6"],
+                    sixthChildSurName: data["Surname Child 6"],
+                    sixthChildGender: data["Child 6 gender"],
+                    sixthChildLivingWith: data["Child 6 living with?"],
+                    sixthChildDateOfBirth: data["Child 6 DoB"],
+                    issixthChildHaveSpecialNeeds: data["Child 6 has special needs?"],
+                    sixthChildSpecialNeeds: data["Child 6 special needs info"],
+                    sixthChildResponsibility: data["Child 6 parental responsibility?"],
                 }},
             ],
             courtProceedings: {
