@@ -45,10 +45,15 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
   try {
     const { caseID } = req.params;
     const files = req.files;
-
+    
     // Get the Google Drive case folder ID from the database based on the caseID
-    // const caseFolderID = Case.findById(caseID).folderID; // Replace with your code to get the folder ID from the database
-    const caseFolderID = '13jKPZEZFnVsOtSV89CPSpjk1VzriMqtK';
+    const caseData = await Case.findById(caseID);
+    if (!caseData) {
+      return res.status(404).json({ message: 'Case not found' });
+    }
+
+    const folderId = caseData.folderID;
+
     // Get the Google Drive API client
     const drive = await getDriveApiClient();
 
@@ -56,7 +61,7 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
     for (const file of files) {
       const fileMetadata = {
         name: file.originalname,
-        parents: [caseFolderID],
+        parents: [folderId],
       };
 
       const media = {
@@ -71,14 +76,14 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
       });
 
       // Delete the uploaded file from the server (optional)
-      // fs.unlinkSync(file.path);
+      fs.unlinkSync(file.path);
     }
 
     
-    shareWithPersonalAccount(caseFolderID, "mkabary8@gmail.com" );
+    shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );
 
 
-    res.json({ message: `Files uploaded successfully ${caseFolderID}` });
+    res.json({ message: "Files uploaded successfully " });
   } catch (error) {
     console.error('Error uploading files:', error.message);
     res.status(500).json({ message: 'Failed to upload files' });
@@ -87,100 +92,121 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
 
 
 
-async function shareWithPersonalAccount(folderId, personalAccountEmail  ) {
+// Define a route to handle the form submission
+async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+  try {
+    const authClient = await google.auth.getClient({
+      keyFile: config.credentialFile1,
+      scopes: ['https://www.googleapis.com/auth/drive'],
+    });
 
-  const authClient = await google.auth.getClient({
-    keyFile: config.credentialFile1,
-    scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
-  });
+    const drive = google.drive({ version: 'v3', auth: authClient });
 
-  // const auth = await getDriveApiClient();
-  const drive = await getDriveApiClient();
-  // Set the permissions for the folder or file
-  const permission = {
-    type: 'user',
-    role: 'writer', // Adjust the role as needed
-    emailAddress: personalAccountEmail,
-  };
+    const permission = {
+      type: 'user',
+      role: 'writer',
+      emailAddress: personalAccountEmail,
+    };
 
-  // Share the folder or file with the personal account
-  await drive.permissions.create({
-    auth: authClient,
-    fileId: folderId, // The ID of the folder or file to share
-    requestBody: permission,
-  });
+    await drive.permissions.create({
+      fileId: folderId,
+      requestBody: permission,
+    });
 
-  console.log('Folder shared successfully!');
+    console.log('Folder shared successfully!');
+  } catch (error) {
+    console.error('Error sharing folder:', error.message);
+  }
 }
 
+// router.post('/submit-form', async (req, res) => {
+//   try {
+//     // Retrieve form data from the request body
+//     const { name, email, message } = req.body;
 
+//     // Create a new PDF document
+//     const pdfDoc = await PDFDocument.create();
 
-// Define a route to handle the form submission
-router.post('/submit-form', async (req, res) => {
-  try {
-    // Retrieve form data from the request body
-    const { name, email, message } = req.body;
+//     // Add a new page to the document
+//     const page = pdfDoc.addPage();
 
-    // Create a new PDF document
-    const pdfDoc = await PDFDocument.create();
+//     // Set the font and font size
+//     const font = await pdfDoc.embedFont('Helvetica');
+//     page.setFont(font);
+//     page.setFontSize(12);
 
-    // Add a new page to the document
-    const page = pdfDoc.addPage();
+//     // Write the form data to the PDF page
+//     page.drawText(`Name: ${name}`, { x: 50, y: 700 });
+//     page.drawText(`Email: ${email}`, { x: 50, y: 650 });
+//     page.drawText(`Message: ${message}`, { x: 50, y: 600 });
 
-    // Set the font and font size
-    const font = await pdfDoc.embedFont('Helvetica');
-    page.setFont(font);
-    page.setFontSize(12);
+//     // Save the PDF to a file
+//     const pdfBytes = await pdfDoc.save();
 
-    // Write the form data to the PDF page
-    page.drawText(`Name: ${name}`, { x: 50, y: 700 });
-    page.drawText(`Email: ${email}`, { x: 50, y: 650 });
-    page.drawText(`Message: ${message}`, { x: 50, y: 600 });
+//     // Generate a unique filename for the PDF
+//     const fileName = `${Date.now()}.pdf`;
 
-    // Save the PDF to a file
-    const pdfBytes = await pdfDoc.save();
+//     // Define the file path to save the PDF
+//     const filePath = path.join(__dirname, '../uploads/pdfs', fileName);
 
-    // Generate a unique filename for the PDF
-    const fileName = `${Date.now()}.pdf`;
+//     // Save the PDF file to a specified location
+//     fs.writeFileSync(filePath, pdfBytes);
 
-    // Define the file path to save the PDF
-    const filePath = path.join(__dirname, '../uploads/pdfs', fileName);
+//     // // Save the file path and other metadata to MongoDB
+//     // await saveToMongoDB(filePath, name, email, message);
 
-    // Save the PDF file to a specified location
-    fs.writeFileSync(filePath, pdfBytes);
+//     // Send a response with the file download link
+//     res.status(200).json({ downloadLink: `/download/${fileName}` });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
-    // // Save the file path and other metadata to MongoDB
-    // await saveToMongoDB(filePath, name, email, message);
-
-    // Send a response with the file download link
-    res.status(200).json({ downloadLink: `/download/${fileName}` });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Define a route to handle the file download
-router.get('/download/:fileName', (req, res) => {
-  try {
+// // Define a route to handle the file download
+// router.get('/download/:fileName', (req, res) => {
+//   try {
     
-    // Retrieve the filename from the URL parameter
-    const fileName = req.params.fileName;
+//     // Retrieve the filename from the URL parameter
+//     const fileName = req.params.fileName;
 
-    // Define the file path
-    const filePath = path.join(__dirname, '../uploads/pdfs', fileName);
+//     // Define the file path
+//     const filePath = path.join(__dirname, '../uploads/pdfs', fileName);
 
-    // Send the file as a response
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+//     // Send the file as a response
+//     res.sendFile(filePath);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
-// // Function to save the PDF metadata to MongoDB
-// async function saveToMongoDB(filePath, name, email, message) {
-//   // Implement MongoDB saving logic here
+
+
+// async function shareWithPersonalAccount(folderId, personalAccountEmail  ) {
+
+//   const authClient = await google.auth.getClient({
+//     keyFile: config.credentialFile1,
+//     scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+//   });
+
+//   // const auth = await getDriveApiClient();
+//   const drive = await getDriveApiClient();
+//   // Set the permissions for the folder or file
+//   const permission = {
+//     type: 'user',
+//     role: 'writer', // Adjust the role as needed
+//     emailAddress: personalAccountEmail,
+//   };
+
+//   // Share the folder or file with the personal account
+//   await drive.permissions.create({
+//     auth: authClient,
+//     fileId: folderId, // The ID of the folder or file to share
+//     requestBody: permission,
+//   });
+
+//   console.log('Folder shared successfully!');
 // }
 
 
