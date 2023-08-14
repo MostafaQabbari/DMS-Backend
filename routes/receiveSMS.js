@@ -101,11 +101,42 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
 //   }
 // })
 
+/*
 
-router.get("/chatSMSbyNumber", authMiddleware,decryptTwillioData, async (req, res) => {
+  📢📢 get("/chatSMSbyNumber/:number"   
+  📢📢  get("/chatSMSC1/:id"      
+  📢📢  get("/chatSMSC2/:id"
+ 
+
+
+  📢📢 res example : 
+   [
+    {
+        "id": "SM53b7a6e91c1e43f3936f12ace555ff98",
+        "body": "Your Client undefined added his twillio",
+        "time": "2023-06-07T12:15:08.000Z",
+        "status": "delivered",
+        "direction": "outbound-api",
+        "from": "Company",
+        "to": "Client"
+    },
+    {
+        "id": "SMcc757d7a2e2056c26cfa43f4b844c0ee",
+        "body": "Your Client undefined added his twillio",
+        "time": "2023-06-07T12:15:09.000Z",
+        "status": "received",
+        "direction": "inbound",
+        "from": "Client",
+        "to": "Company"
+    }
+]
+    
+
+*/
+router.get("/chatSMSbyNumber/:number", authMiddleware,decryptTwillioData, async (req, res) => {
 
   let twillioInfo = req.twillioInfo
-  let {otherNumber} = req.body;
+  let otherNumber = req.params.number;
  // console.log(twillioInfo)
 
    getMessgaes(twillioInfo.twillioNumber ,otherNumber ,twillioInfo,res);
