@@ -79,8 +79,10 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
       fs.unlinkSync(file.path);
     }
 
-    
-    shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );
+    const companyData = await Case.findById(caseID).populate('connectionData.companyID');
+    const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+
+   await shareWithPersonalAccount(folderId, sharingGmail || "mkabary8@gmail.com" );
 
 
     res.json({ message: "Files uploaded successfully " });
