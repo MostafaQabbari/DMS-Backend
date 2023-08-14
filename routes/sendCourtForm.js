@@ -46,8 +46,7 @@ const sendCourtForm = function (companyData, clientData) {
         subject: " Court Form",
         html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
        <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Thanks for booking your MIAM. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Please click on the link below </h2>
-      <h3>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</h3>
+      <h2> xxxxxxxxxxxxxxxxxxxx </h3>
       <h3>Direct Mediation Services.</h3>
       <h3>${companyData.companyName}</h3>
       <h3>${companyData.email}</h3>
