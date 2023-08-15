@@ -238,7 +238,7 @@ async function createMIAM2Upload(MIAM2C1data , sharingGmail , caseID) {
 
 
     // Call the function with the folder ID and personal account email
-    await shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );//the gmail sharing account that belong to the company
+    await shareWithPersonalAccount(folderId, sharingGmail );//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
