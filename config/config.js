@@ -50,7 +50,7 @@ RecordSessionForm/:id
   credentialFile: '../DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json',
 
   projectID1: "direct-mediation-services",
-  credentialFile1: '/opt/render/project/DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' ||'../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json'
+  credentialFile1: '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json'
 
   
 

@@ -105,9 +105,9 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 mail: req.body.mediationDetails.clientEmail,
             }
 
-            generateAndSavePDF(MIAM2mediator)
-            .then(message => console.log(message))
-            .catch(error => console.error('Error:', error));
+            // generateAndSavePDF(MIAM2mediator)
+            // .then(message => console.log(message))
+            // .catch(error => console.error('Error:', error));
             
 
 
@@ -115,6 +115,8 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
 
             let currentCase = await Case.findById(req.params.id);
 
+            
+            
             let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
             let statusRemider = {
                 reminderID: `${currentCase._id}-statusRemider`,
@@ -131,7 +133,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
             mediationDetails.medName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
             messageInfo.formUrl = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
-            const stringfyMIAM2Data = JSON.stringify(MIAM2mediator)
+            const stringfyMIAM2Data = JSON.stringify(MIAM2mediator);
             //!currentCase.MIAM2AddedData
             if (true) {
 
@@ -147,6 +149,10 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
                   
                 })
+                const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+            
+                await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
+
                 if (validationMail(caseDetails.C2mail)) {
 
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
@@ -185,6 +191,10 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     MIAM2AddedData: true,
                     status: "Not suitable for mediation"
                 })
+                const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+            
+                await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
+
                 res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {
@@ -194,7 +204,9 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
         }
 
 
-
+        const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+            
+        await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
 
 
 
@@ -268,9 +280,11 @@ async function createMIAM2Upload(MIAM2C1data , sharingGmail , caseID) {
         // Save the PDF document to a buffer
         const pdfBytes = await pdfDoc.save();
   
-      const companyData = await Case.findById(caseID).populate('connectionData.companyID');
-      const sharingGmail = companyData.connectionData.companyID.sharingGmail;
-    
+        const currentCase = await Case.findById(caseID);
+
+        const folderId = currentCase.folderID;
+
+        console.log(folderId);
   
       // //getting the service account from the email
       // const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
@@ -310,7 +324,7 @@ async function createMIAM2Upload(MIAM2C1data , sharingGmail , caseID) {
   
       // Upload the PDF to the created folder
       const fileMetadata = {
-        name: `"MIAM-1'${Date.now()}'.pdf"`,
+        name: `"MIAM-2.pdf"`,
         parents: [folderId],
       };
   
@@ -327,7 +341,7 @@ async function createMIAM2Upload(MIAM2C1data , sharingGmail , caseID) {
   
   
       // Call the function with the folder ID and personal account email
-      shareWithPersonalAccount(folderId, sharingGmail  );//the gmail sharing account that belong to the company
+      await shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );//the gmail sharing account that belong to the company
       //sharingGmail || "mkabary8@gmail.com"
       console.log("PDF created and uploaded successfully");
     } catch (error) {
