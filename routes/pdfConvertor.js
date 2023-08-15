@@ -99,7 +99,7 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
 async function shareWithPersonalAccount(folderId, personalAccountEmail) {
   try {
     const authClient = await google.auth.getClient({
-      keyFile: googleServiceAccount,
+      keyFile: process.env.GOOGLE_SERVICE_ACCOUNT,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
