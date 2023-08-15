@@ -156,12 +156,12 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 if (validationMail(caseDetails.C2mail)) {
 
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
+                    res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })
                 }
                 else {
                     res.status(200).json({ "message": "MIAM2 added but Client 2 did not add valid email to recieve the invitation " })
                 }
 
-                res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })
             }
             else {
                 res.status(400).json({ "message": "this MIAM2 has been added before" })
