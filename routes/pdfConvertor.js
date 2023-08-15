@@ -46,7 +46,7 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
   try {
     const { caseID } = req.params;
     const files = req.files;
-    
+    console.log(googleServiceAccount);
     // Get the Google Drive case folder ID from the database based on the caseID
     const caseData = await Case.findById(caseID);
     if (!caseData) {
@@ -99,7 +99,7 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
 async function shareWithPersonalAccount(folderId, personalAccountEmail) {
   try {
     const authClient = await google.auth.getClient({
-      keyFile: process.env.GOOGLE_SERVICE_ACCOUNT,
+      keyFile: googleServiceAccount,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
