@@ -477,8 +477,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
 
-        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = "Agreement form of client1 still did not added yet"
-        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = "Agreement form of client2 still did not added yet"
+        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = ""
+        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = ""
 
 
 
@@ -551,8 +551,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
 
-        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = "Agreement form of client1 still did not added yet"
-        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = "Agreement form of client2 still did not added yet"
+        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = ""
+        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = ""
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
