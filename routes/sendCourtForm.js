@@ -66,9 +66,9 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
         if (error) {
             try {
                 fs.unlinkSync(pdfData.path);
-                console.log("File deleted successfully");
+                //console.log("File deleted successfully");
             } catch (err) {
-                console.error("Error deleting file:", err);
+               // console.error("Error deleting file:", err);
             }
             console.log('Error occurred while sending email:', error.message);
 
@@ -76,9 +76,9 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
 
             try {
                 fs.unlinkSync(pdfData.path);
-                console.log("File deleted successfully");
+                //console.log("File deleted successfully");
             } catch (err) {
-                console.error("Error deleting file:", err);
+              //  console.error("Error deleting file:", err);
             }
 
             console.log('Email sent successfully:', info.messageId);
@@ -111,7 +111,7 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdf'), asyn
 
         const pdfData = req.file;
         //console.log(pdfData)
-        const    = req.body.TargetClient;
+        const TargetClient = req.body.TargetClient;
         //  console.log(TargetClient)
         let companyData = {}, clientData = {}
 
