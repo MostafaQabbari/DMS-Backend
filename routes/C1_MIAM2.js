@@ -204,9 +204,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
         }
 
 
-        const sharingGmail = companyData.connectionData.companyID.sharingGmail;
-            
-        await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
+
 
 
 
