@@ -46,9 +46,9 @@ const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo)
         subject: " MIAM I Form",
         html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
        <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Thanks for booking your MIAM. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Please click on the link below </h2>
-      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
-      <h3>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</h3>
+       <h2>BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>
+     <p> Please click on the link below:</p>
+       <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
       <h3>Direct Mediation Services.</h3>
       <h3>${companyData.companyName}</h3>
       <h3>${companyData.email}</h3>
@@ -102,9 +102,11 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
         subject: "MIAM I Form",
         html: ` <div style="text-align: center; padding: 5vw; width: 75%; margin: auto;">
        <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Your application for Legal Aid was SUCCESSFUL. BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. AFTER you have filled and SUBMITTED this form, 
-      a member of our team will get back to you to book your appointment. Please click on the link below: </h2>
-      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+      <h2>Thank you for the signed Legal Aid form. Your application for Legal Aid was SUCCESSFUL.
+      BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>
+      <h2> AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below: </h2>
+      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">${messageBodyinfo.formUrl} </a>
+      <h2>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.   </h2>
       <h3>Direct Mediation Services.</h3>
       <h3>${companyData.companyName}</h3>
       <h3>${companyData.email}</h3>

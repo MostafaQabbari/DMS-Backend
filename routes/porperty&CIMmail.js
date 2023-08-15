@@ -132,8 +132,7 @@ let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
          <p>I hope this email finds you well.</p>
 
          <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for Child 1 and Child 2.
-         Together with this email, you will find a Child Inclusive Mediation - Information sheet for parents, 
-         which explains the process of CIM. Please have a read of the document as it contains very important information about CIM.
+         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
          We have appointed mediator <span style ="color:blue">${mediatorData.name}</span>  trained to conduct CIM. Adele will be in touch with you after you both have signed the Parental Consent Form. 
          This document will be sent to each of you in a separate email from DropboxSign asking for your electronic signature.</p>
 

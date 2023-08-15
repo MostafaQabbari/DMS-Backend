@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const Case = require('../models/case');
-const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const nodemailer = require("nodemailer");
 const Company = require("../models/company");
 const config = require("../config/config");
 const mediator = require('../models/mediator');
+const multer = require('multer');
+const fs = require("fs");
 
 
-
-const sendCourtForm = function (companyData, clientData) {
+const sendCourtForm = function (companyData, clientData, pdfData) {
 
     /*
   
@@ -46,12 +46,17 @@ const sendCourtForm = function (companyData, clientData) {
         subject: " Court Form",
         html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
        <h1>Dear ${clientData.clientName}  </h1>
-      <h2> Thanks for booking your MIAM. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Please click on the link below </h2>
-      <h3>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</h3>
+   
       <h3>Direct Mediation Services.</h3>
       <h3>${companyData.companyName}</h3>
       <h3>${companyData.email}</h3>
        </div>`,
+        attachments: [
+            {
+                filename: 'courtForm.pdf',
+                content: pdfData
+            }
+        ]
 
 
     });
@@ -59,23 +64,55 @@ const sendCourtForm = function (companyData, clientData) {
 
     transporter.sendMail(info, (error, info) => {
         if (error) {
+            try {
+                fs.unlinkSync(pdfData.path);
+                //console.log("File deleted successfully");
+            } catch (err) {
+               // console.error("Error deleting file:", err);
+            }
             console.log('Error occurred while sending email:', error.message);
 
         } else {
+
+            try {
+                fs.unlinkSync(pdfData.path);
+                //console.log("File deleted successfully");
+            } catch (err) {
+              //  console.error("Error deleting file:", err);
+            }
+
             console.log('Email sent successfully:', info.messageId);
         }
-    });
+    })
+
+ 
+
+
+
 
 }
 
 
+const storage = multer.memoryStorage();
+const uploadFile = multer({
+    storage: multer.diskStorage({
+        destination: "./uploads",
+        filename: (req, file, cb) => {
+            cb(null, `${file.originalname}`)
+        }
+    })
+});
 
-router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
+router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdf'), async (req, res, next) => {
 
     let CaseFound;
     try {
-        
+
+
+        const pdfData = req.file;
+        //console.log(pdfData)
         const TargetClient = req.body.TargetClient;
+        //  console.log(TargetClient)
         let companyData = {}, clientData = {}
 
         if (req.userRole == 'company') {
@@ -91,14 +128,26 @@ router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
 
                 if (TargetClient == "C1") {
                     clientData.email = CaseFound.MajorDataC1.mail;
-                    // clientData.email = 'abdosamir023023@gmail.com'
+                   // clientData.email = 'abdosamir023023@gmail.com'
                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email
-                    sendCourtForm(companyData, clientData);
+                    sendCourtForm(companyData, clientData, pdfData);
+
+                    // .then((pdfData) => {
+                    //     try {
+                    //         fs.unlinkSync(pdfData.path);
+                    //         console.log("File deleted successfully");
+                    //     } catch (err) {
+                    //         console.error("Error deleting file:", err);
+                    //     }
+                    // })
+
+
+
                     res.status(200).json({ "message": "court email has been sent ... " })
 
-              
+
 
 
                 }
@@ -107,10 +156,10 @@ router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
                     clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email;
-                    sendCourtForm(companyData, clientData);
+                    sendCourtForm(companyData, clientData, pdfData);
                     res.status(200).json({ "message": "court email has been sent ... " })
 
-          
+
 
 
                 }
@@ -135,16 +184,16 @@ router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
             if (CaseFound) {
 
                 const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-                let currentComp_ =  mediatorCompanyData.companyId
+                let currentComp_ = mediatorCompanyData.companyId
 
                 if (TargetClient == "C1") {
                     clientData.email = CaseFound.MajorDataC1.mail;
                     //clientData.email = "abdosamir023023@gmail.com"
-                  
+
                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                     companyData.companyName = currentComp_.companyName
                     companyData.email = currentComp_.email
-                    sendCourtForm(companyData, clientData);
+                    sendCourtForm(companyData, clientData, pdfData);
                     res.status(200).json({ "message": "court email has been sent ... " })
 
 
@@ -155,8 +204,8 @@ router.post('/sendCourtForm/:id', authMiddleware, async (req, res, next) => {
                     clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                     companyData.companyName = currentComp_.companyName
                     companyData.email = currentComp_.email
-        
-                    sendCourtForm(companyData, clientData);
+
+                    sendCourtForm(companyData, clientData, pdfData);
                     res.status(200).json({ "message": "court email has been sent ... " })
 
 

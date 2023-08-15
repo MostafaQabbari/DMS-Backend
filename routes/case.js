@@ -105,10 +105,11 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
     html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-     <h1>Dear ${clientData.clientName}  </h1>
-    <p> Thanks for booking you MIAM booking you MIAM  , here is your passporting form </p>
-     <p> Please click on the link below :</p>
+     <h1>Hi  ${clientData.clientName}  </h1>
+    <p> Thank you for contacting us regarding your Legal Aid application for family mediation.
+    To start your application please follow the link below:</p>
     <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <p>Applications are only considered via this route.</p>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
     <h4>${companyData.email}</h4>
@@ -164,9 +165,11 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
     subject: `Applying To ${messageBodyinfo.formType} Form`,
     html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
      <h1>Dear ${clientData.clientName}  </h1>
-    <p> Thanks for booking you MIAM , here is your low income / no income form </p>
-     <p> Please click on the link below :</p>
+    <p>Thank you for contacting us regarding your Legal Aid application for family mediation.
+    To start your application please follow the link below::</p>
+     
     <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <h3>Applications are only considered via this route .</h3>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
     <h4>${companyData.email}</h4>
@@ -383,6 +386,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
+          closed:cases.cases[i].closed
         }
 
         casesList.push(resposedCaseObj)
@@ -405,6 +409,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
+          closed:cases.cases[i].closed
         }
 
         casesList.push(resposedCaseObj)
@@ -472,8 +477,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
 
-        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = "Agreement form of client1 still did not added yet"
-        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = "Agreement form of client2 still did not added yet"
+        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = ""
+        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = ""
 
 
 
@@ -546,8 +551,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
 
-        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = "Agreement form of client1 still did not added yet"
-        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = "Agreement form of client2 still did not added yet"
+        CaseFound.C1Agreement ? C1Agreement = CaseFound.C1Agreement : C1Agreement = ""
+        CaseFound.C2Agreement ? C2Agreement = CaseFound.C2Agreement : C2Agreement = ""
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
