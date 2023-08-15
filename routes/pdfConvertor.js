@@ -7,7 +7,8 @@ const config = require("../config/config");
 const Case = require('../models/case');
 const router = express.Router();
 const { google } = require("googleapis");
-
+require('dotenv').config();
+const googleServiceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
 
 
 
@@ -98,7 +99,7 @@ router.post('/uploadFiles/:caseID', upload.array('files', 10), async (req, res) 
 async function shareWithPersonalAccount(folderId, personalAccountEmail) {
   try {
     const authClient = await google.auth.getClient({
-      keyFile: config.credentialFile1,
+      keyFile: googleServiceAccount,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
