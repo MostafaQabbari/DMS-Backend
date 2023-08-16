@@ -221,7 +221,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       let newCaseID;
       if (Themediator) {
 
-
+ 
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location, caseType, legalAidType },
@@ -295,61 +295,6 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
       res.status(200).json({ caseID: newCaseID })
     }
-
-    //     else if (req.userRole == 'mediator') {
-    //       const { firstName, surName, phoneNumber, email, dateOfMAIM, location } = req.body;
-    //       let MIAM_C1_Date = dateOfMAIM;
-    // console.log(MIAM_C1_Date)
-
-    //       const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-    //       let Reference = `${surName} `;
-
-    //       let newCase = await Case.insertMany(
-    //         {
-    //           client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location },
-    //           startDate: dateOfMAIM,
-    //           status: "MIAM 1 sent to C1",
-    //           Reference,
-    //           MajorDataC1: {
-    //             fName: firstName,
-    //             sName: surName,
-    //             mail: email,
-    //             phoneNumber: phoneNumber
-    //           },
-    //           MIAMDates:{
-    //             MIAM_C1_Date: MIAM_C1_Date
-    //           },
-
-    //           connectionData: { mediatorID: req.user._id, companyID: mediatorCompanyData.companyId._id }
-    //         });
-
-    //       let statusRemider = {
-    //         reminderID: `${newCase[0]._id}-statusRemider`,
-    //         reminderTitle: `${Reference}-${newCase[0].status}`,
-    //         startDate: dateNow()
-    //       }
-
-
-    //       await Case.findByIdAndUpdate(newCase[0]._id, {
-    //         $set: {
-    //           'Reminders.statusRemider': statusRemider
-    //         }
-    //       });
-    //       // Update the company's cases array with the new case ID
-    //       const compID = mediatorCompanyData.companyId._id;
-    //       const medID = req.user._id
-    //       await Company.findByIdAndUpdate(compID, { $push: { cases: newCase[0]._id } });
-    //       await mediator.findByIdAndUpdate(medID, { $push: { cases: newCase[0]._id } });
-
-    //       clientData.email = email;
-    //       clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
-    //       messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/${newCase[0]._id}`;
-
-    //       companyData.companyName = mediatorCompanyData.companyId.companyName
-    //       companyData.email = mediatorCompanyData.companyId.email
-    //       sendMail(companyData, clientData, messageBodyinfo)
-    //       res.json({ caseID: newCase[0]._id })
-    //     }
 
     else {
       res.status(400).json({ 'message': "error in the role of token" })
@@ -491,7 +436,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
           startDate: CaseFound.startDate,
-          ca: CaseFound.status,
+          status: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
           MIAM2_C1,
