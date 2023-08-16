@@ -27,7 +27,7 @@ router.patch('/updateC1M1/:id', authMiddleware, async (req, res, next) => {
             }
             if (CaseFound) {
                 let client1data = req.body
-                let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
+                let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
                 const StringfyData = JSON.stringify(client1data);
                 let MajorDataC1 = {
                     fName: req.body.personalContactAndCaseInfo.firstName,
@@ -53,7 +53,7 @@ router.patch('/updateC1M1/:id', authMiddleware, async (req, res, next) => {
             }
             if (CaseFound) {
                 let client1data = req.body
-                let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
+                let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
                 const StringfyData = JSON.stringify(client1data);
                 let MajorDataC1 = {
                     fName: req.body.personalContactAndCaseInfo.firstName,

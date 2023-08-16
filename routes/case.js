@@ -491,7 +491,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           Reference: CaseFound.Reference,
           client1ContactDetails: CaseFound.client1ContactDetails,
           startDate: CaseFound.startDate,
-          status: CaseFound.status,
+          ca: CaseFound.status,
           closed: CaseFound.closed,
           MIAM1_C1,
           MIAM2_C1,

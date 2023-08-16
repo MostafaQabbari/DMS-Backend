@@ -333,7 +333,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         mail: C2invitation.InvitationAnswer.email,
         //phoneNumber: C2invitation.InvitationAccepted.phone
       }
-      let Reference = `${currentCase.MajorDataC1.sName}& ${C2invitation.InvitationAnswer.surname}`;
+      let Reference = `${currentCase.MajorDataC1.sName} & ${C2invitation.InvitationAnswer.surname}`;
 
       const StringfyData = JSON.stringify(C2invitation)
 

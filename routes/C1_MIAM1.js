@@ -66,7 +66,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
    //  GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
-    let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
+    let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
     let MajorDataC1 = {
       fName: req.body.personalContactAndCaseInfo.firstName,
       sName: req.body.personalContactAndCaseInfo.surName,
