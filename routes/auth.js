@@ -54,6 +54,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       }
     
     const { companyName, email, password, logo ,sharingGmail, twillioData } = req.body;
+    let user ;
 
 
     const existingUser = await Company.findOne({ email });
@@ -85,7 +86,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
           cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
 
 
-          const user = new Company({
+           user = new Company({
             // Company data
             companyName,
             email,
@@ -103,7 +104,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       }
       else{
 
-        const user = new Company({
+         user = new Company({
           // Company data
           companyName,
           email,
@@ -111,7 +112,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
           sharingGmail:sharingGmail,
           logo: logo,
           companyLogo: req.file ? req.file.filename : null,
-          phoneNumberTwillio:"number did not added yet"
+        
         });
 
       }
