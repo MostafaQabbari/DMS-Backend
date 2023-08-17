@@ -29,7 +29,7 @@ const updateCase = require("./routes/updateCase")
 const appointmentConf = require('./routes/appoinmentConformation')
 const cim = require('./routes/porperty&CIMmail');
 const courtForm = require ('./routes/sendCourtForm');
-const  mothlyCSV = require("./routes/monthlyCVS")
+const  mothlyCSV = require("./routes/monthlyCSV")
 
 
 const cors = require('cors');
