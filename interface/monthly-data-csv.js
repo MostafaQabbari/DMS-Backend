@@ -12,7 +12,20 @@
     Outcome => ??📢   =>    from mediationSessionRecord => mediationFinishReason a-b-c-s-p
 
     Outreach Location  => ??📢 👌
+
+Outreach Location: The place where mediation was conducted. It could be a physical place which is an office,
+ or virtual, via Zoom, Whatsapp, etc. If the meeting was done online (100% of our meetings are done online
+     at the moment) then the code is 000. If the meeting was done in our office in Leeds, then the code is 001.
+      We have more than 150 different offices
+ and all of them have a different code but we don't use them at all. So we only use the codes 000 and 001.
+
+
     Referral => ??📢 👌
+    Referral:
+Code 002 if the referral comes from us, Direct Mediation Services
+Code 008 if the client comes from mediators or solicitors.
+ The only clients that come from mediators are for cases that Jan Coulton,
+  Rachel Marsden and Alan Nairn do
 
     VAT Indicator => ??📢                          = > Always "Y" (Yes
     Net Disbursement Amount (    VAT) =>??📢       => undone 
