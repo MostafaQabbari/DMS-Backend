@@ -159,38 +159,38 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     <div style="display: ${mediationRecord.keyFacts.children[1]["Child Two"].thirdChildCheck == 'Yes' ? 'block' : 'none'};">
   
     <h2>What is the full name of the third child?</h2>
-    <p>${mediationRecord.keyFacts.children[2]["Child Three"].ChildFirstName}</p>
+    <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildFirstName}</p>
   
-    <h2>What is ${mediationRecord.keyFacts.children[2]["Child Three"].ChildFirstName}’s date of birth?</h2>
-    <p>${mediationRecord.keyFacts.children[2]["Child Three"].ChildDateOfBirth}</p>
+    <h2>What is ${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildFirstName}’s date of birth?</h2>
+    <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildDateOfBirth}</p>
   
    
-    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[2]["Child Three"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[2]["Child Three"].bothHaveParentalResponsibilityForChild}</p>
+    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].bothHaveParentalResponsibilityForChild}</p>
   
-    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[2]["Child Three"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[2]["Child Three"].ChildParentalResponsibility}</p>
+    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildParentalResponsibility}</p>
   
   
     <h2>Do ${mediationRecord.clientData.clientOneFullName} and ${mediationRecord.clientData.clientTwoFullName} have a third child ? </h2>
-    <p>${mediationRecord.keyFacts.children[2]["Child Three"].fourthChildCheck}</p>
+    <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].fourthChildCheck}</p>
     
     </div>
   
-    <div style="display: ${mediationRecord.keyFacts.children[2]["Child Three"].fourthChildCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.keyFacts.children[2]?.["Child Three"].fourthChildCheck == 'Yes' ? 'block' : 'none'};">
   
     <h2>What is the full name of the fourth child?</h2>
-    <p>${mediationRecord.keyFacts.children[3]["Child Four"].ChildFirstName}</p>
+    <p>${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildFirstName}</p>
   
-    <h2>What is ${mediationRecord.keyFacts.children[3]["Child Four"].ChildFirstName}’s date of birth?</h2>
-    <p>${mediationRecord.keyFacts.children[3]["Child Four"].ChildDateOfBirth}</p>
+    <h2>What is ${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildFirstName}’s date of birth?</h2>
+    <p>${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildDateOfBirth}</p>
   
    
-    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[3]["Child Four"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[3]["Child Four"].bothHaveParentalResponsibilityForChild}</p>
+    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[3]?.["Child Four"].bothHaveParentalResponsibilityForChild}</p>
   
-    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[3]["Child Four"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[3]["Child Four"].ChildParentalResponsibility}</p>
+    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[3]?.["Child Four"].ChildParentalResponsibility}</p>
   
     
     </div>
@@ -236,63 +236,63 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
     <h2>First agenda point discussed </h2>
-    <p>${mediationRecord.discussions[0]['Discussion One'].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[0]?.['Discussion One'].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[0]['Discussion One'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[0]?.['Discussion One'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].clientsActionPoints}</p>
   
     <h2>Is there a second agenda point?</h2>
-    <p>${mediationRecord.discussions[0]["Discussion One"].secondAgendaCheck}</p>
+    <p>${mediationRecord.discussions[0]?.["Discussion One"].secondAgendaCheck}</p>
   
   
   
     </div>
   
   
-    <div style="display: ${mediationRecord.discussions[0]['Discussion One'].secondAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[0]?.['Discussion One'].secondAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Second agenda point discussed </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[1]['Discussion Two'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[1]?.['Discussion Two'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].clientsActionPoints}</p>
   
     <h2>Is there a third agenda point?</h2>
-    <p>${mediationRecord.discussions[1]["Discussion Two"].thirdAgendaCheck}</p>
+    <p>${mediationRecord.discussions[1]?.["Discussion Two"].thirdAgendaCheck}</p>
   
   
   
@@ -304,67 +304,67 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
     </div>
   
-    <div style="display: ${mediationRecord.discussions[1]['Discussion Two'].thirdAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[1]?.['Discussion Two'].thirdAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Third agenda point discussed </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[2]['Discussion Three'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[2]?.['Discussion Three'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].clientsActionPoints}</p>
   
     <h2>Is there a fourth agenda point?</h2>
-    <p>${mediationRecord.discussions[2]["Discussion Three"].fourthAgendaCheck}</p>
+    <p>${mediationRecord.discussions[2]?.["Discussion Three"].fourthAgendaCheck}</p>
   
   
   
     </div>
   
-    <div style="display: ${mediationRecord.discussions[2]['Discussion Three'].fourthAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[2]?.['Discussion Three'].fourthAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Fourth agenda point discussed </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[3]['Discussion Four'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[3]?.['Discussion Four'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].clientsActionPoints}</p>
   
     <h2>Is there a fifth agenda point?</h2>
-    <p>${mediationRecord.discussions[3]["Discussion Four"].fifthAgendaCheck}</p>
+    <p>${mediationRecord.discussions[3]?.["Discussion Four"].fifthAgendaCheck}</p>
   
   
   
@@ -372,34 +372,34 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
   
-    <div style="display: ${mediationRecord.discussions[3]['Discussion Four'].fifthAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[3]?.['Discussion Four'].fifthAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Fifth agenda point discussed </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[4]['Discussion Five'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[4]?.['Discussion Five'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].clientsActionPoints}</p>
   
     <h2>Is there a sixth agenda point?</h2>
-    <p>${mediationRecord.discussions[4]["Discussion Five"].sixthAgendaCheck}</p>
+    <p>${mediationRecord.discussions[4]?.["Discussion Five"].sixthAgendaCheck}</p>
   
   
   
@@ -408,34 +408,34 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
   
-    <div style="display: ${mediationRecord.discussions[4]['Discussion Five'].sixthAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[4]?.['Discussion Five'].sixthAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Sixth agenda point discussed </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[5]['Discussion Six'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[5]?.['Discussion Six'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].clientsActionPoints}</p>
   
     <h2>Is there a seventh agenda point?</h2>
-    <p>${mediationRecord.discussions[5]["Discussion Six"].seventhAgendaCheck}</p>
+    <p>${mediationRecord.discussions[5]?.["Discussion Six"].seventhAgendaCheck}</p>
   
   
   
@@ -444,34 +444,34 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
   
-    <div style="display: ${mediationRecord.discussions[5]['Discussion Six'].seventhAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[5]?.['Discussion Six'].seventhAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Seventh agenda point discussed </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[6]['Discussion Seven'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[6]?.['Discussion Seven'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].clientsActionPoints}</p>
   
     <h2>Is there a eighth agenda point?</h2>
-    <p>${mediationRecord.discussions[6]["Discussion Seven"].eighthAgendaCheck}</p>
+    <p>${mediationRecord.discussions[6]?.["Discussion Seven"].eighthAgendaCheck}</p>
   
   
   
@@ -479,31 +479,31 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
   
-    <div style="display: ${mediationRecord.discussions[6]['Discussion Seven'].eighthAgendaCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[6]?.['Discussion Seven'].eighthAgendaCheck == 'Yes' ? 'block' : 'none'};">
   
   
   
     <h2>Eighth agenda point discussed </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].agendaPointDiscussed}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].agendaPointDiscussed}</p>
   
     <h2>Issues identified </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].issuesIdentified}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].issuesIdentified}</p>
   
     <h2>Options discussed </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].optionsDiscussed}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].optionsDiscussed}</p>
   
     <h2>Any agreements reached? </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].anyAgreementsReached}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].anyAgreementsReached}</p>
   
-    <div style="display: ${mediationRecord.discussions[7]['Discussion Eight'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.discussions[7]?.['Discussion Eight'].anyAgreementsReached == 'Yes' ? 'block' : 'none'};">
   
     <h2>Please bullet point any agreements reached </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].agreedBulletsPoints}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].agreedBulletsPoints}</p>
   
     </div>
   
     <h2>Action points for the clients </h2>
-    <p>${mediationRecord.discussions[7]["Discussion Eight"].clientsActionPoints}</p>
+    <p>${mediationRecord.discussions[7]?.["Discussion Eight"].clientsActionPoints}</p>
   
   
    
@@ -513,14 +513,16 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
   
    <div style="text-align:left ; direction:ltr">
+   <div style="display: ${mediationRecord.documentUpload.additionalDocumentsToUpload ? 'block' : 'none'};">
     <h2>Are there any additional documents to upload?</h2>
     <p>${mediationRecord.documentUpload.additionalDocumentsToUpload}</p>
+  </div>
   
-  
-  
+    <div style="display: ${mediationRecord.NextSteps.isFurtherSessionPlanned ? 'block' : 'none'};">
   
     <h2>Has a further mediation session been planned?</h2>
     <p>${mediationRecord.NextSteps.isFurtherSessionPlanned}</p>
+    </div>
   
   
     <div style="display: ${mediationRecord.NextSteps.isFurtherSessionPlanned == 'Yes' ? 'block' : 'none'};">
@@ -530,8 +532,8 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
   
     </div>
   
-    
-    <div style="display: ${mediationRecord.NextSteps.isFurtherSessionPlanned == 'No' ? 'block' : 'none'};">
+
+    <div style="display: ${mediationRecord.NextSteps.mediationFinishReason  ? 'block' : 'none'};">
   
     <h2>What is the reason mediation has been finished?</h2>
     <p>${mediationRecord.NextSteps.mediationFinishReason}</p>

@@ -7,6 +7,17 @@ const Company = require("../models/company");
 
 const dateNow = require("../global/dateNow");
 
+/*
+
+😒  addCaseLog/:id   =>  patch = > {"logBody" : " "} 
+
+😒  updateCaseLog/:id   =>  patch = > {"logBody" : " "  , "_id" : ""}
+
+😒  deleteCaseLog/:id   =>  delete = > { "_id" : ""}
+
+
+
+*/
 
 
 
