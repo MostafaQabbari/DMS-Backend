@@ -29,7 +29,8 @@ const updateCase = require("./routes/updateCase")
 const appointmentConf = require('./routes/appoinmentConformation')
 const cim = require('./routes/porperty&CIMmail');
 const courtForm = require ('./routes/sendCourtForm');
-const  mothlyCSV = require("./routes/monthlyCSV")
+const  mothlyCSV = require("./routes/monthlyCSV");
+const caseLog= require('./routes/caseLog')
 
 
 const cors = require('cors');
@@ -80,6 +81,7 @@ app.use(appointmentConf)
 app.use(cim)
 app.use(courtForm)
 app.use(mothlyCSV)
+app.use(caseLog)
 
 
 

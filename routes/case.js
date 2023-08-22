@@ -382,7 +382,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
   let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement , mediationRecords=[],
-      caseSuitable; 
+      caseSuitable , caseLogs;
 
 
 
@@ -442,6 +442,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
+        caseLogs = CaseFound.caseLogs
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
 
 
@@ -467,7 +468,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
            C1Agreement,
            C2Agreement,
            mediationRecords,
-           caseSuitable
+           caseSuitable,
+           caseLogs
 
 
         }
@@ -528,6 +530,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
+        caseLogs = CaseFound.caseLogs
 
 
         JSON.stringify(CaseFound.MajorDataC2) === '{}' ? MajorDataC2 = "C2 Data didn't added yet" : MajorDataC2 = CaseFound.MajorDataC2
@@ -555,7 +558,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           C1Agreement,
           C2Agreement,
           mediationRecords,
-          caseSuitable
+          caseSuitable,
+          caseLogs
         }
 
         res.status(200).json(CaseResponse)
