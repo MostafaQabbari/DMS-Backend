@@ -116,47 +116,47 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     <p>${mediationRecord.keyFacts.clientsAgreedToAttendMediationChildAndFiance}</p>
   
     <h2>What is the full name of the first child?</h2>
-    <p>${mediationRecord.keyFacts.children[0]["Child One"].ChildFirstName}</p>
+    <p>${mediationRecord.keyFacts.children[0]?.["Child One"].ChildFirstName}</p>
   
-    <h2>What is ${mediationRecord.keyFacts.children[0]["Child One"].ChildFirstName}’s date of birth?</h2>
-    <p>${mediationRecord.keyFacts.children[0]["Child One"].ChildDateOfBirth}</p>
+    <h2>What is ${mediationRecord.keyFacts.children[0]?.["Child One"].ChildFirstName}’s date of birth?</h2>
+    <p>${mediationRecord.keyFacts.children[0]?.["Child One"].ChildDateOfBirth}</p>
   
    
-    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[0]["Child One"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[0]["Child One"].bothHaveParentalResponsibilityForChild}</p>
+    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[0]?.["Child One"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[0]?.["Child One"].bothHaveParentalResponsibilityForChild}</p>
   
-    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[0]["Child One"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[0]["Child One"].ChildParentalResponsibility}</p>
+    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[0]?.["Child One"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[0]?.["Child One"].ChildParentalResponsibility}</p>
   
   
     <h2>Do ${mediationRecord.clientData.clientOneFullName} and ${mediationRecord.clientData.clientTwoFullName} have a second child ? </h2>
-    <p>${mediationRecord.keyFacts.children[0]["Child One"].secondChildCheck}</p>
+    <p>${mediationRecord.keyFacts.children[0]?.["Child One"].secondChildCheck}</p>
   
   
   
-    <div style="display: ${mediationRecord.keyFacts.children[0]["Child One"].secondChildCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.keyFacts.children[0]?.["Child One"].secondChildCheck == 'Yes' ? 'block' : 'none'};">
   
     <h2>What is the full name of the second child?</h2>
-    <p>${mediationRecord.keyFacts.children[1]["Child Two"].ChildFirstName}</p>
+    <p>${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildFirstName}</p>
   
-    <h2>What is ${mediationRecord.keyFacts.children[1]["Child Two"].ChildFirstName}’s date of birth?</h2>
-    <p>${mediationRecord.keyFacts.children[1]["Child Two"].ChildDateOfBirth}</p>
+    <h2>What is ${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildFirstName}’s date of birth?</h2>
+    <p>${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildDateOfBirth}</p>
   
    
-    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[1]["Child Two"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[1]["Child Two"].bothHaveParentalResponsibilityForChild}</p>
+    <h2> Do both participants have Parental Responsibility for ${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[1]?.["Child Two"].bothHaveParentalResponsibilityForChild}</p>
   
-    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[1]["Child Two"].ChildFirstName}</h2>
-    <p>${mediationRecord.keyFacts.children[1]["Child Two"].ChildParentalResponsibility}</p>
+    <h2> Who has parental resposibility for ${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildFirstName}</h2>
+    <p>${mediationRecord.keyFacts.children[1]?.["Child Two"].ChildParentalResponsibility}</p>
   
   
     <h2>Do ${mediationRecord.clientData.clientOneFullName} and ${mediationRecord.clientData.clientTwoFullName} have a third child ? </h2>
-    <p>${mediationRecord.keyFacts.children[1]["Child Two"].thirdChildCheck}</p>
+    <p>${mediationRecord.keyFacts.children[1]?.["Child Two"].thirdChildCheck}</p>
     
     </div>
   
   
-    <div style="display: ${mediationRecord.keyFacts.children[1]["Child Two"].thirdChildCheck == 'Yes' ? 'block' : 'none'};">
+    <div style="display: ${mediationRecord.keyFacts.children[1]?.["Child Two"].thirdChildCheck == 'Yes' ? 'block' : 'none'};">
   
     <h2>What is the full name of the third child?</h2>
     <p>${mediationRecord.keyFacts.children[2]?.["Child Three"].ChildFirstName}</p>

@@ -30,25 +30,53 @@ const companySchema = new mongoose.Schema({
   }],
 
   statistics:[{
-    readyTrigger:{type:Boolean , default:false},
+    // readyTrigger:{type:Boolean , default:false},
+    /*🤦‍♂️  after miam2 , medsession => make it true */
     date:{type:String},
+    /*🤦‍♂️  after miam2 , medsession => date now function will be date of mediationDetails.DateOfMIAM */
     Type:{type:String},
+    /*🤦‍♂️  after miam2 , medsession => default string */
     caseReference:{type: String },
+   /*🤦‍♂️  after each miam2 , medsession => get from case data */
     caseStartDate:{type: String },
+   /*🤦‍♂️ after each miam2 , medsession => get from case data */
+
 
     claimId:{type: String },        // daily depend on number of med  001 ... 00n
+  /*🤦‍♂️ after each miam2 , medsession => se default 000 */
+
     uniqueCaseId:{type: String },   // daily depend on CaseStartDate/claimId   without slash
+  /*🤦‍♂️ after each miam2 , medsession => se default 000 + formate date getting from case data */  
+
     caseConcludedDate:{type:String },    //  date of last mediation session record ?
+  /*🤦‍♂️ after each medsession => check if 📢 NextSteps.isFurtherSessionPlanned==No
+                                      get 📢 clientData.sessionDate
+  
+  */  
 
     client1ForeName:{type:String },
+     /*🤦‍♂️ after each miam2, medsession => from case data */
     client1surName:{type:String },
     client1dateOfBirth:{type:String },
     client1UCN:{type:String },   // =>  DDMMYYYY/N/SURN    date of birth (without forward slash)/First letter of the name/four letter of their surname.  
     client1postCode:{type:String },
+     /*🤦‍♂️ after each miam2, medsession => from case data from MIAM1 
+                                        📢 personalContactAndCaseInfo.postCode
+     */
     client1Gender:{type:String },
+      /*🤦‍♂️ after each miam2, medsession => from case data from MIAM1 
+                                        📢 personalContactAndCaseInfo.gender
+     */
     client1Ethincity:{type:String },
+       /*🤦‍♂️ after each miam2, medsession => from case data from MIAM1 
+                                        📢 personalContactAndCaseInfo.ethnicOrigin
+     */
     client1Disability:{type:String },
+     /*🤦‍♂️ after each miam2, medsession => from case data from MIAM1 
+                                        📢 personalContactAndCaseInfo.disabilityRegistered
+     */
     client1LegallyAided:{type:String },
+       /*🤦‍♂️ after each miam2, medsession => from case data   casteType */
 
     client2ForeName:{type:String },
     client2surName:{type:String },
@@ -75,13 +103,6 @@ const companySchema = new mongoose.Schema({
     client1PostalApplicationAccepted:{type:String }, // => N
     client2PostalApplicationAccepted:{type:String }, // => N
     scheduleReferenceOutCome:{type:String }, // =>   2P664C/MEDI2018/00
-
-
-
-
-
-    
-    
 
   }]
 

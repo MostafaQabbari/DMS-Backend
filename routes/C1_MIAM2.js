@@ -74,23 +74,14 @@ const validationMail = function (x) {
 router.patch("/addC1MIAM2/:id", async (req, res) => {
 
 
-    /*{
-           caseDetails.C2mail,
-           caseDetails.C2name
-           caseDetails.C1name
- 
-            mediationDetails.companyName
-            mediationDetails.medName
- 
-            messageInfo.formUrl
-    }
-    */
-
     try {
 
         let MIAM2mediator = req.body;
         let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
+
+
+        
 
         if (caseSuitable == "Yes") {
             let caseDetails = {}, mediationDetails = {}, messageInfo = {};
