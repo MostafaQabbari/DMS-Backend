@@ -12,3 +12,4 @@ module.exports = function dateNow(){
     const formattedDate = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
    return formattedDate
 }
+

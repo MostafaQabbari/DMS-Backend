@@ -6,7 +6,8 @@ const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 
-const statisticFunctions = require("../global/statisticsFunctions")
+const statisticFunctions = require("../global/statisticsFunctions");
+const Company = require("../models/company");
 
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
@@ -133,7 +134,13 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 })
 
                 const miam1c1  = JSON.parse(updateCase.client1data)
-                statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1)
+                let MIAM2_C1_Statistics= statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1);
+                const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+               const targetCompID = targetComp.connectionData.companyID._id;
+               const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
+                await Company.findByIdAndUpdate(targetCompID, {
+                 $push: { statistics: stringfyStatiscs }
+                })
 
                 if (validationMail(caseDetails.C2mail)) {
 
@@ -174,9 +181,16 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     status: "Not suitable for mediation"
                 })
 
-                const miam1c1  = JSON.parse(updateCase.client1data)
-                statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1)
-                
+               const miam1c1  = JSON.parse(updateCase.client1data)
+               let MIAM2_C1_Statistics= statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1);
+               const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+              const targetCompID = targetComp.connectionData.companyID._id;
+              const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
+
+               await Company.findByIdAndUpdate(targetCompID, {
+                $push: { statistics: stringfyStatiscs }
+               })
+            
                 res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {
