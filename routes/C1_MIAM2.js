@@ -4,7 +4,9 @@ const router = express.Router();
 const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
-const dateNow = require("../global/dateNow")
+const dateNow = require("../global/dateNow");
+
+const statisticFunctions = require("../global/statisticsFunctions")
 
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
@@ -117,7 +119,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             //!currentCase.MIAM2AddedData
             if (true) {
 
-                await Case.findByIdAndUpdate(req.params.id, {
+             const updateCase =   await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
                         'MajorDataC1.fName': MajorDataC1.fName,
                         'MajorDataC1.sName': MajorDataC1.sName,
@@ -129,6 +131,10 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
                   
                 })
+
+                const miam1c1  = JSON.parse(updateCase.client1data)
+                statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1)
+
                 if (validationMail(caseDetails.C2mail)) {
 
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
@@ -157,7 +163,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             //!currentCase.MIAM2AddedData
             if (true) {
 
-                await Case.findByIdAndUpdate(req.params.id, {
+                const updateCase =   await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
                         'MajorDataC1.fName': MajorDataC1.fName,
                         'MajorDataC1.sName': MajorDataC1.sName,
@@ -167,6 +173,10 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     MIAM2AddedData: true,
                     status: "Not suitable for mediation"
                 })
+
+                const miam1c1  = JSON.parse(updateCase.client1data)
+                statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1)
+                
                 res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {

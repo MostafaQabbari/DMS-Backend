@@ -258,6 +258,7 @@ module.exports = function airTableData(data) {
                 explainWhyADRInfoWasNotProvided: data["ADR not provided"],
 
                 clientPreference: data["Client prefer the mediation online or in person?"],
+                doesClientWishForChildInclusive:[""],
 
 
 

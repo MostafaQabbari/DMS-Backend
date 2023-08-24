@@ -27,9 +27,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     starttls: {
       enable: true
     },
-    starttls: {
-      enable: true
-    },
+  
 
     secureConnection: false,
 

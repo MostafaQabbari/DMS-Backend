@@ -8,7 +8,7 @@ const Company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const getNowFormattedDate = require('../global/specialDateFormate');
-
+const dateNow = require('../global/dateNow')
 
 const MailRecordFormToMed = function (mediatorData, caseData) {
 
@@ -223,7 +223,7 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     <h2>Type of mediation</h2>
     <p>${mediationRecord.recordOfMattersDiscussed.mediationType}</p>
   
-    <h2>Do {mediationRecord.clientData.clientOneFullName} and ${mediationRecord.clientData.clientTwoFullName} agree to the Agreement to Mediate?</h2>
+    <h2>Do ${mediationRecord.clientData.clientOneFullName} and ${mediationRecord.clientData.clientTwoFullName} agree to the Agreement to Mediate?</h2>
     <p>${mediationRecord.recordOfMattersDiscussed.clientsAgreedToMediate}</p>
   
   
