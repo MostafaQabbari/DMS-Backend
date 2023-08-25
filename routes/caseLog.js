@@ -102,6 +102,7 @@ router.patch('/updateCaseLog/:id', authMiddleware, async (req, res) => {
 router.delete('/deleteCaseLog/:id/:logID', authMiddleware, async (req, res) => {
 
     try {
+        console.log(req.params)
         if (req.userRole == 'company') {
             const _id = req.params.logID
 
