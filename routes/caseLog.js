@@ -25,12 +25,14 @@ const dateNow = require("../global/dateNow");
 router.patch('/addCaseLog/:id', authMiddleware, async (req, res) => {
 
     try {
-        const logBody = req.body.logBody;
+    
         if (req.userRole == 'company') {
+            const logBody = req.body.logBody;
+            const subName = req.body.subName;
             const companyId = req.user._id;
             const currentComp = await Company.findById(companyId)
             await Case.findByIdAndUpdate(req.params.id, {
-                $push: { caseLogs: { by: currentComp.companyName, logBody, date: dateNow() } }
+                $push: { caseLogs: { by:`${currentComp.companyName} - ${subName}`, logBody, date: dateNow() } }
             })
 
             res.status(200).json({ 'res': "new cas log has been added" })
@@ -38,7 +40,7 @@ router.patch('/addCaseLog/:id', authMiddleware, async (req, res) => {
         }
 
         else if (req.userRole == 'mediator') {
-
+            const logBody = req.body.logBody;
             const medID = req.user._id;
             const currentMed = await Company.findById(medID)
 
