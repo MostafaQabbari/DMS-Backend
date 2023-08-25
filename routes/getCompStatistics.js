@@ -24,11 +24,11 @@ function filterByMonth(array, targetMonth) {
     return filteredArray;
 }
 
-function convertToCSV(dataArray) {
-    const header = Object.keys(dataArray[0]).join(',');
-    const rows = dataArray.map(obj => Object.values(obj).map(val => `"${val}"`).join(','));
-    return [header, ...rows].join('\n');
-}
+// function convertToCSV(dataArray) {
+//     const header = Object.keys(dataArray[0]).join(',');
+//     const rows = dataArray.map(obj => Object.values(obj).map(val => `"${val}"`).join(','));
+//     return [header, ...rows].join('\n');
+// }
 
 
 router.get('/getStatistics', authMiddleware, async (req, res) => {
@@ -48,40 +48,23 @@ router.get('/getStatistics', authMiddleware, async (req, res) => {
 
 
             // Call the function to filter objects with a specific month (e.g., July)
-            const filteredResults = filterByMonth(resData, 7);
+          //  const filteredResults = filterByMonth(resData, 7);
 
 
-            const csvContent = convertToCSV(filteredResults);
+            // const csvContent = convertToCSV(filteredResults);
 
-            // Write the CSV content to a file
-            fs.writeFile('data.csv', csvContent, err => {
-                if (err) {
-                    console.error('Error writing CSV file:', err);
-                } else {
-                    console.log('CSV file has been written successfully.');
-                }
-            });
+            // // Write the CSV content to a file
+            // fs.writeFile('data.csv', csvContent, err => {
+            //     if (err) {
+            //         console.error('Error writing CSV file:', err);
+            //     } else {
+            //         console.log('CSV file has been written successfully.');
+            //     }
+            // });
 
-            console.log(filteredResults);
+            //console.log(resData);
 
-            const server = http.createServer((req, res) => {
-                const filePath = './data.csv';
-                
-                // Set the appropriate headers for the download
-                res.setHeader('Content-disposition', 'attachment; filename=data.csv');
-                res.setHeader('Content-type', 'text/csv');
-          
-                // Stream the file to the response
-                const fileStream = fs.createReadStream(filePath);
-                fileStream.pipe(res);
-          
-                // Remove the file after it's been served
-                fileStream.on('end', () => {
-                  fs.unlinkSync(filePath);
-                  console.log('CSV file has been served and removed.');
-                });
-              });
-
+   
             res.status(200).json(resData)
 
         }

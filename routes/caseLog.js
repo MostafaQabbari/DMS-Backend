@@ -97,11 +97,11 @@ router.patch('/updateCaseLog/:id', authMiddleware, async (req, res) => {
 
 });
 
-router.delete('/deleteCaseLog/:id', authMiddleware, async (req, res) => {
+router.delete('/deleteCaseLog/:id/:logID', authMiddleware, async (req, res) => {
 
     try {
         if (req.userRole == 'company') {
-            const _id = req.body
+            const _id = req.params.logID
 
             const selectedCase = await Case.findById(req.params.id)
 
@@ -115,7 +115,7 @@ router.delete('/deleteCaseLog/:id', authMiddleware, async (req, res) => {
         }
 
         else if (req.userRole == 'mediator') {
-            const _id = req.body
+            const _id =  req.params.logID
 
             const selectedCase = await Case.findById(req.params.id)
 

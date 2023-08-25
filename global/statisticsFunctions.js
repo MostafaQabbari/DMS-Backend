@@ -21,6 +21,68 @@ function clientUCN(date, firstName, surname) {
   return `${formattedDate}/${firstNameInitial}/${surnameInitials}`;
 }
 
+function creatDisabiltySymbols(arrOfDisability) {
+  let disabilitiesArr =[]
+
+  for (let i = 0; i < arrOfDisability.length; i++) {
+
+
+    if(arrOfDisability[i]=="No disabilities (NCD)") disabilitiesArr.push("NCD") 
+    if(arrOfDisability[i]== "Mental health condition (MHC)") disabilitiesArr.push("MHC")
+    if(arrOfDisability[i]=="Mobility impairment (MOB)") disabilitiesArr.push("MOB") 
+    if(arrOfDisability[i]== "Long standing illness or Health Condition (ILL)") disabilitiesArr.push("ILL")
+    if(arrOfDisability[i]=="Blind (BLI)") disabilitiesArr.push("BLI")
+    if(arrOfDisability[i]== "Visual impairment (VIS)") disabilitiesArr.push("VIS")
+    if(arrOfDisability[i]=="Deaf (DEA)") disabilitiesArr.push("DEA")
+    if(arrOfDisability[i]== "Hearing impaired (HEA)") disabilitiesArr.push("HEA")
+    if(arrOfDisability[i]=="Unknown (UKN)") disabilitiesArr.push("UKN")
+    if(arrOfDisability[i]=="Cognitive impairment (COG)") disabilitiesArr.push("COG")
+    if(arrOfDisability[i]== "Physical impairment (PHY)") disabilitiesArr.push("PHY")
+    if(arrOfDisability[i]=="Learning disability/difficulty (LDD)") disabilitiesArr.push("LDD")
+    if(arrOfDisability[i]=="Other (OTH)") disabilitiesArr.push("OTH");
+    
+   
+
+  }
+  let result = disabilitiesArr.join(',')
+ 
+  return result
+
+}
+function getCapitalizedFirstLetter(inputString) {
+  if (inputString.length === 0) {
+    return null; 
+  }
+
+  return inputString.charAt(0).toUpperCase();
+}
+
+function checkPrivateCase(caseType){
+  if(caseType==="Private") return "N"
+  else return "Y"
+
+}
+function getEthincityNumber(ethincityValue) {
+  let result = ethincityValue.indexOf('-');
+  
+  if (result === -1) {
+    return ethincityValue; 
+  }
+
+  return ethincityValue.substring(0, result);
+}
+function getSessionNo(inputString) {
+  let matches = inputString.match(/\d+/); 
+  
+  if (matches) {
+    return parseInt(matches[0]); 
+  } else {
+    return null;
+  }
+}
+
+
+
 const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
 
   let statisticsObj = {};
@@ -43,10 +105,10 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
   statisticsObj.client1dateOfBirth = miam1c1.personalContactAndCaseInfo.dateOfBirth
   statisticsObj.client1UCN = c1UCN
   statisticsObj.client1postCode = miam1c1.personalContactAndCaseInfo.postCode
-  statisticsObj.client1Gender = miam1c1.personalContactAndCaseInfo.gender
-  statisticsObj.client1Ethincity = miam1c1.personalContactAndCaseInfo.ethnicOrigin
-  statisticsObj.client1Disability = miam1c1.personalContactAndCaseInfo.disabilityRegistered
-  statisticsObj.client1LegallyAided = currentCase.caseTypeC1
+  statisticsObj.client1Gender =getCapitalizedFirstLetter(miam1c1.personalContactAndCaseInfo.gender) 
+  statisticsObj.client1Ethincity =getEthincityNumber( miam1c1.personalContactAndCaseInfo.ethnicOrigin)
+  statisticsObj.client1Disability =creatDisabiltySymbols(miam1c1.personalContactAndCaseInfo.disabilityRegistered) 
+  statisticsObj.client1LegallyAided =checkPrivateCase(currentCase.caseTypeC1) 
 
   statisticsObj.client2ForeName = currentCase.MajorDataC2.fName
   statisticsObj.client2surName = currentCase.MajorDataC2.sName
@@ -89,10 +151,6 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
   statisticsObj.client2PostalApplicationAccepted = "N"
   statisticsObj.scheduleReferenceOutCome = "2P664C/MEDI2018/00"
 
-
-
-  console.log('📢📢test m2c1')
-  console.log(statisticsObj)
   return statisticsObj
 
 }
@@ -120,10 +178,10 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
   statisticsObj.client1dateOfBirth = miam1c2.personalContactAndCaseInfo.dateOfBirth
   statisticsObj.client1UCN = c1UCN
   statisticsObj.client1postCode = miam1c2.personalContactAndCaseInfo.postCode
-  statisticsObj.client1Gender = miam1c2.personalContactAndCaseInfo.gender
-  statisticsObj.client1Ethincity = miam1c2.personalContactAndCaseInfo.ethnicOrigin
-  statisticsObj.client1Disability = miam1c2.personalContactAndCaseInfo.disabilityRegistered
-  statisticsObj.client1LegallyAided = currentCase.caseTypeC2
+  statisticsObj.client1Gender = getCapitalizedFirstLetter(miam1c2.personalContactAndCaseInfo.gender) 
+  statisticsObj.client1Ethincity =getEthincityNumber(miam1c2.personalContactAndCaseInfo.ethnicOrigin)
+  statisticsObj.client1Disability =creatDisabiltySymbols(miam1c2.personalContactAndCaseInfo.disabilityRegistered) 
+  statisticsObj.client1LegallyAided =checkPrivateCase(currentCase.caseTypeC2) 
 
   statisticsObj.client2ForeName = currentCase.MajorDataC1.fName
   statisticsObj.client2surName = currentCase.MajorDataC1.sName
@@ -132,10 +190,10 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
   statisticsObj.client2postCode = miam1c2.otherParty.otherPartyPostalCode
 
 
-  statisticsObj.client2Gender = miam1c1.personalContactAndCaseInfo.gender
-  statisticsObj.client2Ethincity = miam1c1.personalContactAndCaseInfo.ethnicOrigin
-  statisticsObj.client2Disability = miam1c1.personalContactAndCaseInfo.disabilityRegistered
-  statisticsObj.client2LegallyAided = currentCase.caseTypeC1
+  statisticsObj.client2Gender = getCapitalizedFirstLetter(miam1c1.personalContactAndCaseInfo.gender)
+  statisticsObj.client2Ethincity =getEthincityNumber(miam1c1.personalContactAndCaseInfo.ethnicOrigin) 
+  statisticsObj.client2Disability =creatDisabiltySymbols(miam1c1.personalContactAndCaseInfo.disabilityRegistered) 
+  statisticsObj.client2LegallyAided =checkPrivateCase(currentCase.caseTypeC1)
 
 
   statisticsObj.NoOfMediationSessions = ""
@@ -162,8 +220,7 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
   statisticsObj.client1PostalApplicationAccepted = "N"
   statisticsObj.client2PostalApplicationAccepted = "N"
   statisticsObj.scheduleReferenceOutCome = "2P664C/MEDI2018/00"
-  console.log('test m2c2')
-  console.log(statisticsObj)
+
   return statisticsObj
 }
 
@@ -173,13 +230,13 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
 
 const MedSession_Statistics = function (medsession, currentCase) {
 
-  console.log("xxxxxxxxxxx")
+ // console.log("xxxxxxxxxxx")
   let statisticsObj = {};
   let startDateFormated = dateFormat(currentCase.startDate)
   const MIAM1_C1 = JSON.parse(currentCase.client1data)
   const MIAM1_C2 = JSON.parse(currentCase.client2data)
-  console.log(MIAM1_C1)
-  console.log(MIAM1_C2)
+//  console.log(MIAM1_C1)
+//  console.log(MIAM1_C2)
 
   let c1UCN = clientUCN(MIAM1_C1.personalContactAndCaseInfo.dateOfBirth, currentCase.MajorDataC1.fName, currentCase.MajorDataC1.sName)
   let c2UCN = clientUCN(MIAM1_C2.personalContactAndCaseInfo.dateOfBirth, currentCase.MajorDataC2.fName, currentCase.MajorDataC2.sName)
@@ -207,10 +264,10 @@ const MedSession_Statistics = function (medsession, currentCase) {
   statisticsObj.client1dateOfBirth = MIAM1_C1.personalContactAndCaseInfo.dateOfBirth
   statisticsObj.client1UCN = c1UCN
   statisticsObj.client1postCode = MIAM1_C1.personalContactAndCaseInfo.postCode
-  statisticsObj.client1Gender = MIAM1_C1.personalContactAndCaseInfo.gender
-  statisticsObj.client1Ethincity = MIAM1_C1.personalContactAndCaseInfo.ethnicOrigin
-  statisticsObj.client1Disability = MIAM1_C1.personalContactAndCaseInfo.disabilityRegistered
-  statisticsObj.client1LegallyAided = currentCase.caseTypeC1
+  statisticsObj.client1Gender =getCapitalizedFirstLetter(MIAM1_C1.personalContactAndCaseInfo.gender) 
+  statisticsObj.client1Ethincity =getEthincityNumber(MIAM1_C1.personalContactAndCaseInfo.ethnicOrigin) 
+  statisticsObj.client1Disability =creatDisabiltySymbols(MIAM1_C1.personalContactAndCaseInfo.disabilityRegistered) 
+  statisticsObj.client1LegallyAided =checkPrivateCase(currentCase.caseTypeC1) 
 
   statisticsObj.client2ForeName = currentCase.MajorDataC2.fName
   statisticsObj.client2surName = currentCase.MajorDataC2.sName
@@ -219,13 +276,13 @@ const MedSession_Statistics = function (medsession, currentCase) {
   statisticsObj.client2postCode = MIAM1_C2.personalContactAndCaseInfo.postCode
 
 
-  statisticsObj.client2Gender = MIAM1_C2.personalContactAndCaseInfo.gender
-  statisticsObj.client2Ethincity = MIAM1_C2.personalContactAndCaseInfo.ethnicOrigin
-  statisticsObj.client2Disability = MIAM1_C2.personalContactAndCaseInfo.disabilityRegistered
-  statisticsObj.client2LegallyAided = currentCase.caseTypeC2
+  statisticsObj.client2Gender =getCapitalizedFirstLetter( MIAM1_C2.personalContactAndCaseInfo.gender)
+  statisticsObj.client2Ethincity =getEthincityNumber(MIAM1_C2.personalContactAndCaseInfo.ethnicOrigin) 
+  statisticsObj.client2Disability =creatDisabiltySymbols( MIAM1_C2.personalContactAndCaseInfo.disabilityRegistered)
+  statisticsObj.client2LegallyAided =checkPrivateCase(currentCase.caseTypeC2) 
 
 
-  statisticsObj.NoOfMediationSessions = medsession.clientData.mediationSessionNumber
+  statisticsObj.NoOfMediationSessions =getSessionNo(medsession.clientData.mediationSessionNumber) 
   statisticsObj.mediationTimePerMins = medsession.clientData.sessionLength;
 
   switch (medsession.NextSteps.mediationFinishedReason) {
@@ -263,8 +320,7 @@ const MedSession_Statistics = function (medsession, currentCase) {
   statisticsObj.client1PostalApplicationAccepted = "N"
   statisticsObj.client2PostalApplicationAccepted = "N"
   statisticsObj.scheduleReferenceOutCome = "2P664C/MEDI2018/00"
-  console.log('test med session')
-  console.log(statisticsObj)
+  
 
   return statisticsObj
 }
