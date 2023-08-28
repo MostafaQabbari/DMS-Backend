@@ -424,11 +424,11 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.C1Agreement ? C1Agreement = JSON.parse(CaseFound.C1Agreement) : C1Agreement = ""
         CaseFound.C2Agreement ? C2Agreement = JSON.parse(CaseFound.C2Agreement) : C2Agreement = "";
 
-        if(MIAM2_C1.FinalComments.isSuitable=="Yes" && MIAM2_C2.FinalComments.isSuitable=="Yes")
+        if(MIAM2_C1.FinalComments?.isSuitable=="Yes" && MIAM2_C2.FinalComments?.isSuitable=="Yes")
         {
           caseSuitable = "Suitable"
 
-        }else if(MIAM2_C1.FinalComments.isSuitable=="NO" || MIAM2_C2.FinalComments.isSuitable=="No")
+        }else if(MIAM2_C1.FinalComments?.isSuitable=="NO" || MIAM2_C2.FinalComments?.isSuitable=="No")
         {
           caseSuitable = "Not Suitable"
         }
@@ -513,11 +513,11 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.C1Agreement ? C1Agreement = JSON.parse(CaseFound.C1Agreement) : C1Agreement = ""
         CaseFound.C2Agreement ? C2Agreement = JSON.parse(CaseFound.C2Agreement) : C2Agreement = "";
 
-        if(MIAM2_C1.FinalComments.isSuitable === "Yes" && MIAM2_C2.FinalComments.isSuitable === "Yes")
+        if(MIAM2_C1.FinalComments?.isSuitable === "Yes" && MIAM2_C2.FinalComments?.isSuitable === "Yes")
         {
           caseSuitable = "Suitable"
 
-        }else if(MIAM2_C1.FinalComments.isSuitable=="NO" || MIAM2_C2.FinalComments.isSuitable=="No")
+        }else if(MIAM2_C1.FinalComments?.isSuitable=="NO" || MIAM2_C2.FinalComments?.isSuitable=="No")
         {
           caseSuitable = "Not Suitable"
         }
