@@ -63,7 +63,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-   //  GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+    GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName}& ${req.body.otherParty.otherPartySurname}`;
@@ -93,12 +93,10 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const sharingGmail = companyData.connectionData.companyID.sharingGmail;
 
-    await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );//put email parameter for sharing gmail email company 
+    // await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );//put email parameter for sharing gmail email company 
 
 
-    // generateAndSavePDF(client1data)
-    // .then(message => console.log(message))
-    // .catch(error => console.error('Error:', error));
+
 
     
 
@@ -452,6 +450,10 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
     console.error('Error sharing folder:', error.message);
   }
 }
+
+    // generateAndSavePDF(client1data)
+    // .then(message => console.log(message))
+    // .catch(error => console.error('Error:', error));
  
 
 // const generateAndSavePDF = async (client1data) => {
