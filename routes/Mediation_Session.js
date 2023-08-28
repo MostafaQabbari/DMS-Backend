@@ -669,7 +669,6 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
         let mediationRecord = req.body;
         const StringfyData = JSON.stringify(mediationRecord);
 
-<<<<<<< HEAD
         // createMediationRecordUpload(mediationRecord  , currentCase._id);
         
         // // Call the function
@@ -690,7 +689,6 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
         .catch(error => {
         console.error('Error:', error);
         });
-=======
         mediationRecord.submittedDate = getNowFormattedDate();
         const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
         let compData = {}
@@ -714,7 +712,6 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
 
 
->>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
 
 
         if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
@@ -825,7 +822,6 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 });
 
 
-<<<<<<< HEAD
 //this function create pdf and folder and then upload it to that google drive folder 
 async function createMediationRecordUpload(data  , caseID) {
     try {
@@ -1177,7 +1173,6 @@ const pdfBytes = await pdfDoc.save();
 //     }
 //   };
   
-=======
 
 
 
@@ -1226,6 +1221,5 @@ router.post("/sendRecordFormToMediator/:id", authMiddleware, async (req, res) =>
 
 
 });
->>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
 
 module.exports = router

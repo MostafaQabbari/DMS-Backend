@@ -69,13 +69,10 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                 await Company.findByIdAndUpdate(targetCompID, {
                     $push: { statistics: stringfyStatiscs }
                 })
-<<<<<<< HEAD
                 
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
             
                 await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
-=======
->>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
 
                 res.status(200).json({ "message": " MIAM2 has been added " })
             }
