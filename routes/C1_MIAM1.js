@@ -63,7 +63,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-   //  GoogleFunctions(currentCase._id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+    GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
@@ -89,16 +89,14 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const StringfyData = JSON.stringify(client1data)
 
 
-    // const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+    const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
-    // const companyEmail = companyData.connectionData.companyID.email;
+    const sharingGmail = companyData.connectionData.companyID.sharingGmail;
 
-    await createMIAM1Upload(client1data , Reference , req.params.id );//put email parameter
+    // await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );//put email parameter for sharing gmail email company 
 
 
-    generateAndSavePDF(client1data)
-    .then(message => console.log(message))
-    .catch(error => console.error('Error:', error));
+
 
     
 
@@ -160,90 +158,181 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
 
 
-// // Function to authenticate the service account and get the Drive API client
-// async function getDriveApiClient() {
-//   const auth = new google.auth.GoogleAuth({
-//     keyFile: config.credentialFile1, 
-//     scopes: ['https://www.googleapis.com/auth/drive'],
-//   });
-
-//   const drive = google.drive({
-//     version: 'v3',
-//     auth: await auth.getClient(),
-//   });
-
-//   return drive;
-// }
-
-
-
-
 //this function create pdf and folder and then upload it to that google drive folder 
-async function createMIAM1Upload(client1data, folderName , email , caseID) {
+async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID) {
   try {
 
     const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-1-temp.pdf');
-    
     const pdfTemplateBytes = fs.readFileSync(filePath);
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
-
-    // // Create a new PDF document
-    // const pdfDoc = await PDFDocument.create();
 
     const pages = pdfDoc.getPages();
     const Page1 = pages[0];
     const Page2 = pages[1];
+    const Page3 = pages[2];
+    const Page4 = pages[3];
+    const Page5 = pages[4];
+    const Page6 = pages[5];
+    const Page7 = pages[6];
 
-    // // Add a new page to the document
-    // const page = pdfDoc.addPage();
-
-    // Set the font and font size
     const font = await pdfDoc.embedFont('Helvetica');
     Page1.setFont(font);
     Page1.setFontSize(12);
     Page2.setFont(font);
     Page2.setFontSize(12);
+    Page3.setFont(font);
+    Page3.setFontSize(12);
+    Page4.setFont(font);
+    Page4.setFontSize(12);
+    Page5.setFont(font);
+    Page5.setFontSize(12);
+    Page6.setFont(font);
+    Page6.setFontSize(12);
+    Page7.setFont(font);
+    Page7.setFontSize(12);
 
     const personalContactAndCaseInfo = client1data.personalContactAndCaseInfo;
+    const otherParty = client1data.otherParty;
+    const children= client1data.children;
+    const previousRelationshipDetails = client1data.previousRelationshipDetails;
+    const courtProceedings = client1data.courtProceedings;
+    const yourSolicitorOrMcKenzieFriend = client1data.yourSolicitorOrMcKenzieFriend;
 
-    // // Add client1 data to the PDF document"first page" 
-    Page1.drawText("Yes" , { x: 350, y: 545 });//Do you Agree to GDPR Policy
-    Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
-    Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
-    Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
-    Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
-    Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
-    Page1.drawText(
-      `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
-      { x: 350, y: 365 }
-    );//loctaion is address or not 
-    Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
-    Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
-    Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
-    // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
-    Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
-    Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+    // Rest of your code to draw text on pages...
+   // // Add client1 data to the PDF document"first page" 
+   Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
+   Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
+   Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
+   Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
+   Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
+   Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
+   Page1.drawText(
+     `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
+     { x: 350, y: 365 }
+   );//loctaion is address or not 
+   Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
+   Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
+   Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
+   // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
+   Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
+   Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+   
+
+   //the second page 
+   Page2.drawText(personalContactAndCaseInfo.areChangesToServicesRequired , { x: 350, y: 725 });
+   Page2.drawText(personalContactAndCaseInfo.changesRequired ||"" , { x: 350, y: 685 });
+   Page2.drawText(personalContactAndCaseInfo.willSupporterAttendMediation, { x: 350, y: 635 });
+   Page2.drawText(personalContactAndCaseInfo.supporterNameAndRelation || "", { x: 350, y: 575 });
+   Page2.drawText(personalContactAndCaseInfo.ethnicOrigin, { x: 350, y: 505 });
+   Page2.drawText(personalContactAndCaseInfo.hasBritishPassport , { x: 350, y: 445 });
+   Page2.drawText(personalContactAndCaseInfo.immigrationStatus || "" , { x: 350, y: 380 });
+  //  Page2.drawText(personalContactAndCaseInfo., { x: 350, y: 305 });//leave it empty in the form
+   Page2.drawText(personalContactAndCaseInfo.howClientFoundDMS, { x: 350, y: 265});
+   Page2.drawText(personalContactAndCaseInfo.facedIssue, { x: 350, y: 215 });
+   Page2.drawText(personalContactAndCaseInfo.isThereDaysCanNotAttend, { x: 350, y: 185 });
+   Page2.drawText(personalContactAndCaseInfo.whatDaysCanNotAttend || "", { x: 350, y: 125 });
+
+
+
+  //the third page 
+  Page3.drawText(personalContactAndCaseInfo.appointmentTime , { x: 350, y: 735 });
+  Page3.drawText(personalContactAndCaseInfo.otherParty , { x: 350, y: 675 });
+  Page3.drawText(otherParty.otherPartyFirstName, { x: 350, y: 625 });
+  Page3.drawText(otherParty.otherPartySurname, { x: 350, y: 585 });
+  Page3.drawText(otherParty.otherPartyDateOfBirth, { x: 350, y: 535 });
+  Page3.drawText(otherParty.otherPartyEmail, { x: 350, y: 505 });
+  Page3.drawText(otherParty.otherPartyPhone , { x: 350, y: 475 });
+  Page3.drawText(otherParty.otherPartyAddressKnown, { x: 350, y: 445 });//do you know the other party's adderss not found in the clinet1data
+  if (otherParty || otherParty.otherPartyStreet || otherParty.otherPartyCity ||
+    otherParty.otherPartyCountry || otherParty.otherPartyPostalCode) {
+  Page3.drawText(
+    `${otherParty.otherPartyStreet}, ${otherParty.otherPartyCity}, ${otherParty.otherPartyCountry}, ${otherParty.otherPartyPostalCode}`,
+    { x: 350, y: 415 }
+  );
+}
+  Page3.drawText(previousRelationshipDetails.separationDate, { x: 350, y: 385});
+  Page3.drawText(previousRelationshipDetails.relationshipPeriod, { x: 350, y: 345 });
+  Page3.drawText(previousRelationshipDetails.isMarried, { x: 350, y: 290 });
+  Page3.drawText(previousRelationshipDetails.marriageDate || "", { x: 350, y: 225 });
+
+  Page3.drawText(children[0]["Child One"].firstChildFirstName || "" , { x: 350, y: 175});
+  Page3.drawText(children[0]["Child One"].firstChildSurName || "", { x: 350, y: 145 });
+  Page3.drawText(children[0]["Child One"].firstChildGender || "" , { x: 350, y: 115 });
+  Page3.drawText(children[0]["Child One"].firstChildLivingWith || "", { x: 350, y: 85 });
+  
+
+    //the forth page 
+    Page4.drawText(children[0]["Child One"].firstChildDateOfBirth , { x: 350, y: 745 });
+    Page4.drawText(children[0]["Child One"].isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
+    Page4.drawText(children[0]["Child One"].firstChildResponsibility || "", { x: 350, y: 640 });
+    Page4.drawText(children[0]["Child One"].secondChildCheck || "", { x: 350, y: 585 });
+    Page4.drawText(children[1]["Child Two"].secondChildFirstName || "", { x: 350, y: 535 });
+    Page4.drawText(children[1]["Child Two"].secondChildSurName || "" , { x: 350, y: 505 });
+    Page4.drawText(children[1]["Child Two"].secondChildGender || "" , { x: 350, y: 475 });
+    Page4.drawText(children[1]["Child Two"].secondChildLivingWith || "", { x: 350, y: 445 });
+    Page4.drawText(children[1]["Child Two"].secondChildDateOfBirth || "", { x: 350, y: 415});
+    Page4.drawText(children[1]["Child Two"].issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
+    Page4.drawText(children[1]["Child Two"].secondChildResponsibility || "", { x: 350, y: 315 });
+    Page4.drawText(children[1]["Child Two"].thirdChildCheck || "", { x: 350, y: 250 });
+    Page4.drawText(children[2]["Child Three"].thirdChildFirstName || "" , { x: 350, y: 205});
+    Page4.drawText(children[2]["Child Three"].thirdChildSurName || "", { x: 350, y: 175 });
+    Page4.drawText(children[2]["Child Three"].thirdChildGender || "" , { x: 350, y: 145 });
+    Page4.drawText(children[2]["Child Three"].thirdChildLivingWith || "", { x: 350, y: 115 });
+    Page4.drawText(children[2]["Child Three"].thirdChildDateOfBirth || "" , { x: 350, y: 85 });
+   
+    //the fifth page 
+    Page5.drawText(children[2]["Child Three"].isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+    Page5.drawText(children[2]["Child Three"].thirdChildResponsibility ||"" , { x: 350, y: 660 });
+    Page5.drawText(children[2]["Child Three"].fourthChildCheck || "", { x: 350, y: 625 });
+    Page5.drawText(children[3]["Child Four"].fourthChildFirstName || "", { x: 350, y: 565 });
+    Page5.drawText(children[3]["Child Four"].fourthChildSurName || "", { x: 350, y: 535 });
+    Page5.drawText(children[3]["Child Four"].fourthChildGender || "" , { x: 350, y: 505 });
+    Page5.drawText(children[3]["Child Four"].fourthChildLivingWith || "" , { x: 350, y: 475 });
+    Page5.drawText(children[3]["Child Four"].fourthChildDateOfBirth || "", { x: 350, y: 445 });
+    Page5.drawText(children[3]["Child Four"].isfourthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+    Page5.drawText(children[3]["Child Four"].fourthChildResponsibility || "", { x: 350, y: 335 });
+    Page5.drawText(children[3]["Child Four"].fifthChildCheck || "", { x: 350, y: 285 });
+    Page5.drawText(children[4]["Child Five"].fifthChildFirstName || "", { x: 350, y: 235 });
+    Page5.drawText(children[4]["Child Five"].fifthChildSurName || "" , { x: 350, y: 205});
+    Page5.drawText(children[4]["Child Five"].fifthChildGender|| "", { x: 350, y: 175 });
+    Page5.drawText(children[4]["Child Five"].fifthChildLivingWith || "" , { x: 350, y: 145 });
+    Page5.drawText(children[4]["Child Five"].fifthChildDateOfBirth  || "", { x: 350, y: 115 });
+    
+    //the sixth page 
+    Page6.drawText(children[4]["Child Five"].isfifthChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+    Page6.drawText(children[4]["Child Five"].fifthChildResponsibility ||"" , { x: 350, y: 660 });
+    Page6.drawText(children[4]["Child Five"].sixthChildCheck || "", { x: 350, y: 625 });
+    Page6.drawText(children[5]["Child Six"].sixthChildFirstName || "", { x: 350, y: 565 });
+    Page6.drawText(children[5]["Child Six"].sixthChildSurName || "", { x: 350, y: 535 });
+    Page6.drawText(children[5]["Child Six"].sixthChildGender || "" , { x: 350, y: 505 });
+    Page6.drawText(children[5]["Child Six"].sixthChildLivingWith || "" , { x: 350, y: 475 });
+    Page6.drawText(children[5]["Child Six"].sixthChildDateOfBirth || "", { x: 350, y: 445 });
+    Page6.drawText(children[5]["Child Six"].issixthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+    Page6.drawText(children[5]["Child Six"].sixthChildResponsibility || "", { x: 350, y: 335 });
+    Page6.drawText(courtProceedings.isFacingLegalProceedings || "", { x: 350, y: 285 });
+    Page6.drawText(courtProceedings.legalProceedingsInfo || "", { x: 350, y: 235 });
+    Page6.drawText(courtProceedings.courtApplicationKnown || "" , { x: 350, y: 205});
+    Page6.drawText(courtProceedings.courtApplicationInfo|| "", { x: 350, y: 175 });
+
+
+    //the seventh page 
+    Page7.drawText(courtProceedings.maritalStatus || "" , { x: 350, y: 750 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorCheck ||"" , { x: 350, y: 720 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.consultationRegardingLegalSupport || "", { x: 350, y: 670 });
+    // Page7.drawText( || "", { x: 350, y: 565 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorLawFirmName || "", { x: 350, y: 535 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorTelephone || "" , { x: 350, y: 505 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorEmail || "" , { x: 350, y: 475 });
+    Page7.drawText(yourSolicitorOrMcKenzieFriend.sendMediationCertificateToSolicitor || "", { x: 350, y: 445 });
+    Page7.drawText("Yes" || "", { x: 350, y: 355});
+    Page7.drawText("Yes" || "", { x: 350, y: 300 });
+  
+
     
 
-    //the second page 
-    Page2.drawText(personalContactAndCaseInfo.firstName , { x: 350, y: 775 });//submit at
-    Page2.drawText("Yes" , { x: 350, y: 545 });//Do you Agree to GDPR Policy
-    Page2.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
-    Page2.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
-    Page2.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
-    Page2.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
-    Page2.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
-    Page2.drawText(
-      `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
-      { x: 350, y: 365 }
-    );//loctaion is address or not 
-    Page2.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
-    Page2.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
-    Page2.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
-    // Page2.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
-    Page2.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
-    Page2.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
-    
+   
+   
+
 
     // Save the PDF document to a buffer
     const pdfBytes = await pdfDoc.save();
@@ -319,14 +408,14 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
       media: media,
       fields: "id",
     });
-
+    console.log(folderId);
     //put the FolderID into the database
     await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, "mkabary8@gmail.com" );//the gmail sharing account that belong to the company 
-
+    shareWithPersonalAccount(folderId, sharingGmail  );//the gmail sharing account that belong to the company
+    //sharingGmail || "mkabary8@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
     console.error("Error creating PDF and uploading to Google Drive:", error);
@@ -336,187 +425,245 @@ async function createMIAM1Upload(client1data, folderName , email , caseID) {
 
 
 
-async function shareWithPersonalAccount(folderId, personalAccountEmail  ) {
+async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+  try {
+    const authClient = await google.auth.getClient({
+      keyFile: config.credentialFile1,
+      scopes: ['https://www.googleapis.com/auth/drive'],
+    });
 
-  const authClient = await google.auth.getClient({
-    keyFile: config.credentialFile1,
-    scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
-  });
+    const drive = google.drive({ version: 'v3', auth: authClient });
 
-  // const auth = await getDriveApiClient();
-  // Set the permissions for the folder or file
-  const permission = {
-    type: 'user',
-    role: 'writer', // Adjust the role as needed
-    emailAddress: personalAccountEmail,
-  };
+    const permission = {
+      type: 'user',
+      role: 'writer',
+      emailAddress: personalAccountEmail,
+    };
 
-  // Share the folder or file with the personal account
-  await drive.permissions.create({
-    auth: authClient,
-    fileId: folderId, // The ID of the folder or file to share
-    requestBody: permission,
-  });
+    await drive.permissions.create({
+      fileId: folderId,
+      requestBody: permission,
+    });
 
-  console.log('Folder shared successfully!');
+    console.log('Folder shared successfully!');
+  } catch (error) {
+    console.error('Error sharing folder:', error.message);
+  }
 }
+
+    // generateAndSavePDF(client1data)
+    // .then(message => console.log(message))
+    // .catch(error => console.error('Error:', error));
  
 
-const generateAndSavePDF = async (client1data) => {
-  try {
-    const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-1-temp.pdf');
-    const pdfTemplateBytes = fs.readFileSync(filePath);
-    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+// const generateAndSavePDF = async (client1data) => {
+//   try {
+//     const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-1-temp.pdf');
+//     const pdfTemplateBytes = fs.readFileSync(filePath);
+//     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
 
-    const pages = pdfDoc.getPages();
-    const Page1 = pages[0];
-    const Page2 = pages[1];
-    const Page3 = pages[2];
-    const Page4 = pages[3];
-    const Page5 = pages[4];
-    const Page6 = pages[5];
-    const Page7 = pages[6];
+//     const pages = pdfDoc.getPages();
+//     const Page1 = pages[0];
+//     const Page2 = pages[1];
+//     const Page3 = pages[2];
+//     const Page4 = pages[3];
+//     const Page5 = pages[4];
+//     const Page6 = pages[5];
+//     const Page7 = pages[6];
 
-    const font = await pdfDoc.embedFont('Helvetica');
-    Page1.setFont(font);
-    Page1.setFontSize(12);
-    Page2.setFont(font);
-    Page2.setFontSize(12);
-    Page3.setFont(font);
-    Page3.setFontSize(12);
-    Page4.setFont(font);
-    Page4.setFontSize(12);
-    Page5.setFont(font);
-    Page5.setFontSize(12);
-    Page6.setFont(font);
-    Page6.setFontSize(12);
-    Page7.setFont(font);
-    Page7.setFontSize(12);
+//     const font = await pdfDoc.embedFont('Helvetica');
+//     Page1.setFont(font);
+//     Page1.setFontSize(12);
+//     Page2.setFont(font);
+//     Page2.setFontSize(12);
+//     Page3.setFont(font);
+//     Page3.setFontSize(12);
+//     Page4.setFont(font);
+//     Page4.setFontSize(12);
+//     Page5.setFont(font);
+//     Page5.setFontSize(12);
+//     Page6.setFont(font);
+//     Page6.setFontSize(12);
+//     Page7.setFont(font);
+//     Page7.setFontSize(12);
 
-    const personalContactAndCaseInfo = client1data.personalContactAndCaseInfo;
-    const otherParty = client1data.otherParty;
-    const children= client1data.children;
-    const previousRelationshipDetails = client1data.previousRelationshipDetails;
+//     const personalContactAndCaseInfo = client1data.personalContactAndCaseInfo;
+//     const otherParty = client1data.otherParty;
+//     const children= client1data.children;
+//     const previousRelationshipDetails = client1data.previousRelationshipDetails;
+//     const courtProceedings = client1data.courtProceedings;
+//     const yourSolicitorOrMcKenzieFriend = client1data.yourSolicitorOrMcKenzieFriend;
 
-    // Rest of your code to draw text on pages...
-   // // Add client1 data to the PDF document"first page" 
-   Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
-   Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
-   Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
-   Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
-   Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
-   Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
-   Page1.drawText(
-     `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
-     { x: 350, y: 365 }
-   );//loctaion is address or not 
-   Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
-   Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
-   Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
-   // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
-   Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
-   Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
+//     // Rest of your code to draw text on pages...
+//    // // Add client1 data to the PDF document"first page" 
+//    Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
+//    Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
+//    Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
+//    Page1.drawText(personalContactAndCaseInfo.dateOfBirth, { x: 350, y: 455 });
+//    Page1.drawText(personalContactAndCaseInfo.phoneNumber , { x: 350, y: 425 });
+//    Page1.drawText(personalContactAndCaseInfo.email , { x: 350, y: 395 });
+//    Page1.drawText(
+//      `${personalContactAndCaseInfo.street}, ${personalContactAndCaseInfo.city}, ${personalContactAndCaseInfo.country}, ${personalContactAndCaseInfo.postCode}`,
+//      { x: 350, y: 365 }
+//    );//loctaion is address or not 
+//    Page1.drawText(personalContactAndCaseInfo.doesOtherPartyKnow, { x: 350, y: 335 });
+//    Page1.drawText(personalContactAndCaseInfo.makeDetailsConfidential, { x: 350, y: 275 });
+//    Page1.drawText(personalContactAndCaseInfo.isClientVulnerable, { x: 350, y: 215 });
+//    // Page1.drawText(personalContactAndCaseInfo.disabilityRegistered, { x: 350, y: 185 });
+//    Page1.drawText(personalContactAndCaseInfo.gender, { x: 350, y: 155 });
+//    Page1.drawText(personalContactAndCaseInfo.isWillingToTryMediation, { x: 350, y: 125 });
    
 
-   //the second page 
-   Page2.drawText(personalContactAndCaseInfo.areChangesToServicesRequired , { x: 350, y: 725 });
-   Page2.drawText(personalContactAndCaseInfo.changesRequired ||"" , { x: 350, y: 685 });
-   Page2.drawText(personalContactAndCaseInfo.willSupporterAttendMediation, { x: 350, y: 635 });
-   Page2.drawText(personalContactAndCaseInfo.supporterNameAndRelation || "", { x: 350, y: 575 });
-   Page2.drawText(personalContactAndCaseInfo.ethnicOrigin, { x: 350, y: 505 });
-   Page2.drawText(personalContactAndCaseInfo.hasBritishPassport , { x: 350, y: 445 });
-   Page2.drawText(personalContactAndCaseInfo.immigrationStatus || "" , { x: 350, y: 380 });
-  //  Page2.drawText(personalContactAndCaseInfo., { x: 350, y: 305 });//leave it empty in the form
-   Page2.drawText(personalContactAndCaseInfo.howClientFoundDMS, { x: 350, y: 265});
-   Page2.drawText(personalContactAndCaseInfo.facedIssue, { x: 350, y: 215 });
-   Page2.drawText(personalContactAndCaseInfo.isThereDaysCanNotAttend, { x: 350, y: 185 });
-   Page2.drawText(personalContactAndCaseInfo.whatDaysCanNotAttend || "", { x: 350, y: 125 });
+//    //the second page 
+//    Page2.drawText(personalContactAndCaseInfo.areChangesToServicesRequired , { x: 350, y: 725 });
+//    Page2.drawText(personalContactAndCaseInfo.changesRequired ||"" , { x: 350, y: 685 });
+//    Page2.drawText(personalContactAndCaseInfo.willSupporterAttendMediation, { x: 350, y: 635 });
+//    Page2.drawText(personalContactAndCaseInfo.supporterNameAndRelation || "", { x: 350, y: 575 });
+//    Page2.drawText(personalContactAndCaseInfo.ethnicOrigin, { x: 350, y: 505 });
+//    Page2.drawText(personalContactAndCaseInfo.hasBritishPassport , { x: 350, y: 445 });
+//    Page2.drawText(personalContactAndCaseInfo.immigrationStatus || "" , { x: 350, y: 380 });
+//   //  Page2.drawText(personalContactAndCaseInfo., { x: 350, y: 305 });//leave it empty in the form
+//    Page2.drawText(personalContactAndCaseInfo.howClientFoundDMS, { x: 350, y: 265});
+//    Page2.drawText(personalContactAndCaseInfo.facedIssue, { x: 350, y: 215 });
+//    Page2.drawText(personalContactAndCaseInfo.isThereDaysCanNotAttend, { x: 350, y: 185 });
+//    Page2.drawText(personalContactAndCaseInfo.whatDaysCanNotAttend || "", { x: 350, y: 125 });
 
 
 
-  //the third page 
-  Page3.drawText(personalContactAndCaseInfo.appointmentTime , { x: 350, y: 735 });
-  Page3.drawText(personalContactAndCaseInfo.otherParty , { x: 350, y: 675 });
-  Page3.drawText(otherParty.otherPartyFirstName, { x: 350, y: 625 });
-  Page3.drawText(otherParty.otherPartySurname, { x: 350, y: 585 });
-  Page3.drawText(otherParty.otherPartyDateOfBirth, { x: 350, y: 535 });
-  Page3.drawText(otherParty.otherPartyEmail, { x: 350, y: 505 });
-  Page3.drawText(otherParty.otherPartyPhone , { x: 350, y: 475 });
-  Page3.drawText(otherParty.otherPartyAddressKnown, { x: 350, y: 445 });//do you know the other party's adderss not found in the clinet1data
-  if (otherParty || otherParty.otherPartyStreet || otherParty.otherPartyCity ||
-    otherParty.otherPartyCountry || otherParty.otherPartyPostalCode) {
-  Page3.drawText(
-    `${otherParty.otherPartyStreet}, ${otherParty.otherPartyCity}, ${otherParty.otherPartyCountry}, ${otherParty.otherPartyPostalCode}`,
-    { x: 350, y: 415 }
-  );
-}
-  Page3.drawText(previousRelationshipDetails.separationDate, { x: 350, y: 385});
-  Page3.drawText(previousRelationshipDetails.relationshipPeriod, { x: 350, y: 345 });
-  Page3.drawText(previousRelationshipDetails.isMarried, { x: 350, y: 290 });
-  Page3.drawText(previousRelationshipDetails.marriageDate || "", { x: 350, y: 225 });
+//   //the third page 
+//   Page3.drawText(personalContactAndCaseInfo.appointmentTime , { x: 350, y: 735 });
+//   Page3.drawText(personalContactAndCaseInfo.otherParty , { x: 350, y: 675 });
+//   Page3.drawText(otherParty.otherPartyFirstName, { x: 350, y: 625 });
+//   Page3.drawText(otherParty.otherPartySurname, { x: 350, y: 585 });
+//   Page3.drawText(otherParty.otherPartyDateOfBirth, { x: 350, y: 535 });
+//   Page3.drawText(otherParty.otherPartyEmail, { x: 350, y: 505 });
+//   Page3.drawText(otherParty.otherPartyPhone , { x: 350, y: 475 });
+//   Page3.drawText(otherParty.otherPartyAddressKnown, { x: 350, y: 445 });//do you know the other party's adderss not found in the clinet1data
+//   if (otherParty || otherParty.otherPartyStreet || otherParty.otherPartyCity ||
+//     otherParty.otherPartyCountry || otherParty.otherPartyPostalCode) {
+//   Page3.drawText(
+//     `${otherParty.otherPartyStreet}, ${otherParty.otherPartyCity}, ${otherParty.otherPartyCountry}, ${otherParty.otherPartyPostalCode}`,
+//     { x: 350, y: 415 }
+//   );
+// }
+//   Page3.drawText(previousRelationshipDetails.separationDate, { x: 350, y: 385});
+//   Page3.drawText(previousRelationshipDetails.relationshipPeriod, { x: 350, y: 345 });
+//   Page3.drawText(previousRelationshipDetails.isMarried, { x: 350, y: 290 });
+//   Page3.drawText(previousRelationshipDetails.marriageDate || "", { x: 350, y: 225 });
 
-  Page3.drawText(children[0]["Child One"].firstChildFirstName || "" , { x: 350, y: 175});
-  Page3.drawText(children[0]["Child One"].firstChildSurName || "", { x: 350, y: 145 });
-  Page3.drawText(children[0]["Child One"].firstChildGender || "" , { x: 350, y: 115 });
-  Page3.drawText(children[0]["Child One"].firstChildLivingWith || "", { x: 350, y: 85 });
+//   Page3.drawText(children[0]["Child One"].firstChildFirstName || "" , { x: 350, y: 175});
+//   Page3.drawText(children[0]["Child One"].firstChildSurName || "", { x: 350, y: 145 });
+//   Page3.drawText(children[0]["Child One"].firstChildGender || "" , { x: 350, y: 115 });
+//   Page3.drawText(children[0]["Child One"].firstChildLivingWith || "", { x: 350, y: 85 });
   
 
-    //the forth page 
-    Page4.drawText(children[0]["Child One"].firstChildDateOfBirth , { x: 350, y: 745 });
-    Page4.drawText(children[0]["Child One"].isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
-    Page4.drawText(children[0]["Child One"].firstChildResponsibility, { x: 350, y: 640 });
-    Page4.drawText(children[0]["Child One"].secondChildCheck || "", { x: 350, y: 585 });
-    Page4.drawText(children[1]["Child Two"].secondChildFirstName || "", { x: 350, y: 535 });
-    Page4.drawText(children[1]["Child Two"].secondChildSurName || "" , { x: 350, y: 505 });
-    Page4.drawText(children[1]["Child Two"].secondChildGender || "" , { x: 350, y: 475 });
-    Page4.drawText(children[1]["Child Two"].secondChildLivingWith || "", { x: 350, y: 445 });
-    Page4.drawText(children[1]["Child Two"].secondChildDateOfBirth || "", { x: 350, y: 415});
-    Page4.drawText(children[1]["Child Two"].issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
-    Page4.drawText(children[1]["Child Two"].secondChildResponsibility || "", { x: 350, y: 315 });
-    Page4.drawText(children[1]["Child Two"].thirdChildCheck || "", { x: 350, y: 250 });
-    Page4.drawText(children[2]["Child Three"].thirdChildFirstName || "" , { x: 350, y: 215});
-    Page4.drawText(children[2]["Child Three"].thirdChildSurName || "", { x: 350, y: 185 });
-    Page4.drawText(children[2]["Child Three"].thirdChildGender || "" , { x: 350, y: 155 });
-    Page4.drawText(children[2]["Child Three"].thirdChildLivingWith || "", { x: 350, y: 125 });
-    Page4.drawText(children[2]["Child Three"].thirdChildDateOfBirth || "" , { x: 350, y: 95 });
+//     //the forth page 
+//     Page4.drawText(children[0]["Child One"].firstChildDateOfBirth , { x: 350, y: 745 });
+//     Page4.drawText(children[0]["Child One"].isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
+//     Page4.drawText(children[0]["Child One"].firstChildResponsibility || "", { x: 350, y: 640 });
+//     Page4.drawText(children[0]["Child One"].secondChildCheck || "", { x: 350, y: 585 });
+//     Page4.drawText(children[1]["Child Two"].secondChildFirstName || "", { x: 350, y: 535 });
+//     Page4.drawText(children[1]["Child Two"].secondChildSurName || "" , { x: 350, y: 505 });
+//     Page4.drawText(children[1]["Child Two"].secondChildGender || "" , { x: 350, y: 475 });
+//     Page4.drawText(children[1]["Child Two"].secondChildLivingWith || "", { x: 350, y: 445 });
+//     Page4.drawText(children[1]["Child Two"].secondChildDateOfBirth || "", { x: 350, y: 415});
+//     Page4.drawText(children[1]["Child Two"].issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
+//     Page4.drawText(children[1]["Child Two"].secondChildResponsibility || "", { x: 350, y: 315 });
+//     Page4.drawText(children[1]["Child Two"].thirdChildCheck || "", { x: 350, y: 250 });
+//     Page4.drawText(children[2]["Child Three"].thirdChildFirstName || "" , { x: 350, y: 205});
+//     Page4.drawText(children[2]["Child Three"].thirdChildSurName || "", { x: 350, y: 175 });
+//     Page4.drawText(children[2]["Child Three"].thirdChildGender || "" , { x: 350, y: 145 });
+//     Page4.drawText(children[2]["Child Three"].thirdChildLivingWith || "", { x: 350, y: 115 });
+//     Page4.drawText(children[2]["Child Three"].thirdChildDateOfBirth || "" , { x: 350, y: 85 });
    
-    //the fifth page 
-    Page5.drawText(children[2]["Child Three"].isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 745 });
-    Page5.drawText(children[2]["Child Three"].thirdChildResponsibility ||"" , { x: 350, y: 705 });
-    Page5.drawText(children[2]["Child Three"].fourthChildCheck, { x: 350, y: 640 });
-    Page5.drawText(children[3]["Child Four"].forthChildFirstName || "", { x: 350, y: 585 });
-    Page5.drawText(children[3]["Child Four"].forthChildSurName || "", { x: 350, y: 535 });
-    Page5.drawText(children[3]["Child Four"].forthChildGender || "" , { x: 350, y: 505 });
-    Page5.drawText(children[3]["Child Four"].forthChildLivingWith || "" , { x: 350, y: 475 });
-    Page5.drawText(children[3]["Child Four"].forthChildDateOfBirth || "", { x: 350, y: 445 });
-    Page5.drawText(children[3]["Child Four"].isforthChildHaveSpecialNeeds || "", { x: 350, y: 415});
-    Page5.drawText(children[3]["Child Four"].forthChildResponsibility || "", { x: 350, y: 365 });
-    Page5.drawText(children[3]["Child Four"].fifthChildCheck || "", { x: 350, y: 315 });
-    Page5.drawText(children[4]["Child Five"].fifthChildFirstName || "", { x: 350, y: 250 });
-    Page5.drawText(children[4]["Child Five"].fifthChildSurName || "" , { x: 350, y: 215});
-    Page5.drawText(children[4]["Child Five"].fifthChildGender|| "", { x: 350, y: 185 });
-    Page5.drawText(children[4]["Child Five"].fifthChildLivingWith || "" , { x: 350, y: 155 });
-    Page5.drawText(children[4]["Child Five"].fifthChildDateOfBirth  || "", { x: 350, y: 125 });
+//     //the fifth page 
+//     Page5.drawText(children[2]["Child Three"].isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+//     Page5.drawText(children[2]["Child Three"].thirdChildResponsibility ||"" , { x: 350, y: 660 });
+//     Page5.drawText(children[2]["Child Three"].fourthChildCheck || "", { x: 350, y: 625 });
+//     Page5.drawText(children[3]["Child Four"].fourthChildFirstName || "", { x: 350, y: 565 });
+//     Page5.drawText(children[3]["Child Four"].fourthChildSurName || "", { x: 350, y: 535 });
+//     Page5.drawText(children[3]["Child Four"].fourthChildGender || "" , { x: 350, y: 505 });
+//     Page5.drawText(children[3]["Child Four"].fourthChildLivingWith || "" , { x: 350, y: 475 });
+//     Page5.drawText(children[3]["Child Four"].fourthChildDateOfBirth || "", { x: 350, y: 445 });
+//     Page5.drawText(children[3]["Child Four"].isfourthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+//     Page5.drawText(children[3]["Child Four"].fourthChildResponsibility || "", { x: 350, y: 335 });
+//     Page5.drawText(children[3]["Child Four"].fifthChildCheck || "", { x: 350, y: 285 });
+//     Page5.drawText(children[4]["Child Five"].fifthChildFirstName || "", { x: 350, y: 235 });
+//     Page5.drawText(children[4]["Child Five"].fifthChildSurName || "" , { x: 350, y: 205});
+//     Page5.drawText(children[4]["Child Five"].fifthChildGender|| "", { x: 350, y: 175 });
+//     Page5.drawText(children[4]["Child Five"].fifthChildLivingWith || "" , { x: 350, y: 145 });
+//     Page5.drawText(children[4]["Child Five"].fifthChildDateOfBirth  || "", { x: 350, y: 115 });
+    
+//     //the sixth page 
+//     Page6.drawText(children[4]["Child Five"].isfifthChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+//     Page6.drawText(children[4]["Child Five"].fifthChildResponsibility ||"" , { x: 350, y: 660 });
+//     Page6.drawText(children[4]["Child Five"].sixthChildCheck || "", { x: 350, y: 625 });
+//     Page6.drawText(children[5]["Child Six"].sixthChildFirstName || "", { x: 350, y: 565 });
+//     Page6.drawText(children[5]["Child Six"].sixthChildSurName || "", { x: 350, y: 535 });
+//     Page6.drawText(children[5]["Child Six"].sixthChildGender || "" , { x: 350, y: 505 });
+//     Page6.drawText(children[5]["Child Six"].sixthChildLivingWith || "" , { x: 350, y: 475 });
+//     Page6.drawText(children[5]["Child Six"].sixthChildDateOfBirth || "", { x: 350, y: 445 });
+//     Page6.drawText(children[5]["Child Six"].issixthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+//     Page6.drawText(children[5]["Child Six"].sixthChildResponsibility || "", { x: 350, y: 335 });
+//     Page6.drawText(courtProceedings.isFacingLegalProceedings || "", { x: 350, y: 285 });
+//     Page6.drawText(courtProceedings.legalProceedingsInfo || "", { x: 350, y: 235 });
+//     Page6.drawText(courtProceedings.courtApplicationKnown || "" , { x: 350, y: 205});
+//     Page6.drawText(courtProceedings.courtApplicationInfo|| "", { x: 350, y: 175 });
+
+
+//     //the seventh page 
+//     Page7.drawText(courtProceedings.maritalStatus || "" , { x: 350, y: 750 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorCheck ||"" , { x: 350, y: 720 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.consultationRegardingLegalSupport || "", { x: 350, y: 670 });
+//     // Page7.drawText( || "", { x: 350, y: 565 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorLawFirmName || "", { x: 350, y: 535 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorTelephone || "" , { x: 350, y: 505 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.solicitorEmail || "" , { x: 350, y: 475 });
+//     Page7.drawText(yourSolicitorOrMcKenzieFriend.sendMediationCertificateToSolicitor || "", { x: 350, y: 445 });
+//     Page7.drawText("Yes" || "", { x: 350, y: 355});
+//     Page7.drawText("Yes" || "", { x: 350, y: 300 });
+  
+
+    
+
    
    
 
 
-    // Save the PDF document to a buffer
-    const pdfBytes = await pdfDoc.save();
+//     // Save the PDF document to a buffer
+//     const pdfBytes = await pdfDoc.save();
 
-    // Save the PDF to the "uploads" folder
-    const pdfSavePath = path.join(__dirname, '../uploads/generated.pdf');
-    fs.writeFileSync(pdfSavePath, pdfBytes);
+//     // Save the PDF to the "uploads" folder
+//     const pdfSavePath = path.join(__dirname, '../uploads/generated.pdf');
+//     fs.writeFileSync(pdfSavePath, pdfBytes);
 
 
 
-    return 'PDF generated and saved successfully';
-  } catch (error) {
-    console.error('Error generating and saving PDF:', error);
-    throw error;
-  }
-};
+//     return 'PDF generated and saved successfully';
+//   } catch (error) {
+//     console.error('Error generating and saving PDF:', error);
+//     throw error;
+//   }
+// };
 
+
+// Function to authenticate the service account and get the Drive API client
+
+
+
+// async function getDriveApiClient() {
+//   const auth = new google.auth.GoogleAuth({
+//     keyFile: config.credentialFile1, 
+//     scopes: ['https://www.googleapis.com/auth/drive'],
+//   });
+
+//   const drive = google.drive({
+//     version: 'v3',
+//     auth: await auth.getClient(),
+//   });
+
+//   return drive;
+// }
 
 
 

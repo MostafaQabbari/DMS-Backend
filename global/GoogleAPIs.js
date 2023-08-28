@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const Company = require('../models/company');
 const Case = require('../models/case');
+const config = require("../config/config");
 
 //, client2Email
  async function createEvent(caseId, mediatorEmail, client1Email) {
@@ -9,25 +10,34 @@ const Case = require('../models/case');
     // const currentCase = await Case.findById(caseId);
     // const company = await Company.findById(currentCase.connectionData.companyID);
 
-    const companyData = await Case.findById(caseId).populate('connectionData.companyID');
+    // const companyData = await Case.findById(caseId).populate('connectionData.companyID');
  
-    const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
-    const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
+    // const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
+    // const companyServiceAccountKey = companyData.connectionData.companyID.serviceAccountKey;
     
 
-    const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
+    // const plain = Buffer.from(companyServiceAccountKey, 'base64').toString('utf8') 
     
-    const plainParsed = JSON.parse(plain);
-    const privatekey1 = plainParsed.private_key;
+    // const plainParsed = JSON.parse(plain);
+    // const privatekey1 = plainParsed.private_key;
 
     // await impersonateServiceAccount("mkabary8@gmail.com" , )
 
-    // Create the JWT auth client
-    const auth = new google.auth.JWT({
-      email: companyServiceAccount,
-      key: privatekey1,
-      scopes: ['https://www.googleapis.com/auth/calendar.events'],
+    // // Create the JWT auth client
+    // const auth = new google.auth.JWT({
+    //   email: companyServiceAccount,
+    //   key: privatekey1,
+    //   scopes: ['https://www.googleapis.com/auth/calendar.events'],
+    // });
+
+    
+    const auth = await google.auth.getClient({
+      
+      keyFile: config.credentialFile1,
+
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
     });
+
 
     // Authorize the client
     const calendar = google.calendar({ version: 'v3', auth });

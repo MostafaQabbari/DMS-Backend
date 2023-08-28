@@ -44,13 +44,10 @@ RecordSessionForm/:id
 */
 
 
+
+  projectID1: " direct-mediation-services-web",
+  credentialFile1: '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json',
  
-
-  projectID: "direct-mediation-services",
-  credentialFile: '../DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json',
-
-  projectID1: "direct-mediation-services",
-  credentialFile1: '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json'
 
   
 
