@@ -9,7 +9,7 @@ const dateNow = require("../global/dateNow");
 
 /*
 
-😒  addCaseLog/:id   =>  patch = > {"logBody" : " "} 
+😒  addCaseLog/:id   =>  patch = > {"logBody" : " " ,"subName"} 
 
 😒  updateCaseLog/:id   =>  patch = > {"logBody" : " "  , "_id" : ""}
 
@@ -42,7 +42,7 @@ router.patch('/addCaseLog/:id', authMiddleware, async (req, res) => {
         else if (req.userRole == 'mediator') {
             const logBody = req.body.logBody;
             const medID = req.user._id;
-            const currentMed = await Company.findById(medID)
+            const currentMed = await mediator.findById(medID)
 
             await Case.findByIdAndUpdate(req.params.id, {
                 $push: { caseLogs: { by: `${currentMed.firstName} ${currentMed.lastName}`, logBody, date: dateNow() } }

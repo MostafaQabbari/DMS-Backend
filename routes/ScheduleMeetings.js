@@ -117,7 +117,7 @@ const MediationSessionMail = function (meetingDetails, clientDetials, companyDet
     })
 
     let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
-console.log("👆👆👆👆",mailList)
+//console.log("👆👆👆👆",mailList)
 
     let info = transporter.sendMail({
         from: config.companyEmail,
