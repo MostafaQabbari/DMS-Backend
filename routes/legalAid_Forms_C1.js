@@ -177,7 +177,7 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
         const reference = currentCase.Reference;
 
         try {
-            const filledPdfBytes = await createLegalAidPassport(lowIncome_C1 , reference);
+            const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C1 , reference);
             await fs.promises.writeFile('legalAidLowIncomeC1.pdf', filledPdfBytes);
             console.log('PDF form filled and saved.');
             } catch (error) {
@@ -291,7 +291,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         const reference = currentCase.Reference;
 
         try {
-            const filledPdfBytes = await createLegalAidPassport(lowIncome_C2 , reference);
+            const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C2 , reference);
             await fs.promises.writeFile('legalAidLowIncomeC2.pdf', filledPdfBytes);
             console.log('PDF form filled and saved.');
             } catch (error) {
@@ -614,7 +614,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           const properties1 = fieldData.properties[0];
           const properties2 = fieldData.properties[1];
           const assets = fieldData.assets;
-          const isOwnproperty = fieldData.accommodation.ownProperty;
+          const isOwnproperty = fieldData.case.nameInDeedsProperty;
           const checkboxField3 = form.getField('Case is about ownership or possession of assets');
           const caseAbout = fieldData.case.caseAbout;
           const share = properties1.propertyShare
@@ -711,12 +711,12 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText261').setText(theDifferenceStringOther);
                 form.getTextField('FillText40').setText(result5StringOther);
             //PartB point 7 client
-                const  notIncludedInFinancialAssets = fieldData.notIncludedInFinancialAssets;
-                form.getTextField('FillText110').setText(notIncludedInFinancialAssets.savingsAmount);
-                form.getTextField('FillText111').setText(notIncludedInFinancialAssets.investmentsAmount);
-                form.getTextField('FillText112').setText(notIncludedInFinancialAssets.valuableItemsWorth);
-                form.getTextField('FillText113').setText(notIncludedInFinancialAssets.otherCapitalValue);
-                const totalCapitalNumber = parseFloat(notIncludedInFinancialAssets.savingsAmount) + parseFloat(notIncludedInFinancialAssets.investmentsAmount) + parseFloat(notIncludedInFinancialAssets.valuableItemsWorth) + parseFloat(notIncludedInFinancialAssets.otherCapitalValue);
+                const  financialDetails = fieldData.financialDetails;
+                form.getTextField('FillText110').setText(financialDetails.savingsAmount);
+                form.getTextField('FillText111').setText(financialDetails.investmentsAmount);
+                form.getTextField('FillText112').setText(financialDetails.valuableItemsWorth);
+                form.getTextField('FillText113').setText(financialDetails.otherCapitalValue);
+                const totalCapitalNumber = parseFloat(financialDetails.savingsAmount) + parseFloat(financialDetails.investmentsAmount) + parseFloat(financialDetails.valuableItemsWorth) + parseFloat(financialDetails.otherCapitalValue);
                 const totalCapitalString = totalCapitalNumber.toString();
                 form.getTextField('FillText118').setText(totalCapitalString);
             //PartB point 7 partner
@@ -727,6 +727,23 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText117').setText(partnerFinancialAssets.otherCapitalValue);
 
             }
+            //PartC
+            const otherDetails = fieldData.otherDetails;
+            form.getTextField('FillText5').setText(otherDetails.lastMonthMortgagePayment);
+            form.getTextField('FillText7').setText(otherDetails.lastMonthRentPay);
+            const childernUnder15Number =  parseFloat(otherDetails.childrenUnder15)*338.9;
+            const childernUnder15String = childernUnder15Number.toString();
+            const childernAbove16Number =  parseFloat(otherDetails.childrenOver15)*338.9;
+            const childernAbove16String = childernAbove16Number.toString();
+            form.getTextField('FillText12').setText(childernUnder15String);
+            form.getTextField('FillText13').setText(childernAbove16String);
+
+            form.getTextField('FillText16').setText("45");
+            form.getTextField('FillText18').setText(otherDetails.lastMonthMaintenancePayment);
+            form.getTextField('FillText27').setText(otherDetails.lastMonthChildCarePayment);
+            form.getTextField('FillText28').setText(otherDetails.criminalLegalAidPerMonthPayment);
+
+            
 
             //Evidence given
             form.getField('Evidence given').check();
@@ -734,33 +751,27 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 
       
             const textField = form.getTextField('FillText35');
-            if (fieldData.accommodation.accommodationLiveInType == 'Rent') {
-                const newText = `THE APPLICANT IS IN RECEIPT OF ${fieldData.typeOfApplication.benefitReceiving}.\nTHE APPLICANT IS LIVING IN RENTED ACCOMMODATION IN A HOUSING ASSOCIATION. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
+            if (fieldData.case.accommodationType == 'Privately rented') {
+                const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING IN RENTED ACCOMMODATION IN A HOUSING ASSOCIATION. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            } else if (fieldData.accommodation.accommodationLiveInType == 'Own'){
-                const newText = `THE APPLICANT IS IN RECEIPT OF ${fieldData.typeOfApplication.benefitReceiving}.\nTHE APPLICANT IS LIVING IN OWNED ACCOMMODATION \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
+            } else if (fieldData.case.accommodationType == 'My own property'){
+                const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING IN OWNED ACCOMMODATION \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            }else if (fieldData.accommodation.accommodationLiveInType == 'I live with friend or family and I pay rent'){
-                const newText = `THE APPLICANT IS IN RECEIPT OF ${fieldData.typeOfApplication.benefitReceiving}.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
+            }else if (fieldData.case.accommodationType == 'I live with friend or family and I pay rent'){
+                const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            }else if (fieldData.accommodation.accommodationLiveInType == "I live with friend or family and don't pay rent"){
-                const newText = `THE APPLICANT IS IN RECEIPT OF ${fieldData.typeOfApplication.benefitReceiving}.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS NOT PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
+            }else if (fieldData.case.accommodationType == "I live with friend or family and I pay rent"){
+                const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS NOT PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
             }
         
-            // Set checkbox for Universal Credit
-            if (fieldData.typeOfApplication.benefitReceiving.toUpperCase() === 'UNIVERSAL CREDIT') {
-                form.getField('Passported').check();
-            }
+            // // Set checkbox for Universal Credit
+            // if (fieldData.typeOfApplication.benefitReceiving.toUpperCase() === 'UNIVERSAL CREDIT') {
+            //     form.getField('Passported').check();
+            // }
 
 
-            // Find the checkbox field based on name and value
-            const checkboxFieldPassported = form.getCheckBoxesWithName('Passported').find(field => field.getValue() === 'No');
 
-            if (checkboxFieldPassported) {
-                checkboxFieldPassported.check();
-            } 
-            
             const base64Signature = fieldData.clientDeclaration.signature;
             const imageBytes = Buffer.from(base64Signature, 'base64');
             const signaturePage = pdfDoc.getPage(6);
