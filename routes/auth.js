@@ -54,6 +54,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       }
     
     const { companyName, email, password, logo ,sharingGmail, twillioData } = req.body;
+    let user ;
 
 
     const existingUser = await Company.findOne({ email });
@@ -83,22 +84,45 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
           });
 
           cryptedTwilioData = CryptoJS.AES.encrypt(JSON.stringify([twillioData]), 'ourTwillioEncyptionKey').toString();
+
+
+           user = new Company({
+            // Company data
+            companyName,
+            email,
+            password: hashedPassword,
+            sharingGmail:sharingGmail,
+            logo: logo,
+            companyLogo: req.file ? req.file.filename : null,
+            twillioData:cryptedTwilioData,
+            phoneNumberTwillio:req.body.twillioData.twillioNumber
+          });
+
         } catch (error) {
           console.error(error);
         }
       }
+      else{
 
-    const user = new Company({
-      // Company data
-      companyName,
-      email,
-      password: hashedPassword,
-      sharingGmail:sharingGmail,
-      logo: logo,
-      companyLogo: req.file ? req.file.filename : null,
-      twillioData:cryptedTwilioData,
-      phoneNumberTwillio:req.body.twillioData.twillioNumber
-    });
+         user = new Company({
+          // Company data
+          companyName,
+          email,
+          password: hashedPassword,
+          sharingGmail:sharingGmail,
+          logo: logo,
+          companyLogo: req.file ? req.file.filename : null,
+        
+        });
+
+      }
+
+ 
+
+
+
+
+    
     // Check if sharingGmail is already present in any user within the company accounts
     const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
     if (existingUser1) {

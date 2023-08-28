@@ -1,7 +1,4 @@
-
-
-
-module.exports = function dateNow(){
+module.exports = function getNowFormattedDate(){
     const now = new Date();
     const year = now.getFullYear();
     const month = ('0' + (now.getMonth() + 1)).slice(-2);
@@ -9,7 +6,6 @@ module.exports = function dateNow(){
     const hour = ('0' + now.getHours()).slice(-2);
     const minute = ('0' + now.getMinutes()).slice(-2);
     const second = ('0' + now.getSeconds()).slice(-2);
-    const formattedDate = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+    const formattedDate = `${year}-${month}-${day}  ${hour}:${minute}:${second}`;
    return formattedDate
 }
-

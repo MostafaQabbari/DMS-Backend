@@ -14,8 +14,8 @@ const caseSchema = new Schema({
     phoneNumber: { type: String },
     dateOfMAIM: { type: Date },
     location: { type: String },
-    caseType:{type:String , required:true}  ,   //private , LegalAid , passporting , lowIncome
-    legalAidType:{type:String}
+    caseType: { type: String, required: true },   //private , LegalAid , passporting , lowIncome
+    legalAidType: { type: String }
   },
   connectionData: {
     mediatorID: {
@@ -28,17 +28,17 @@ const caseSchema = new Schema({
     }
   },
 
-  caseTypeC1:{type:String},
-  caseTypeC2:{type:String},
-  passporting_C1:{type: String},
-  lowIncome_C1:{type: String},
+  caseTypeC1: { type: String },
+  caseTypeC2: { type: String },
+  passporting_C1: { type: String },
+  lowIncome_C1: { type: String },
   client1data: { type: String },
   client1AddedData: { type: Boolean, default: false },
   MIAM2mediator: { type: String },
   MIAM2AddedData: { type: Boolean, default: false },
 
-  passporting_C2:{type: String},
-  lowIncome_C2:{type: String},
+  passporting_C2: { type: String },
+  lowIncome_C2: { type: String },
   client2data: { type: String },
   client2AddedData: { type: Boolean, default: false },
   MIAM2C2: { type: String },
@@ -53,19 +53,19 @@ const caseSchema = new Schema({
   C2Agreement: { type: String },
   C2AgreementApplied: { type: Boolean, default: false },
 
-  mediationRecords:[{type:String}],
-  mediationSessionsNo:{type:Number ,default:0},
+  mediationRecords: [{ type: String }],
+  mediationSessionsNo: { type: Number, default: 0 },
 
-  
-  availableTimes_C1:{
-    whatDaysCanNotAttend:{type:String},
-    appointmentTime:{type:String}
+
+  availableTimes_C1: {
+    whatDaysCanNotAttend: { type: String },
+    appointmentTime: { type: String }
   },
-  
-  phoneCallAppointment_C2_C2reply:[{type: String}],
-  availableTimes_C2:{
-    whatDaysCanNotAttend:{types:String},
-    appointmentTime:{types:String}
+
+  phoneCallAppointment_C2_C2reply: [{ type: String }],
+  availableTimes_C2: {
+    whatDaysCanNotAttend: { types: String },
+    appointmentTime: { types: String }
   },
 
   MajorDataC1: {
@@ -90,7 +90,7 @@ const caseSchema = new Schema({
       sessionDate: { type: String }
     }]
     ,
-    
+
   },
 
   Reminders: {
@@ -98,14 +98,24 @@ const caseSchema = new Schema({
       reminderID: { type: String },      // ID =>   caseID + "statusRemider" keyWord
       reminderTitle: { type: String },    // title   =>  ReferenceCase + StatusValue
       startDate: { type: String }
-    }
+    },
+    eventReminders: [{
+      reminderTitle: { type: String },
+      startDate: { type: String }
+    }]
   },
+
+  caseLogs: [{
+    by: { type: String },
+    logBody: { type: String },
+    date:{type:String}
+  }],
 
 
 
   status: { type: String, default: "MIAM Part 1-C1" },
   closed: { type: Boolean, default: false },
-  folderID:{type: String},
+  folderID: { type: String },
 },
   {
     timestamps: true,

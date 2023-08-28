@@ -4,12 +4,18 @@ const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow");
+<<<<<<< HEAD
 const fs = require('fs');
 const path = require('path');
 const stream = require("stream");
 const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
 
+=======
+
+const statisticFunctions = require("../global/statisticsFunctions");
+const Company = require("../models/company");
+>>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
 
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
@@ -79,23 +85,14 @@ const validationMail = function (x) {
 router.patch("/addC1MIAM2/:id", async (req, res) => {
 
 
-    /*{
-           caseDetails.C2mail,
-           caseDetails.C2name
-           caseDetails.C1name
- 
-            mediationDetails.companyName
-            mediationDetails.medName
- 
-            messageInfo.formUrl
-    }
-    */
-
     try {
 
         let MIAM2mediator = req.body;
         let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
+
+
+        
 
         if (caseSuitable == "Yes") {
             let caseDetails = {}, mediationDetails = {}, messageInfo = {};
@@ -137,7 +134,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             //!currentCase.MIAM2AddedData
             if (true) {
 
-                await Case.findByIdAndUpdate(req.params.id, {
+             const updateCase =   await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
                         'MajorDataC1.fName': MajorDataC1.fName,
                         'MajorDataC1.sName': MajorDataC1.sName,
@@ -149,9 +146,21 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
                   
                 })
+<<<<<<< HEAD
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
             
                 await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
+=======
+
+                const miam1c1  = JSON.parse(updateCase.client1data)
+                let MIAM2_C1_Statistics= statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1);
+                const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+               const targetCompID = targetComp.connectionData.companyID._id;
+               const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
+                await Company.findByIdAndUpdate(targetCompID, {
+                 $push: { statistics: stringfyStatiscs }
+                })
+>>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
 
                 if (validationMail(caseDetails.C2mail)) {
 
@@ -181,7 +190,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             //!currentCase.MIAM2AddedData
             if (true) {
 
-                await Case.findByIdAndUpdate(req.params.id, {
+                const updateCase =   await Case.findByIdAndUpdate(req.params.id, {
                     $set: {
                         'MajorDataC1.fName': MajorDataC1.fName,
                         'MajorDataC1.sName': MajorDataC1.sName,
@@ -191,10 +200,24 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                     MIAM2AddedData: true,
                     status: "Not suitable for mediation"
                 })
+<<<<<<< HEAD
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
             
                 await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
 
+=======
+
+               const miam1c1  = JSON.parse(updateCase.client1data)
+               let MIAM2_C1_Statistics= statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1);
+               const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+              const targetCompID = targetComp.connectionData.companyID._id;
+              const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
+
+               await Company.findByIdAndUpdate(targetCompID, {
+                $push: { statistics: stringfyStatiscs }
+               })
+            
+>>>>>>> a277691ba9b2ed05255e2863d6a708827924ef35
                 res.status(200).json({ "message": " MIAM2 has been added with Not Suitable status " })
             }
             else {

@@ -8,8 +8,10 @@ const decryptTwillioData = require("../middleware/getDataFromTwilio");
 const validNumber = function (x) {
 
   if (!isNaN(Number(x))) {
+
       return true
   } else {
+   
       return false
   }
 }
@@ -61,12 +63,14 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
    
      messages.sort((a, b) => new Date(a.time) - new Date(b.time));
     // return messages;
+  
    res.status(200).json(messages)
  
    })
-   
+    
    .catch(error => {
      console.log(error);
+     res.status(400).json({"Err from twilio":error})
    });
 }
 
@@ -169,25 +173,28 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
       }
       else{
       let CaseFound=  await Case.findById(CaseFoundID);
+      //console.log(CaseFound)
       
       if(CaseFound.MajorDataC1.phoneNumber){
         let C1number = CaseFound.MajorDataC1.phoneNumber
             if(validNumber(C1number))
-            {
+            { 
               // let testNumSender = "+447359624736"   // will be replaced by  ]=> twillioInfo.twillioNumber
               // C1number = "+447824627002"  // this line will be removed
-             // console.log(C1number)
+              //console.log("👌👌",  !isNaN(Number(C1number)))
              
               getMessgaes( twillioInfo.twillioNumber ,C1number ,twillioInfo, res);
        
             }
              else
             {
+             // console.log("🤦‍♂️🤦‍♂️")
               res.status(400).json("please make sure about the c1 phone number  ")
             }
             
       }
       else{
+      //  console.log("🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️")
         res.status(400).json("there is no phone number for c1 ")
       }
     
@@ -195,7 +202,7 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
       
  
     }
-    if (req.userRole == "mediator"){ 
+   else if (req.userRole == "mediator"){ 
       let CaseFoundID
        // let cases = await Company.findById(req.user._id).populate('cases');
        let comp = await mediator.findById(req.user._id);
@@ -242,10 +249,12 @@ router.get("/chatSMSC1/:id", authMiddleware,decryptTwillioData, async (req, res)
       }
     else
     {
+     // console.log("🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️")
       res.status(400).json("something wrong with auth ... ")
     }
 
   }catch (err) {
+   // console.log("🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️🤦‍♂️")
     res.status(400).json(err.message)
   }
 
@@ -301,7 +310,7 @@ router.get("/chatSMSC2/:id", authMiddleware,decryptTwillioData, async (req, res)
       
  
     }
-    if (req.userRole == "mediator"){ 
+   else if (req.userRole == "mediator"){ 
       let CaseFoundID
        // let cases = await Company.findById(req.user._id).populate('cases');
        let comp = await mediator.findById(req.user._id);

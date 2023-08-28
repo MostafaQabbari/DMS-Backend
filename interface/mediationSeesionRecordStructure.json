@@ -7,42 +7,49 @@
     "caseType": "",
     "specifyLocation": "",
     "mediationSessionNumber": "",
-    "sessionLength": ""
+    "sessionLength": "",
+    "mediationSessionLocation":"" 📢  to add im mail remember
   },
   "keyFacts": {
     "clientsAgreedToAttendMediationChildAndFiance": "",
     "clientsAgreedToAttendMediationChild": "",
     "children": [
       {
-        "Child One": {
-          "ChildFirstName": "",
-          "ChildDateOfBirth": "",
-          "bothHaveParentalResponsibilityForChild": "",
-          "ChildParentalResponsibility": "",
-          "secondChildCheck": ""
-        },
-        "Child Two": {
-          "ChildFirstName": "",
-          "ChildDateOfBirth": "",
-          "bothHaveParentalResponsibilityForChild": "",
-          "ChildParentalResponsibility": "",
-          "thirdChildCheck": ""
-        },
-        "Child Three": {
-          "ChildFirstName": "",
-          "ChildDateOfBirth": "",
-          "bothHaveParentalResponsibilityForChild": "",
-          "ChildParentalResponsibility": "",
-          "fourthChildCheck": ""
-        },
-        "Child Four": {
-          "ChildFirstName": "",
-          "ChildDateOfBirth": "",
-          "bothHaveParentalResponsibilityForChild": "",
-          "ChildParentalResponsibility": ""
-        }
+          "Child One": {
+              "firstChildFirstName": "rania",
+              "firstChildDateOfBirth": "2023-08-21",
+              "bothHaveParentalResponsibilityForFirstChild": "No",
+              "secondChildCheck": "Yes",
+              "firstChildParentalResponsibility": "Heelo"
+          }
+      },
+      {
+          "Child Two": {
+              "secondChildFullName": "farha",
+              "secondChildDateOfBirth": "2023-08-03",
+              "secondChildBothParentalResponsibility": "No",
+              "thirdChildCheck": "Yes",
+              "secondChildParentalResponsibility": "omomo"
+          }
+      },
+      {
+          "Child Three": {
+              "thirdChildFullName": "sameh",
+              "thirdChildDateOfBirth": "2023-08-16",
+              "thirdChildBothParentalResponsibility": "No",
+              "fourthChildCheck": "Yes",
+              "thirdChildParentalResponsibility": "bobboobo"
+          }
+      },
+      {
+          "Child Four": {
+              "fourthChildFullName": "hamdy",
+              "fourthChildDateOfBirth": "2023-08-04",
+              "fourthChildBothParentalResponsibility": "No",
+              "fourthChildParentalResponsibility": "12345+"
+          }
       }
-    ]
+  ],
   },
   "recordOfMattersDiscussed": {
     "mediationType": "",
@@ -52,92 +59,94 @@
   "discussions": [
     {
       "Discussion One": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "firstAgendaPointDiscussed": "",
+        "firstAgendaIssuesIdentified": "",
+        "firstAgendaOptionsDiscussed": "",
+        "firstAgendaAnyAgreementsReached": "",
+        "firstAgendaAgreedBulletsPoints": "",
+        "firstAgendaClientsActionPoints": "",
         "secondAgendaCheck": ""
       }
     },
     {
       "Discussion Two": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "secondAgendaPointDiscussed": "",
+        "secondAgendaIssuesIdentified": "",
+        "secondAgendaOptionsDiscussed": "",
+        "secondAgendaAnyAgreementsReached": "",
+        "secondAgendaAgreedBulletsPoints": "",
+        "secondAgendaClientsActionPoints": "",
         "thirdAgendaCheck": ""
       }
     },
     {
       "Discussion Three": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "thirdAgendaPointDiscussed": "",
+        "thirdAgendaIssuesIdentified": "",
+        "thirdAgendaOptionsDiscussed": "",
+        "thirdAgendaAnyAgreementsReached": "",
+        "thirdAgendaAgreedBulletsPoints": "",
+        "thirdAgendaClientsActionPoints": "",
         "fourthAgendaCheck": ""
       }
     },
     {
       "Discussion Four": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "fourthAgendaPointDiscussed": "",
+        "fourthAgendaIssuesIdentified": "",
+        "fourthAgendaOptionsDiscussed": "",
+        "fourthAgendaAnyAgreementsReached": "",
+        "fourthAgendaAgreedBulletsPoints": "",
+        "fourthAgendaClientsActionPoints": "",
         "fifthAgendaCheck": ""
       }
     },
     {
       "Discussion Five": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "fifthAgendaPointDiscussed": "",
+        "fifthAgendaIssuesIdentified": "",
+        "fifthAgendaOptionsDiscussed": "",
+        "fifthAgendaAnyAgreementsReached": "",
+        "fifthAgendaAgreedBulletsPoints": "",
+        "fifthAgendaClientsActionPoints": "",
         "sixthAgendaCheck": ""
       }
     },
     {
       "Discussion Six": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "sixthAgendaPointDiscussed": "",
+        "sixthAgendaIssuesIdentified": "",
+        "sixthAgendaOptionsDiscussed": "",
+        "sixthAgendaAnyAgreementsReached": "",
+        "sixthAgendaAgreedBulletsPoints": "",
+        "sixthAgendaClientsActionPoints": "",
         "seventhAgendaCheck": ""
       }
     },
     {
       "Discussion Seven": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": "",
+        "seventhAgendaPointDiscussed": "",
+        "seventhAgendaIssuesIdentified": "",
+        "seventhAgendaOptionsDiscussed": "",
+        "seventhAgendaAnyAgreementsReached": "",
+        "seventhAgendaAgreedBulletsPoints": "",
+        "seventhAgendaClientsActionPoints": "",
         "eighthAgendaCheck": ""
       }
     },
     {
       "Discussion Eight": {
-        "agendaPointDiscussed": "",
-        "issuesIdentified": "",
-        "optionsDiscussed": "",
-        "anyAgreementsReached": "",
-        "agreedBulletsPoints": "",
-        "clientsActionPoints": ""
+        "eighthAgendaAgendaPointDiscussed": "",
+        "eighthAgendaIssuesIdentified": "",
+        "eighthAgendaOptionsDiscussed": "",
+        "eighthAgendaAnyAgreementsReached": "",
+        "eighthAgendaAgreedBulletsPoints": "",
+        "eighthAgendaClientsActionPoints": ""
       }
     }
   ],
+
+
   "documentUpload": {
     "additionalDocumentsToUpload": "",
     "documentsPaths": [""]
@@ -148,14 +157,19 @@
     "bothClientsAgreed": "",
     "returnToMediationDate": "",
     "appointmentTime": "",
-    "mediationFinishReason": "",    // if No session => will get status from here    Broken  ,
+    "mediationFinishedReason": "",    // if No session => will get status from here    Broken  ,44
     "isC100OrFormA": "",
     "documentsPaths": [""],
-    "isTwoClientWantCopy": "",
+    "isTwoClientWantCopy": "",   // if yes so will send mail to c2
+
     "clientOneEmail": "",
     "clientTwoEmail": "",
+
     "isMediatorWantCopy": "",
     "mediatorEmail": "",
+
     "Mediator'sComments": ""
   }
 }
+
+

@@ -11,7 +11,7 @@ const Company = require("../models/company");
 
 
 
-router.patch('/addRemider', authMiddleware, async (req, res, next) => {
+router.patch('/addRemider', authMiddleware, async (req, res) => {
 
     try {
         if (req.userRole == 'company') {
@@ -51,7 +51,7 @@ router.patch('/addRemider', authMiddleware, async (req, res, next) => {
 
 });
 
-router.get('/getReminders', authMiddleware, async (req, res, next) => {
+router.get('/getReminders', authMiddleware, async (req, res) => {
 
     try {
         if (req.userRole == 'company') {
@@ -70,8 +70,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
             const companyId = req.user._id;
             const selectedComp = await Company.findById(companyId);
             const userReminders = selectedComp.Reminders;
-            const mediatorReminders = []
-            const casesReminders = []
+        
 
             const mediatorsList = await Company.findById(req.user._id).populate('mediators');
             const casesList = await Company.findById(req.user._id).populate('cases');
@@ -111,15 +110,34 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
 
                 let caseStatusReminders = casesList.cases[i].Reminders.statusRemider;
                 let caseReference = casesList.cases[i].Reference;
-                let reminderObj = {}
+                let reminderObj = {};
                 reminderObj.id = caseStatusReminders.reminderID
                 reminderObj.title = caseStatusReminders.reminderTitle
                 reminderObj.start = caseStatusReminders.startDate
                 reminderObj.creator = "caseStatus"
                 reminderObj.caseReference = caseReference;
-
-                console.log(reminderObj)
                 Reminders.push(reminderObj)
+
+
+                for(let rem=0 ; rem<casesList.cases[i].Reminders.eventReminders.length ; rem++)
+                {
+                    let eventReminders = casesList.cases[i].Reminders.eventReminders[rem];
+                    let eventReminderObj = {}
+                    
+                    eventReminderObj.id = eventReminders._id
+                    eventReminderObj.title = eventReminders.reminderTitle
+                    eventReminderObj.start = eventReminders.startDate
+                    eventReminderObj.creator = "Event Reminder"
+                    eventReminderObj.caseReference = caseReference;
+                 
+                    Reminders.push(eventReminderObj)
+
+                }
+             
+
+
+
+
 
 
             }
@@ -179,7 +197,22 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
                 reminderObj.start = caseStatusReminders.startDate
                 reminderObj.creator = "caseStatus"
                 reminderObj.caseReference = caseReference;
-                Reminders.push(reminderObj)
+                Reminders.push(reminderObj);
+
+                for(let rem=0 ; rem<casesList.cases[i].Reminders.eventReminders.length ; rem++)
+                {
+                    let eventReminders = casesList.cases[i].Reminders.eventReminders[rem];
+                    let eventReminderObj = {}
+    
+                  
+                    eventReminderObj.id = eventReminders._id
+                    eventReminderObj.title = eventReminders.reminderTitle
+                    eventReminderObj.start = eventReminders.startDate
+                    eventReminderObj.creator = "Event Reminder"
+                    eventReminderObj.caseReference = caseReference;
+                    Reminders.push(eventReminderObj)
+
+                }
 
             }
 
@@ -196,7 +229,7 @@ router.get('/getReminders', authMiddleware, async (req, res, next) => {
     }
 
 });
-router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
+router.patch('/updateReminder', authMiddleware, async (req, res) => {
 
     try {
         if (req.userRole == 'company') {
@@ -239,7 +272,7 @@ router.patch('/updateReminder', authMiddleware, async (req, res, next) => {
 
 });
 
-router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => {
+router.delete('/deleteReminder/:_id', authMiddleware, async (req, res) => {
 
     try {
         if (req.userRole == 'company') {
@@ -284,6 +317,73 @@ router.delete('/deleteReminder/:_id', authMiddleware, async (req, res, next) => 
 });
 
 
+
+router.patch("/adding-event-reminder/:id" , authMiddleware , async(req, res)=>{
+
+    
+    try {
+        let eventReminderdata = req.body;
+        if (req.userRole == 'company') {
+            let cases = await Company.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+
+                await Case.findByIdAndUpdate(req.params.id, {
+                    $push: { 'Reminders.eventReminders': eventReminderdata }
+                })
+                res.status(200).json({ "message": " Event Reminder has been added ... " })
+                
+
+
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+
+
+        else if (req.userRole == 'mediator') {
+            let cases = await mediator.findById(req.user._id).populate('cases');
+            for (let i = 0; i < cases.cases.length; i++) {
+                if (cases.cases[i]._id == req.params.id) {
+
+                    CaseFound = (cases.cases[i])
+                }
+            }
+            if (CaseFound) {
+
+                await Case.findByIdAndUpdate(req.params.id, {
+                    $push: { 'Reminders.eventReminders': eventReminderdata }
+                })
+                res.status(200).json({ "message": " Event Reminder has been added ... " })
+                
+
+            
+              
+            }
+            else {
+                res.status(400).json({ "message": "no case found ... " })
+            }
+
+        }
+
+
+
+
+        else {
+            res.status(400).json({ 'message': "error in the role of token" })
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+
+})
 
 
 module.exports = router;
