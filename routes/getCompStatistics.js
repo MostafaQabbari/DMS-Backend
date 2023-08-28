@@ -1,11 +1,9 @@
 
 const express = require('express');
 const router = express.Router();
-const config = require("../config/config");
 const authMiddleware = require("../middleware/authMiddleware");
 const Company = require("../models/company");
-const fs = require('fs');
-const http = require('http');
+
 
 
 function filterByMonth(array, targetMonth) {
@@ -25,25 +23,28 @@ function filterByMonth(array, targetMonth) {
 }
 
 function filterArrayByMonthAndYear(data, year, month) {
-    const filtredData =  data.filter(item => {
+    const filtredData = data.filter(item => {
         const [itemYear, itemMonth] = item.date.split('-');
-       
+
         return Number(itemYear) === Number(year) && Number(itemMonth) === Number(month);
-      });
-      console.log(filtredData)
-      return filtredData
-  }
+    });
+    console.log(filtredData)
+    return filtredData
+}
 
 
-router.get('/getStatistics/:month/:year', authMiddleware, async (req, res) => {
+router.post('/getStatistics', authMiddleware, async (req, res) => {
+    /*
+    {"month":"07" , "year":"2023"}
+    */
 
     try {
         if (req.userRole == 'company') {
             const companyId = req.user._id;
             const compData = await Company.findById(companyId)
             let resData = []
-            let month = req.params.month
-            let year  = req.params.year
+            let month = req.body.month
+            let year = req.body.year
             for (let i = 0; i < compData.statistics.length; i++) {
                 resData.push(JSON.parse(compData.statistics[i]))
 
@@ -51,10 +52,10 @@ router.get('/getStatistics/:month/:year', authMiddleware, async (req, res) => {
 
 
 
-            console.log(resData);
+            //console.log(resData);
 
-          let x =  filterArrayByMonthAndYear(resData , year , month)
-            res.status(200).json(x)
+            let data = filterArrayByMonthAndYear(resData, year, month)
+            res.status(200).json(data)
 
         }
 

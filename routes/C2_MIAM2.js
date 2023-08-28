@@ -299,3 +299,23 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
 
 
 module.exports = router;
+
+
+/*
+per.prod.add
+products=[
+  get_product=true
+]
+
+per = {
+  products:{
+    add:true,
+    remove:false
+  },
+  orders:{
+    add:true,
+    remove:false
+  }
+}
+
+*/
