@@ -80,28 +80,30 @@ router.get('/getReminders', authMiddleware, async (req, res) => {
 
             for (let i = 0; i < userReminders.length; i++) {
                 let reminderObj = {}
-                reminderObj.id = userReminders[i]._id
-                reminderObj.title = userReminders[i].reminderTitle
-                reminderObj.start = userReminders[i].startDate
+                reminderObj.id = userReminders[i]?._id
+                reminderObj.title = userReminders[i]?.reminderTitle
+                reminderObj.start = userReminders[i]?.startDate
                 reminderObj.creator = "company"
                 reminderObj.companyName = selectedComp.companyName
                 Reminders.push(reminderObj)
-
+                
             }
-
+            
             for (let i = 0; i < mediatorsList.mediators.length; i++) {
                 let medName = `${mediatorsList.mediators[i].firstName} ${mediatorsList.mediators[i].lastName}`;
                 let medReminders = mediatorsList.mediators[i].Reminders;
+                console.log(medReminders)
                 let reminderObj = {}
                 for (let j = 0; j < medReminders.length; j++) {
 
-                    reminderObj.id = medReminders[i]._id
-                    reminderObj.title = medReminders[i].reminderTitle
-                    reminderObj.start = medReminders[i].startDate
+                    reminderObj.id = medReminders[i]?._id
+                    reminderObj.title = medReminders[i]?.reminderTitle
+                    reminderObj.start = medReminders[i]?.startDate
                     reminderObj.creator = "mediator"
                     reminderObj.mediatorName = medName
                     Reminders.push(reminderObj)
-
+                    
+                    console.log("📢📢")
 
                 }
 
@@ -124,9 +126,9 @@ router.get('/getReminders', authMiddleware, async (req, res) => {
                     let eventReminders = casesList.cases[i].Reminders.eventReminders[rem];
                     let eventReminderObj = {}
                     
-                    eventReminderObj.id = eventReminders._id
-                    eventReminderObj.title = eventReminders.reminderTitle
-                    eventReminderObj.start = eventReminders.startDate
+                    eventReminderObj.id = eventReminders?._id
+                    eventReminderObj.title = eventReminders?.reminderTitle
+                    eventReminderObj.start = eventReminders?.startDate
                     eventReminderObj.creator = "Event Reminder"
                     eventReminderObj.caseReference = caseReference;
                  
@@ -167,9 +169,9 @@ router.get('/getReminders', authMiddleware, async (req, res) => {
             let Reminders = []
             for (let i = 0; i < compReminders.length; i++) {
                 let reminderObj = {}
-                reminderObj.id = compReminders[i]._id
-                reminderObj.title = compReminders[i].reminderTitle
-                reminderObj.start = compReminders[i].startDate
+                reminderObj.id = compReminders[i]?._id
+                reminderObj.title = compReminders[i]?.reminderTitle
+                reminderObj.start = compReminders[i]?.startDate
                 reminderObj.creator = "company"
                 reminderObj.companyName = compName
                 Reminders.push(reminderObj)
@@ -178,9 +180,9 @@ router.get('/getReminders', authMiddleware, async (req, res) => {
             
             for (let i = 0; i < userReminders.length; i++) {
                 let reminderObj = {}
-                reminderObj.id = userReminders[i]._id
-                reminderObj.title = userReminders[i].reminderTitle
-                reminderObj.start = userReminders[i].startDate
+                reminderObj.id = userReminders[i]?._id
+                reminderObj.title = userReminders[i]?.reminderTitle
+                reminderObj.start = userReminders[i]?.startDate
                 reminderObj.creator = "mediator"
                 reminderObj.mediatorName = medName
                 Reminders.push(reminderObj)
@@ -205,9 +207,9 @@ router.get('/getReminders', authMiddleware, async (req, res) => {
                     let eventReminderObj = {}
     
                   
-                    eventReminderObj.id = eventReminders._id
-                    eventReminderObj.title = eventReminders.reminderTitle
-                    eventReminderObj.start = eventReminders.startDate
+                    eventReminderObj.id = eventReminders?._id
+                    eventReminderObj.title = eventReminders?.reminderTitle
+                    eventReminderObj.start = eventReminders?.startDate
                     eventReminderObj.creator = "Event Reminder"
                     eventReminderObj.caseReference = caseReference;
                     Reminders.push(eventReminderObj)
