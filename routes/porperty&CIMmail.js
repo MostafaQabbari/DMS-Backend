@@ -10,7 +10,7 @@ const mediator = require('../models/mediator');
 
 
 
-const sendCIMMail = function (mediatorData, clientDetials, companyDetails) {
+const sendCIMMail = function (mediatorData, clientDetials, companyDetails , childNames) {
     /*
 
     mediatorData.name
@@ -50,12 +50,12 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails) {
         from: config.companyEmail,
         to: `${mailList}` ,
         subject: `CIM Information`,
-        html: ` <div style="padding: 2vw; direction: ltr">
+        html: ` <div style=" direction: ltr">
          <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
 
          <p>I hope this email finds you well.</p>
 
-         <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for Child 1 and Child 2.
+         <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for ${childNames}.
          Together with this email, you will find a Child Inclusive Mediation - Information sheet for parents, 
          which explains the process of CIM. Please have a read of the document as it contains very important information about CIM.
          We have appointed mediator <span style ="color:blue">${mediatorData.name}</span>  trained to conduct CIM. Adele will be in touch with you after you both have signed the Parental Consent Form. 
@@ -167,7 +167,7 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
     let CaseFound;
     try {
  
-        let companyDetails = {}, clientDetials = {}, mediatorData = {}
+        let companyDetails = {}, clientDetials = {}, mediatorData = {} ,childNames ;
 
         if (req.userRole == 'company') {
             let cases = await Company.findById(req.user._id).populate('cases');
@@ -195,9 +195,32 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
 
+                childNames=""
+ 
+                //JSON.parse()
+                let childrensArr = JSON.parse(CaseFound.client1data).children;
+                if(childrensArr)
+                {
+                    if(childrensArr[0]) childNames+= childrensArr[0]['Child One'].firstChildFirstName
+                
+                    if(childrensArr[1]) childNames+=" and "+childrensArr[1]['Child Two'].secondChildFirstName
+                    if(childrensArr[2]) childNames+=" and "+childrensArr[2]['Child Three'].thirdChildFirstName
+                  
+                    if(childrensArr[3]) childNames+=" and "+childrensArr[3]['Child Four'].forthChildFirstName
+                    if(childrensArr[4]) childNames+=" and "+childrensArr[4]['Child Five'].fifthChildFirstName
+                    if(childrensArr[5]) childNames+=" and "+childrensArr[5]['Child Six'].sixthChildFirstName
+               
+                }
+                else{
+                    childNames=" "
+                }
+               
+                
+   
+
           
 
-                sendCIMMail(mediatorData, clientDetials, companyDetails);
+                sendCIMMail(mediatorData, clientDetials, companyDetails ,childNames);
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -231,9 +254,29 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 companyDetails.companyName = mediatorCompanyData.companyId.companyName
                 companyDetails.email = mediatorCompanyData.companyId.email;
 
+                childNames=""
+ 
+                //JSON.parse()
+                let childrensArr = JSON.parse(CaseFound.client1data).children;
+                if(childrensArr)
+                {
+                    if(childrensArr[0]) childNames+= childrensArr[0]['Child One'].firstChildFirstName
+                
+                    if(childrensArr[1]) childNames+=" and "+childrensArr[1]['Child Two'].secondChildFirstName
+                    if(childrensArr[2]) childNames+=" and "+childrensArr[2]['Child Three'].thirdChildFirstName
+                  
+                    if(childrensArr[3]) childNames+=" and "+childrensArr[3]['Child Four'].forthChildFirstName
+                    if(childrensArr[4]) childNames+=" and "+childrensArr[4]['Child Five'].fifthChildFirstName
+                    if(childrensArr[5]) childNames+=" and "+childrensArr[5]['Child Six'].sixthChildFirstName
+               
+                }
+                else{
+                    childNames=" "
+                }
+
            
 
-                sendCIMMail(mediatorData, clientDetials, companyDetails);
+                sendCIMMail(mediatorData, clientDetials, companyDetails , childNames);
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
