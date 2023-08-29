@@ -5,8 +5,8 @@ module.exports = {
   baseUrlpassportingForm :'https://passport-benefits.vercel.app',
   baseUrllowIncomeForm :'https://laa-low-income.vercel.app',
   baseUrlC2Invitation :'https://c2-reply-form.vercel.app',
-  baseUrlC2AgreementForm :'https://https://agreement-to-mediate.vercel.app/',
-  baseUrlRecordSessionForm:'https://mediation-session.vercel.app/',
+  baseUrlC2AgreementForm :'https://agreement-to-mediate.vercel.app',
+  baseUrlRecordSessionForm:'https://mediation-session.vercel.app',
 
   companyEmail:"abdo.samir.7719@gmail.com",
   appPassWord:"evhxpzdevqnrrtpa",

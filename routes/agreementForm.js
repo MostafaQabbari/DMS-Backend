@@ -44,7 +44,7 @@ const sendAgreementFormC1 = function (clientDetials, companyDetails, caseID) {
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Agreement Form`,
-        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left ;">
          <h1>Dear ${clientDetials.clientName}  </h1>
         <p> Thanks for using our services ,  We love to ask you about your agreement for the mediation</p>
         <p>please follow the link below</p>
