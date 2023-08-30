@@ -279,8 +279,8 @@ router.post("/sendAgreementForm/:id", authMiddleware, async (req, res) => {
 
                 clientDetials1.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials1.email = CaseFound.MajorDataC1.mail
-                clientDetials1.email = "abdosamir023023@gmail.com"
-                clientDetials2.email = "abdosamir023023@gmail.com"
+              //  clientDetials1.email = "abdosamir023023@gmail.com"
+                //clientDetials2.email = "abdosamir023023@gmail.com"
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
                 caseID = req.params.id
