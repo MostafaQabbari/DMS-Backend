@@ -130,21 +130,38 @@ let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
          <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
 
          <p>I hope this email finds you well.</p>
+         <p>Further to your MIAM I’m pleased to confirm both of you have said you wish to proceed with mediation on a joint basis.
+          As you wish to address financial issues in mediation, in preparation for your first meeting I enclose a financial pack which includes the following:</p>
+        
 
-         <p>Your mediator <span style ="color:blue">${mediatorData.name}</span> has advised us you requested Child Inclusive Mediation (CIM) for Child 1 and Child 2.
-         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-         We have appointed mediator <span style ="color:blue">${mediatorData.name}</span>  trained to conduct CIM. Adele will be in touch with you after you both have signed the Parental Consent Form. 
-         This document will be sent to each of you in a separate email from DropboxSign asking for your electronic signature.</p>
+         <p>1. <a style="color:blue;" target="_blank" href="https://www.directmediationservices.co.uk/wp-content/uploads/2021/08/FINANCIAL-DISCLOSURE-PACK.docx">Financial Questionnaire </a> (attached to this email) </p>
+         <p>2.  Financial Disclosure Checklist (<a style="color:blue;" href="https://directmediationservices.co.uk/wp-content/uploads/2019/04/Financial-disclosure-for-married-couples.pdf">married couples</a> &<a style="color:blue;" href="https://directmediationservices.co.uk/wp-content/uploads/2019/04/Financial-disclosure-for-unmarried-couples.pdf">unmarried couples</a> )    </p>
+         <p>3. <a style="color:blue;" href="https://directmediationservices.co.uk/wp-content/uploads/2019/04/Financial-Provision-on-Divorce.pdf">Financial Provision on Divorce</a> </p>
+         <p>4. <a style="color:blue;" href="https://www.directmediationservices.co.uk/wp-content/uploads/2023/05/A-guide-for-financial-cases.pdf"> A guide for Financial cases</a> </p>
 
-        <p>If you have any questions at this point, please do not hesitate to contact us.</p>
+         <p>As explained in your initial meeting, if financial matters are to be addressed in mediation,
+          I do ask that you both commit to providing the form 1,  <a style="color:blue;" target="_blank" href="https://www.directmediationservices.co.uk/wp-content/uploads/2021/08/FINANCIAL-DISCLOSURE-PACK.docx">Financial Questionnaire </a>, filled out before your first mediation session. 
+          This form needs to be completed <strong> AT LEAST 7 days </strong> before the first mediation session. However, 
+          it is requested that no financial documents i.e., bank statements are sent at this time.
+           It is requested that clients email the mediator only with the  <a style="color:blue;" target="_blank" href="https://www.directmediationservices.co.uk/wp-content/uploads/2021/08/FINANCIAL-DISCLOSURE-PACK.docx">Financial Questionnaire </a>. 
+           If this is not done, the mediation session will not go ahead as the mediator requires time to review the documents and 
+           prepare documentation before the first mediation session.
+
+         If you have any questions at this stage, feel free to let us know</p>
    
 
         <p>Kind Regards</p>
-        <h3>Direct Mediation Services</h3>
+        <h3>DMS Admin Team</h3>
 
         <h4>${companyDetails.companyName}</h4>
         <h4>${companyDetails.email}</h4>
-         </div>`
+         </div>`,
+         attachments: [
+            {
+              filename: 'FINANCIAL-DISCLOSURE-PACK.docx', 
+              path: './FINANCIAL-DISCLOSURE-PACK.docx', 
+            },
+          ],
 
 
     });
@@ -324,8 +341,8 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
                 
-                 //clientDetials.c2email = 'abdosamir023023@gmail.com'
-              //  clientDetials.c1email = 'abdosamir023023@gmail.com'
+              //  clientDetials.c2email = 'abdosamir023023@gmail.com'
+              // clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
