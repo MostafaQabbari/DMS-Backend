@@ -111,7 +111,8 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
  <p>We are writing to introduce our family mediation service, which is accredited with the <a  href="https://www.familymediationcouncil.org.uk/"  style="color : blue"> Family Mediation Council </a>.
   We want to let you know that  <span style="color : red">${clientDetails.name}</span>    has come to us to see about the possibility
    of mediation to sort out arrangements between you both. At this point, they attended
-    a Mediation Information & Assessment Meeting <a href="https://www.directmediationservices.co.uk/miam/" style="color : blue"> (MIAM) </a> with us. This is the 
+    a Mediation Information & Assessment Meeting
+     <a href="https://www.directmediationservices.co.uk/miam/" style="color : blue"> (MIAM) </a> with us. This is the 
     first stage of starting family mediation and allows participants to see whether they feel it is appropriate, 
     and of course for us to assess whether we feel the matter is suitable for mediation. Having met with <span style="color : red">${clientDetails.name}</span>    and listened 
     to their account of the issues faced, it appears that there may be a benefit to using mediation. In view of this, I would like to invite you to a MIAM, 
@@ -141,7 +142,7 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
 </ul>
 
 <p>You will only pay for your own fees, not the other participant’s. If you would like further information on Legal Aid eligibility, please contact the office and ensure to inform of your funding status when booking your MIAM.</p>
-<p>The easiest and quickest way to respond to your invitation to mediation is by filling our reply to the mediation form that can be accessed by clicking  <a href="https://directmediationservices.co.uk/reply-to-mediation/" style="color : blue">HERE</a>.</p>
+<p>The easiest and quickest way to respond to your invitation to mediation is by filling our reply to the mediation form that can be accessed by clicking  <a href="https://c2-reply-form.vercel.app/C2_reply/${clientDetails.id}" style="color : blue">HERE</a>.</p>
 <p>I would be grateful if I could have your response to this invitation no later than a week from the date of this letter either by email or telephone ${compnayDetails.phone}. In the event that you require a little longer, or require any further guidance in making your decision, then we encourage you to get in touch as soon as possible to let us know.
  If we don’t hear from you, we will assume that you do not wish to engage in mediation</p>
 <p>I look forward to hearing from you</p>
@@ -325,6 +326,7 @@ router.post('/sendMailInvitation/:id', authMiddleware, async (req, res) => {
         /*{
         clientDetails.name,
         clientDetails.email
+        clientDetails.id
        compnayDetails.phone
 
       }
@@ -334,6 +336,7 @@ router.post('/sendMailInvitation/:id', authMiddleware, async (req, res) => {
             const currentComp = await company.findById(req.user._id)
 
             let clientDetails = {}, compnayDetails = {};
+            clientDetails.id = req.params.id
             compnayDetails.email=currentComp.email
             compnayDetails.name = currentComp.companyName
 

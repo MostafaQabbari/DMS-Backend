@@ -1,11 +1,9 @@
 
 const express = require('express');
 const router = express.Router();
-const config = require("../config/config");
 const authMiddleware = require("../middleware/authMiddleware");
 const Company = require("../models/company");
-const fs = require('fs');
-const http = require('http');
+
 
 
 function filterByMonth(array, targetMonth) {
@@ -24,21 +22,29 @@ function filterByMonth(array, targetMonth) {
     return filteredArray;
 }
 
-// function convertToCSV(dataArray) {
-//     const header = Object.keys(dataArray[0]).join(',');
-//     const rows = dataArray.map(obj => Object.values(obj).map(val => `"${val}"`).join(','));
-//     return [header, ...rows].join('\n');
-// }
+function filterArrayByMonthAndYear(data, year, month) {
+    const filtredData = data.filter(item => {
+        const [itemYear, itemMonth] = item.date.split('-');
+
+        return Number(itemYear) === Number(year) && Number(itemMonth) === Number(month);
+    });
+    console.log(filtredData)
+    return filtredData
+}
 
 
-router.get('/getStatistics', authMiddleware, async (req, res) => {
+router.post('/getStatistics', authMiddleware, async (req, res) => {
+    /*
+    {"month":"07" , "year":"2023"}
+    */
 
     try {
         if (req.userRole == 'company') {
             const companyId = req.user._id;
             const compData = await Company.findById(companyId)
             let resData = []
-
+            let month = req.body.month
+            let year = req.body.year
             for (let i = 0; i < compData.statistics.length; i++) {
                 resData.push(JSON.parse(compData.statistics[i]))
 
@@ -46,26 +52,10 @@ router.get('/getStatistics', authMiddleware, async (req, res) => {
 
 
 
-
-            // Call the function to filter objects with a specific month (e.g., July)
-          //  const filteredResults = filterByMonth(resData, 7);
-
-
-            // const csvContent = convertToCSV(filteredResults);
-
-            // // Write the CSV content to a file
-            // fs.writeFile('data.csv', csvContent, err => {
-            //     if (err) {
-            //         console.error('Error writing CSV file:', err);
-            //     } else {
-            //         console.log('CSV file has been written successfully.');
-            //     }
-            // });
-
             //console.log(resData);
 
-   
-            res.status(200).json(resData)
+            let data = filterArrayByMonthAndYear(resData, year, month)
+            res.status(200).json(data)
 
         }
 

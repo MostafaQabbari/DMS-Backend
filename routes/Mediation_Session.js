@@ -49,15 +49,15 @@ caseData.caseID
   */
 
 
-  let info = transporter.sendMail({
-    from: config.companyEmail,
-    to: mediatorData.email,
-    subject: `Mediation Session Record Form for  ${caseData.caseReference} `,
-    html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    let info = transporter.sendMail({
+        from: config.companyEmail,
+        to: mediatorData.email,
+        subject: `Mediation Session Record Form for  ${caseData.caseReference} `,
+        html: `<body>
+        <div style=" text-align: left; ">
         <h1>Hello ${mediatorData.name}  </h1>
         <h3>Here is the session record form link for ${caseData.caseReference} case </h3>
-        <a>${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}</a>
+        <a href="${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}">${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}</a>
         <p> Best Regards </p>
         <p>DMS's Team </p> 
         </div>

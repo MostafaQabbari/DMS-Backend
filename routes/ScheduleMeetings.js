@@ -77,7 +77,7 @@ const MailInviationToMediation = function (meetingDetails, clientDetials, compan
 
 
 }
-const MediationSessionMail = function (meetingDetails, clientDetials, companyDetails) {
+const MediationSessionMail = function (meetingDetails, clientDetials, companyDetails ,textBody) {
     /*
 
     meetingDetails.dates
@@ -117,7 +117,7 @@ const MediationSessionMail = function (meetingDetails, clientDetials, companyDet
     })
 
     let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
-console.log("👆👆👆👆",mailList)
+//console.log("👆👆👆👆",mailList)
 
     let info = transporter.sendMail({
         from: config.companyEmail,
@@ -131,7 +131,7 @@ console.log("👆👆👆👆",mailList)
          <p>The next step is for you both to choose a time and date when you are available to attend mediation.
           Your first mediation session will be conducted over <span style="color:blue" >${meetingDetails.location}</span> for the duration of<span style="color:blue" > 2 Hours</span>. 
           If you are unable to use <span style="color:blue" >${meetingDetails.location}</span>, please let me know so that we can explore other options available. </p>
-       <p>I can confirm that the application for the Family Mediation Voucher Scheme was successful and there is also Legal Aid funding applied to your case. Due to this, there is no charge payable by either of you for this session.</p>
+       <p>${textBody}.</p>
 
         <p>The following dates and times are available for your session. If you are able to attend more than one of these sessions then do inform me of this as it improves chances of a time that works for all of us.</p>
    
@@ -284,6 +284,7 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
 
     try {
         let meetingDetails = {}, clientDetials = {}, companyDetails = {};
+        let textBody= req.body.textBody
 
         if (req.userRole == "company") {
 
@@ -314,7 +315,7 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
                 console.log("🙌🙌",meetingDetails,"🙌🙌", clientDetials,"🙌🙌", companyDetails)
 
 
-                MediationSessionMail(meetingDetails, clientDetials, companyDetails)
+                MediationSessionMail(meetingDetails, clientDetials, companyDetails ,textBody)
 
                 res.status(200).json({ 'meesage': "Invitation Mail to the mediation session has been sent" })
             }
@@ -350,7 +351,7 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
                 companyDetails.email = mediatorCompanyData.companyId.email
 
 
-                MediationSessionMail(meetingDetails, clientDetials, companyDetails)
+                MediationSessionMail(meetingDetails, clientDetials, companyDetails , textBody)
 
                 res.status(200).json({ 'meesage': "Invitation Mail to the mediation session has been sent" })
             }

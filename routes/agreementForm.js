@@ -44,13 +44,19 @@ const sendAgreementFormC1 = function (clientDetials, companyDetails, caseID) {
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Agreement Form`,
-        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left ;">
          <h1>Dear ${clientDetials.clientName}  </h1>
-        <p> Thanks for using our services ,  We love to ask you about your agreement for the mediation</p>
-        <p>please follow the link below</p>
+        <p> Thank you for attending your Mediation Information & Assessments Meetings (MIAM). You have both agreed that you wish to attend mediation.</p>
+
+        <p>Here is the online form for the <a style="color:blue;" href='${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${caseID}'>Agreement to mediate</a>  .
+         It is important that you read, 
+        understand and <span style="color:red;">submit the online form</span>  before attending your mediation. After you have submitted this form,
+         your mediator will get in touch with you to book you for a mediation session.</p>
+
+         <p><a style="color:blue;" href='${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${caseID}'> Your mediation cannot go ahead if this is not done. </a></p>
      
         
-        <a>${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${caseID}</a>
+        
      
         <h3>Direct Mediation Services</h3>
         <h4>${companyDetails.companyName}</h4>
@@ -110,13 +116,20 @@ const sendAgreementFormC2 = function (clientDetials, companyDetails, caseID) {
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Agreement Form`,
-        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
-         <h1>Dear ${clientDetials.clientName}  </h1>
-        <p> Thanks for using our services ,  We love to ask you about your agreement for the mediation</p>
-        <p>please follow the link below</p>
+        html: `
+        <div style=" text-align: left ;">
+        <h1>Dear ${clientDetials.clientName}  </h1>
+        
+        <p> Thank you for attending your Mediation Information & Assessments Meetings (MIAM). You have both agreed that you wish to attend mediation.</p>
+
+        <p>Here is the online form for the <a style="color:blue;" href='${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${caseID}'>Agreement to mediate</a>  .
+         It is important that you read, 
+        understand and <span style="color:red;">submit the online form</span>  before attending your mediation. After you have submitted this form,
+         your mediator will get in touch with you to book you for a mediation session.</p>
+
+         <p><a style="color:blue;" href='${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${caseID}'> Your mediation cannot go ahead if this is not done. </a></p>
      
         
-        <a>${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${caseID}</a>
      
         <h3>Direct Mediation Services</h3>
         <h4>${companyDetails.companyName}</h4>
@@ -266,7 +279,8 @@ router.post("/sendAgreementForm/:id", authMiddleware, async (req, res) => {
 
                 clientDetials1.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials1.email = CaseFound.MajorDataC1.mail
-
+              //  clientDetials1.email = "abdosamir023023@gmail.com"
+                //clientDetials2.email = "abdosamir023023@gmail.com"
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
                 caseID = req.params.id
@@ -310,15 +324,15 @@ router.patch("/addAgreement_C2/:id", async (req, res) => {
                 C2Agreement: StringfyData, C2AgreementApplied: true
             })
 
-            let companyData={} , caseData={}
+            let companyData = {}, caseData = {}
 
             const currentComp = await Case.findById(req.params.id).populate('connectionData.companyID');
-             companyData.email = currentComp.connectionData.companyID.email;
-             companyData.companyName =  currentComp.connectionData.companyID.companyName;
+            companyData.email = currentComp.connectionData.companyID.email;
+            companyData.companyName = currentComp.connectionData.companyID.companyName;
 
-             caseData.caseReference =currentCase.Reference
+            caseData.caseReference = currentCase.Reference
 
-             notifyCompanyC2(companyData, caseData)
+            notifyCompanyC2(companyData, caseData)
             res.status(200).json({ "message": "Agreement form of C2 has been added " })
 
         }
@@ -350,15 +364,15 @@ router.patch("/addAgreement_C1/:id", async (req, res) => {
                 C1Agreement: StringfyData, C1AgreementApplied: true
             })
 
-            let companyData={} , caseData={}
+            let companyData = {}, caseData = {}
 
             const currentComp = await Case.findById(req.params.id).populate('connectionData.companyID');
-             companyData.email = currentComp.connectionData.companyID.email;
-             companyData.companyName =  currentComp.connectionData.companyID.companyName;
+            companyData.email = currentComp.connectionData.companyID.email;
+            companyData.companyName = currentComp.connectionData.companyID.companyName;
 
-             caseData.caseReference =currentCase.Reference
+            caseData.caseReference = currentCase.Reference
 
-             notifyCompanyC1(companyData, caseData)
+            notifyCompanyC1(companyData, caseData)
             res.status(200).json({ "message": "Agreement form of C1 has been added " })
 
         }
