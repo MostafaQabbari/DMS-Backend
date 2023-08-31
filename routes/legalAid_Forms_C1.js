@@ -339,7 +339,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 });
 
 
-    async function createLegalAidPassport(fieldData , reference) {
+    async function createLegalAidPassport(fieldData , reference , caseID) {
         try {
           const pdfBytes = await fs.promises.readFile('../DMS-Backend/uploads/pdfs/Legal-aid.pdf');
           const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -568,7 +568,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             }
       }
 
-      async function createLegalAidLowIncome(fieldData , reference) {
+      async function createLegalAidLowIncome(fieldData , reference , caseID) {
         try {
           const pdfBytes = await fs.promises.readFile('../DMS-Backend/uploads/pdfs/Legal-aid.pdf');
           const pdfDoc = await PDFDocument.load(pdfBytes);
