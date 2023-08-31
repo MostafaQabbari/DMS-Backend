@@ -64,6 +64,9 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
 
     // Other validation and data processing code
 
+
+
+
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
@@ -433,20 +436,20 @@ router.post("/forgot-password", async (req, res, next) => {
 
 router.post("/reset-password", async (req, res, next) => {
   try {
-    const { email, resetToken, newPassword } = req.body;
+    const { resetToken, newPassword } = req.body;
 
 
-    const passwordRegex = /^(?=.[A-Za-z])(?=.\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     // Check if the password meets the minimum requirements
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
     }
 
-    // Find the user by email and reset token
-    let user = await Company.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
+    // Find the user by reset token
+    let user = await Company.findOne({ resetToken, resetTokenExpiry: { $gt: Date.now() } });
     if (!user) {
-      user = await Mediator.findOne({ email, resetToken, resetTokenExpiry: { $gt: Date.now() } });
+      user = await Mediator.findOne({ resetToken, resetTokenExpiry: { $gt: Date.now() } });
       if (!user) {
         return res.status(401).json({ message: "Invalid reset token" });
       }
@@ -503,9 +506,9 @@ function sendResetPasswordEmail(email, resetToken) {
     from: config.companyEmail, // your email address
     to: email, // recipient's email address
     text: `You have requested to reset your password. Please click the link below to reset your password:
-    https://dms5.onrender.com/auth/reset-password?token=${resetToken}`,
+    https://direct-mediation-services-black.vercel.app/reset-password?token=${resetToken}`,
     html: `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
-    <a href="https://dms5.onrender.com/auth/reset-password?token=${resetToken}">Reset Password</a>`,
+    <a href="https://direct-mediation-services-black.vercel.app/reset-password?token=${resetToken}">Reset Password</a>`,
   };
 
 
