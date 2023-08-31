@@ -31,7 +31,7 @@ const cim = require('./routes/porperty&CIMmail');
 const courtForm = require ('./routes/sendCourtForm');
 const caseLog= require('./routes/caseLog');
 const compStatistics = require('./routes/getCompStatistics')
-
+const confirmationMail=require('./routes/confirmationMail')
 
 
 
@@ -85,6 +85,7 @@ app.use(courtForm)
 app.use(caseLog)
 
 app.use(compStatistics)
+app.use(confirmationMail)
 
 
 

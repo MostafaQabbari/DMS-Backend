@@ -57,7 +57,7 @@ caseData.caseID
         <div style=" text-align: left; ">
         <h1>Hello ${mediatorData.name}  </h1>
         <h3>Here is the session record form link for ${caseData.caseReference} case </h3>
-        <a>${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}</a>
+        <a href="${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}">${config.baseUrlRecordSessionForm}/${config.RecordSessionForm}/${caseData.caseID}</a>
         <p> Best Regards </p>
         <p>DMS's Team </p> 
         </div>
