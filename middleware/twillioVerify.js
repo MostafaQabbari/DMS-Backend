@@ -23,6 +23,7 @@ const verifyTwillio = async (req, res, next) => {
     ).catch((err) => {
 
         console.log({ errMessage: err.message });
+        res.status(400).json({message: err.message})
 
     });
 }

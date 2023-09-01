@@ -12,7 +12,7 @@ const config = require("../config/config");
 
 
 // :{twillioSID, twillioToken, twillioNumber}
-const sendSMS_M1C1 = function (twillioInfo, clientNumber, messageBodyData) {
+const sendSMS_M1C1 = function (twillioInfo, clientNumber, messageBodyData , res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -31,11 +31,12 @@ const sendSMS_M1C1 = function (twillioInfo, clientNumber, messageBodyData) {
         to: clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "MIAM 1 link has been sent " })
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message:err.message})
     });
 
 }
@@ -161,7 +162,7 @@ const sendMail_C2Invitation = function (caseDetails, mediationDetails, messageIn
     });
 
 }
-const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyData) {
+const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyData ,res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -180,11 +181,14 @@ const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyDat
         to: clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
+
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message: err.messageBody })
+
     });
 
 }
@@ -243,7 +247,7 @@ const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
     });
 
 }
-const sendSMS_C2_M1 = function (twillioInfo, clientNumber, messageBodyData) {
+const sendSMS_C2_M1 = function (twillioInfo, clientNumber, messageBodyData ,res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -262,11 +266,14 @@ const sendSMS_C2_M1 = function (twillioInfo, clientNumber, messageBodyData) {
         to: clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
+
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message:err.message })
+
     });
 
 }
@@ -332,9 +339,9 @@ router.post('/sendM1_sms_C1/:id', authMiddleware, decryptTwillioData, async (req
         messageBodyData.companyName = compData.connectionData.companyID.companyName
         messageBodyData.clientName = `${client1ContactDetails.fName} ${client1ContactDetails.sName}`;
         messageBodyData.formLink = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${caseID}`;
-        sendSMS_M1C1(twillioInfo, clientNumber, messageBodyData)
+        sendSMS_M1C1(twillioInfo, clientNumber, messageBodyData,res)
 
-        res.status(200).json({ message: "MIAM 1 link has been sent " })
+        
 
     } catch (err) {
         res.status(400).json({ message: "error with the end point" })
@@ -439,9 +446,8 @@ router.post('/sendM1_sms_C2/:id', authMiddleware, decryptTwillioData, async (req
     
     
     
-            sendSMS_C2_M1(twillioInfo, clientNumber, messageBodyData)
+            sendSMS_C2_M1(twillioInfo, clientNumber, messageBodyData,res)
     
-            res.status(200).json({ message: "C2_M1 has been sent and added phone number to the client2 data " })
         }else
         {
             res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
@@ -580,9 +586,8 @@ router.post('/SMSC2Invitation/:id', authMiddleware, decryptTwillioData, async (r
             }
         })
 
-        sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
+        sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData,res)
 
-        res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
 
     } catch (err) {
         res.status(400).json({ message: "error with the end point" })
@@ -621,9 +626,8 @@ router.post('/Resend_SMSC2Invitation/:id', authMiddleware, decryptTwillioData, a
     
     
     
-            sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
+            sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData ,res)
     
-            res.status(200).json({ message: "C2 Invitation has been sent and added phone number to the client2 data " })
         }else
         {
             res.status(400).json({ message: "Invalid Number to recieve the invitation by SMS" })
