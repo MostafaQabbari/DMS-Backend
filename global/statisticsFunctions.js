@@ -88,7 +88,7 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
   let statisticsObj = {};
   let startDateFormated = dateFormat(currentCase.startDate)
   let c1UCN = clientUCN(miam1c1.personalContactAndCaseInfo.dateOfBirth, currentCase.MajorDataC1.fName, currentCase.MajorDataC1.sName)
-  let c2UCN = clientUCN(miam2c1.otherParty.otherPartyDateOfBirth, currentCase.MajorDataC2.fName, currentCase.MajorDataC2.sName)
+  let c2UCN = clientUCN(miam1c1.otherParty.otherPartyDateOfBirth, currentCase.MajorDataC2.fName, currentCase.MajorDataC2.sName)
 
 
   statisticsObj.date = miam2c1.mediationDetails.DateOfMIAM;
@@ -112,7 +112,7 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
 
   statisticsObj.client2ForeName = currentCase.MajorDataC2.fName
   statisticsObj.client2surName = currentCase.MajorDataC2.sName
-  statisticsObj.client2dateOfBirth = miam2c1.otherParty.otherPartyDateOfBirth
+  statisticsObj.client2dateOfBirth = miam1c1.otherParty.otherPartyDateOfBirth
   statisticsObj.client2UCN = c2UCN
   statisticsObj.client2postCode = miam2c1.otherParty.otherPartyPostalCode
   statisticsObj.client2Gender = ""

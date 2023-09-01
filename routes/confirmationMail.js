@@ -50,7 +50,7 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
     let info = transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
-        subject: `MIAM Confirmation`,
+        subject: `Confirmation Mail`,
         html: ` <div style=" text-align: left;">
          <h1>Dear ${clientDetials.clientName}  </h1>
 
