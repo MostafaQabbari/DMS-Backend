@@ -25,13 +25,7 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
     
     */
 
-    let zoom = ""
-    if (meetingDetails.zoomLink !== "") {
-        zoom = meetingDetails.zoomLink
-    }
-    else {
-        zoom = "  "
-    }
+
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -71,8 +65,10 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
           <p>Date : ${meetingDetails.date}</p>
           <p>Start Time : ${meetingDetails.startTime}</p>
           <p>Type of mediation : ${meetingDetails.type}</p>
-          <p>Venue : ${meetingDetails.location}</p> <p>${zoom}</p>
+          <p>Venue : ${meetingDetails.location}</p> 
           <p>Mediator : ${meetingDetails.mediatorName}</p>
+
+          <p>${meetingDetails.zoomLink}</p>
 
           <p>We ask you to be on time for your appointment. <span style="color:blue;"> We also ask you to confirm your attendance via email, 
           as well as digitally signing the <a style="color:blue;" href='${meetingDetails.agreementLink}'>"Agreement to mediate"</a> , 
@@ -131,7 +127,7 @@ function extractDateTime(timestamp) {
 😒post("/MIAM1_Confirmation_C1/:id"
 😒post("/MIAM1_Confirmation_C2/:id"
 😒post("/CONFIRM_MEDIATION_SESSION/:id"
- body => {  "date":"2023-12-09T01:00:00Z",  "type":"",  "location":"",   "zoomLink":"" }
+ body => {  "date":"2023-12-09T01:00:00Z",  "type":"Shuttle / Face to face",  "location":": Online via WhatsApp / Zoom",   "zoomLink":"" }
 */
 
 router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
@@ -152,7 +148,11 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
         meetingDetails.startTime = formatedDateTimeObject.startTime
         meetingDetails.type = reqBody.type
         meetingDetails.location = reqBody.location
-        meetingDetails.zoomLink = reqBody.zoomLink
+        if(reqBody.zoomLink)
+        {
+            meetingDetails.zoomLink = `To join your mediation session please follow this link: ${reqBody.location}`
+        }
+        else   meetingDetails.zoomLink  =" "
 
         if (req.userRole == "company") {
 
@@ -260,7 +260,11 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
         meetingDetails.startTime = formatedDateTimeObject.startTime
         meetingDetails.type = reqBody.type
         meetingDetails.location = reqBody.location
-        meetingDetails.zoomLink = reqBody.zoomLink
+        if(reqBody.zoomLink)
+        {
+            meetingDetails.zoomLink = `To join your mediation session please follow this link: ${reqBody.location}`
+        }
+        else   meetingDetails.zoomLink  =" "
 
         if (req.userRole == "company") {
 
