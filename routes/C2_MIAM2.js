@@ -70,7 +70,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                     $push: { statistics: stringfyStatiscs }
                 })
                 
-                const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+                const sharingGmail = targetComp.connectionData.companyID.sharingGmail;
             
                 await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
 
@@ -114,7 +114,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                 await Company.findByIdAndUpdate(targetCompID, {
                     $push: { statistics: stringfyStatiscs }
                 })
-                const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+                const sharingGmail = targetComp.connectionData.companyID.sharingGmail;
             
                 await createMIAM2Upload(MIAM2mediator, sharingGmail , currentCase.id );//put email parameter for sharing gmail email company
 
