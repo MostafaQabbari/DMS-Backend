@@ -80,7 +80,7 @@ function getSessionNo(inputString) {
     return null;
   }
 }
-
+ 
 
 
 const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {

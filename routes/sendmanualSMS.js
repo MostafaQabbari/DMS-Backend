@@ -8,7 +8,7 @@ const company = require("../models/company");
 const config = require("../config/config");
 const mediator = require('../models/mediator');
 
-const sendSMS_manual = function (twillioInfo, clientNumber, messageBodyData) {
+const sendSMS_manual = function (twillioInfo, clientNumber, messageBodyData , res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -25,16 +25,17 @@ const sendSMS_manual = function (twillioInfo, clientNumber, messageBodyData) {
         to: clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "SMS has been sent " })
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message: err.message })
     });
 
 }
 
-const sendSMS_invitaion = function (twillioInfo, clientNumber, clientName) {
+const sendSMS_invitaion = function (twillioInfo, clientNumber, clientName ,res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -58,11 +59,13 @@ const sendSMS_invitaion = function (twillioInfo, clientNumber, clientName) {
         to: clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "SMS has been sent " })
+
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message: err.message })
     });
 
 }
@@ -161,7 +164,7 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
 
 }
 
-const sendSMS_mediationUpdate = function (twillioInfo, clientData) {
+const sendSMS_mediationUpdate = function (twillioInfo, clientData , res) {
 
     /*
       twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -181,11 +184,13 @@ Direct Mediation Services`
         to: clientData.clientNumber
     }).then(message => {
         console.log({ message: "form message sent succesfully", messageID: message.sid });
-        next();
+        res.status(200).json({ message: "SMS has been sent " })
+        
     }
     ).catch((err) => {
 
         console.log(err.message)
+        res.status(400).json({ message: err.message })
     });
 
 }
@@ -221,9 +226,9 @@ router.post('/sendSMS', authMiddleware, decryptTwillioData, async (req, res) => 
         // clientNumber = "+44 7476 544877"
 
 
-        sendSMS_manual(twillioInfo, clientNumber, messageBodyData)
+        sendSMS_manual(twillioInfo, clientNumber, messageBodyData,res)
 
-        res.status(200).json({ message: "SMS has been sent " })
+       
 
     } catch (err) {
         res.status(400).json({ message: "error with the end point autherization" })
@@ -250,8 +255,8 @@ router.post('/sendSMSmediationUpdate/:id', authMiddleware, decryptTwillioData, a
             clientData.clientName = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`;
 
             
-            sendSMS_mediationUpdate(twillioInfo, clientData)
-            res.status(200).json({ message: "SMS has been sent " })
+            sendSMS_mediationUpdate(twillioInfo, clientData ,res)
+           
 
 
         }
@@ -259,8 +264,8 @@ router.post('/sendSMSmediationUpdate/:id', authMiddleware, decryptTwillioData, a
        
             clientData.clientNumber = currentCase.MajorDataC2.phoneNumber;
             clientData.clientName = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
-            sendSMS_mediationUpdate(twillioInfo, clientData)
-            res.status(200).json({ message: "SMS has been sent " })
+            sendSMS_mediationUpdate(twillioInfo, clientData , res)
+           // res.status(200).json({ message: "SMS has been sent " })
 
         }
         else {
@@ -288,14 +293,14 @@ router.post('/sendSMSinvitation/:id', authMiddleware, decryptTwillioData, async 
         */
         const currentCase = await Case.findById(req.params.id)
         let clientNumber, clientName;
-        console.log(currentCase)
+      //  console.log(currentCase)
         if (req.body.Client === "C1") {
 
-            //clientNumber = "+44 7476 544877"
             clientNumber = currentCase.MajorDataC1.phoneNumber;
+           // clientNumber = "+44 7476 544877"
             clientName = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
-            sendSMS_invitaion(twillioInfo, clientNumber, clientName)
-            res.status(200).json({ message: "SMS has been sent " })
+            sendSMS_invitaion(twillioInfo, clientNumber, clientName ,res)
+           // res.status(200).json({ message: "SMS has been sent " })
 
 
         }
@@ -303,8 +308,8 @@ router.post('/sendSMSinvitation/:id', authMiddleware, decryptTwillioData, async 
             // clientNumber = "+44 7476 544877"
             clientNumber = currentCase.MajorDataC2.phoneNumber;
             clientName = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
-            sendSMS_invitaion(twillioInfo, clientNumber, clientName)
-            res.status(200).json({ message: "SMS has been sent " })
+            sendSMS_invitaion(twillioInfo, clientNumber, clientName ,res)
+            //res.status(200).json({ message: "SMS has been sent " })
 
         }
         else {
