@@ -294,7 +294,7 @@ async function createMIAM2Upload(MIAM2C1data , sharingGmail , caseID) {
 
         const folderId = currentCase.folderID;
 
-        console.log(folderId);
+        
   
       // //getting the service account from the email
       // const companyServiceAccount = companyData.connectionData.companyID.serviceAccount;
