@@ -312,7 +312,7 @@ router.post("/BOOK_MEDIATION_SESSION/:id", authMiddleware, async (req, res) => {
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
 
-                console.log("🙌🙌",meetingDetails,"🙌🙌", clientDetials,"🙌🙌", companyDetails)
+               // console.log("🙌🙌",meetingDetails,"🙌🙌", clientDetials,"🙌🙌", companyDetails)
 
 
                 MediationSessionMail(meetingDetails, clientDetials, companyDetails ,textBody)

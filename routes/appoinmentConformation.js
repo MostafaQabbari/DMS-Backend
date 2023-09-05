@@ -10,7 +10,7 @@ const mediator = require('../models/mediator');
 
 
 
-const sendAppointment = function (companyData, clientData, bodyDetails) {
+const sendAppointment = function (companyData, clientData, bodyDetails ,textBody) {
 
     /*
   
@@ -56,6 +56,8 @@ const sendAppointment = function (companyData, clientData, bodyDetails) {
          <p>The next step is for you both to choose a time and date when you are available to attend mediation.
           Your first mediation session will be conducted over <span style="color:blue" >${bodyDetails.location}</span> for the duration of<span style="color:blue" > 2 Hours</span>. 
           If you are unable to use <span style="color:blue" >${bodyDetails.location}</span>, please let me know so that we can explore other options available. </p>
+
+          <p>${textBody}.</p>
        <p>I can confirm that the application for the Family Mediation Voucher Scheme was successful and there is also Legal Aid funding applied to your case. Due to this, there is no charge payable by either of you for this session.</p>
 
         <p>The following dates and times are available for your session. If you are able to attend more than one of these sessions then do inform me of this as it improves chances of a time that works for all of us.</p>
@@ -111,7 +113,7 @@ const sendAppointment = function (companyData, clientData, bodyDetails) {
  
  
    => 😒 dates for mediation session
-   /BOOK_MEDIATION_SESSION/:id , post , {"dates":[" "," "],"location":" "}
+   /BOOK_MEDIATION_SESSION/:id , post , {"dates":[" "," "],"location":" " ,"textBody":""}
  
  
    => 😒 send mediation session record form to mediator
@@ -127,7 +129,7 @@ const sendAppointment = function (companyData, clientData, bodyDetails) {
   /sendSMSmediationUpdate/:id =>post  , {"Client":"C1 || C2"}  
 
   => 😒 send appointment mail
-  /sendAppointment/:id => post ,{"targetClient":"C1" , "caseType":"private"  , "eventType":"med session" , "dates":["next friday" , " saturday"] , "location" :"zoom"}
+  /sendAppointment/:id => post ,{"targetClient":"C1" , "caseType":"private"  , "eventType":"med session" , "dates":["next friday" , " saturday"] , "location" :"zoom" ,"textBody":""}
     
        
  
@@ -154,6 +156,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
         
         */
         const appointmentData = req.body;
+        const textBody = req.body.textBody
         let companyData = {}, clientData = {}, bodyDetails = {};
 
         bodyDetails.caseType = req.body.caseType
@@ -179,7 +182,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email;
 
-                    sendAppointment(companyData, clientData, bodyDetails);
+                    sendAppointment(companyData, clientData, bodyDetails ,textBody);
                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
@@ -190,7 +193,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email;
 
-                    sendAppointment(companyData, clientData, bodyDetails);
+                    sendAppointment(companyData, clientData, bodyDetails,textBody);
                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
@@ -227,7 +230,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
                     companyData.email = currentComp_.email
 
 
-                    s(companyData, clientData, bodyDetails)
+                    sendAppointment(companyData, clientData, bodyDetails,textBody)
                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
@@ -239,7 +242,7 @@ router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
                     companyData.email = currentComp_.email;
 
 
-                    sendAppointment(companyData, clientData, bodyDetails);
+                    sendAppointment(companyData, clientData, bodyDetails,textBody);
                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
