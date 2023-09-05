@@ -137,7 +137,7 @@ const sendMail_C2Invitation = function (caseDetails, mediationDetails, messageIn
         to: caseDetails.C2mail,
         subject: `Invitation to mediation by ${mediationDetails.companyName} `,
         html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style=" text-align: left; ">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>This is an invitation to mediation with your partner  ${caseDetails.C1name} and that's your link to apply your invitation form </h3>
         <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
@@ -222,7 +222,7 @@ const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
         to: caseDetails.C2mail,
         subject: `Invitation to mediation by ${mediationDetails.companyName} `,
         html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style="text-align: left; ">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>Thanks for applying you invitation to mediation with your partner ${caseDetails.C1name} and that's your link to apply your MIAM form </h3>
         <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>

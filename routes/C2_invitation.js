@@ -40,7 +40,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style=" text-align: center; ">
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thank you for responding to the invitation to mediation. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Without this form completed, we cannot proceed with the appointment. </p>
     <p>YOU HAVE A DEADLINE OF THREE WORKING DAYS TO COMPLETE THIS FORM.</p>
@@ -101,7 +101,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style=" text-align: left; ">
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM booking you MIAM  , here is your passporting form </p>
      <p> Please click on the link below :</p>
@@ -159,7 +159,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style="text-align: left;">
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM , here is your low income / no income form </p>
      <p> Please click on the link below :</p>
@@ -228,7 +228,7 @@ const notifyCompanytoCall_C2Refused = function (companyData, clientData) {
     to: companyData.email,
     subject: `C2 Invitation applied for  ${clientData.caseReference} `,
     html: `<body>
-      <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+      <div style=" text-align: left;">
       <h1>Hello ${companyData.companyName}  </h1>
       <h3>We love to inform you that C2_Invitation of ${clientData.caseReference} case have been applied but he did not accept the invitation</h3>
       <h5>you can call him/her in these times</h5>
@@ -287,7 +287,7 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
     to: companyData.email,
     subject: `C2 Invitation applied for  ${clientData.caseReference} `,
     html: `<body>
-      <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+      <div style=" text-align: left;">
       <h1>Hello ${companyData.companyName}  </h1>
       <h3>We love to inform you that C2_Invitation of ${clientData.caseReference} case have been applied but he confused about the case type </h3>
       <h5>you can call him/her in these times to follow up</h5>

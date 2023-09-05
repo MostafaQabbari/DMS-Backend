@@ -39,7 +39,7 @@ const notifyCompany = function (compMail, clientDataName) {
         to: compMail,
         subject: `Legal Aid form has for applied for ${clientDataName} `,
         html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style=" text-align: left;">
         <h3>We love to inform you that Legal Aid form has been applied for ${clientDataName}</h3>
         <p> Best Regards </p>
         <p>DMS's Team </p> 
@@ -82,7 +82,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
         from: config.companyEmail,
         to: clientData.email,
         subject: `Applying To ${messageBodyinfo.formType} Form`,
-        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left; ">
        <h1>Dear ${clientData.clientName}  </h1>
       <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
        we need you to complete an online form records basic information about you and your situation. </p>

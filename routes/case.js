@@ -43,7 +43,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style=" text-align: left; ">
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
      we need you to complete an online form records basic information about you and your situation. </p>
@@ -102,7 +102,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style="text-align: left; ">
      <h1>Hi  ${clientData.clientName}  </h1>
     <p> Thank you for contacting us regarding your Legal Aid application for family mediation.
     To start your application please follow the link below:</p>
@@ -161,7 +161,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+    html: ` <div style="text-align: left; ">
      <h1>Dear ${clientData.clientName}  </h1>
     <p>Thank you for contacting us regarding your Legal Aid application for family mediation.
     To start your application please follow the link below::</p>

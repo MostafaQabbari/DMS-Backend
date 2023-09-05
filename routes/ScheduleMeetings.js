@@ -49,7 +49,7 @@ const MailInviationToMediation = function (meetingDetails, clientDetials, compan
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `MIAM Invitation`,
-        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left;">
          <h1>Dear ${clientDetials.clientName}  </h1>
         <p> We love to invite you to the meeting of your MIAM with our mediator by ${meetingDetails.location}</p>
         <p>The following dates and times are available for your MIAM meeting</p>

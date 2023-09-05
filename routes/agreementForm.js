@@ -186,7 +186,7 @@ caseData.caseReference
         to: companyData.email,
         subject: `Agreement_C1 form applied for  ${caseData.caseReference} `,
         html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style="text-align: left;">
         <h1>Hello ${companyData.companyName}  </h1>
         <h3>We love to inform you that Agreement form of ${caseData.caseReference} case have been applied</h3>
         <p> Best Regards </p>
@@ -232,7 +232,7 @@ caseData.caseReference
         to: companyData.email,
         subject: `Agreement_C2 form applied for  ${caseData.caseReference} `,
         html: `<body>
-        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        <div style="text-align: left;">
         <h1>Hello ${companyData.companyName}  </h1>
         <h3>We love to inform you that Agreement form of ${caseData.caseReference} case have been applied</h3>
         <p> Best Regards </p>

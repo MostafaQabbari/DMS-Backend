@@ -41,7 +41,7 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
     to: mediatorData.email,
     subject: `MIAM 1 has been applied by ${clientData.fname} ${clientData.surName}`,
     html: `<body>
-      <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
+      <div style=" text-align: left;">
       <h1>Hello ${mediatorData.name} 's Teams  </h1>
       <h3>MIAM 1 has been applied by C1 ${clientData.fname} ${clientData.surName} and that's your link to apply your MIAM 2 </h3>
       <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
