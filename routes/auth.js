@@ -127,11 +127,12 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
 
     
     // Check if sharingGmail is already present in any user within the company accounts
-    const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
-    if (existingUser1) {
-      return res.status(400).json({ message: 'Sharing Gmail already exists' });
+    if(sharingGmail !== ""){
+      const existingUser1 = await Company.findOne({ "sharingGmail": sharingGmail });
+      if (existingUser1) {
+        return res.status(400).json({ message: 'Sharing Gmail already exists' });
+      }
     }
-
       // Perform server-side validation
       const validationErrors = user.validateSync();
       if (validationErrors) {
