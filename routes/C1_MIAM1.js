@@ -422,8 +422,8 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, "hassantarekha@gmail.com");//the gmail sharing account that belong to the company
-    //sharingGmail || "mkabary8@gmail.com"
+    shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+    //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
     console.error("Error creating PDF and uploading to Google Drive:", error);
