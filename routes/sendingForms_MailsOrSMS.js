@@ -74,7 +74,7 @@ const sendMail_M1C1 = function (companyData, clientData, messageBodyinfo) {
         from: config.companyEmail,
         to: clientData.email,
         subject: "Applying To MIAM Form",
-        html: `<body><div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: `<body><div style=" text-align: left;">
        <h1>Dear ${clientData.clientName}  </h1>
       <h2> Follow the next Link to Apply to your form </h2>
       <a href='${messageBodyinfo.formUrl}'  style="color:blue; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
