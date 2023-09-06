@@ -384,7 +384,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
   let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement , mediationRecords=[],
-      caseSuitable , caseLogs;
+      caseSuitable , caseLogs,folderID;
 
 
 
@@ -418,20 +418,20 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
 
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
-
         CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
+        
         CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
-
+        
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
-
+        
         CaseFound.C1Agreement ? C1Agreement = JSON.parse(CaseFound.C1Agreement) : C1Agreement = ""
         CaseFound.C2Agreement ? C2Agreement = JSON.parse(CaseFound.C2Agreement) : C2Agreement = "";
-
+        
         if(MIAM2_C1.FinalComments?.isSuitable=="Yes" && MIAM2_C2.FinalComments?.isSuitable=="Yes")
         {
           caseSuitable = "Suitable"
-
+          
         }else if(MIAM2_C1.FinalComments?.isSuitable=="NO" || MIAM2_C2.FinalComments?.isSuitable=="No")
         {
           caseSuitable = "Not Suitable"
@@ -439,7 +439,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         else{
           caseSuitable = "MIAM2_C2 not filled"
         }
-
+        
+        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet"
 
 
         Reminders = CaseFound.Reminders
@@ -471,7 +472,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
            C2Agreement,
            mediationRecords,
            caseSuitable,
-           caseLogs
+           caseLogs,
+           folderID
 
 
         }
@@ -528,7 +530,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         else{
           caseSuitable = "MIAM2_C2 not filled"
         }
-        
+        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet"
+
 
         Reminders = CaseFound.Reminders
         MajorDataC1 = CaseFound.MajorDataC1;
@@ -561,7 +564,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           C2Agreement,
           mediationRecords,
           caseSuitable,
-          caseLogs
+          caseLogs,
+          folderID
         }
 
         res.status(200).json(CaseResponse)
