@@ -12,6 +12,7 @@ const fs = require('fs');
 const { PDFDocument } = require("pdf-lib");
 const path = require('path');
 const { stringify } = require('querystring');
+const { google } = require("googleapis");
 
 const notifyCompany = function (compMail, clientDataName) {
 
@@ -239,8 +240,7 @@ router.patch("/passporting_c2/:id", async (req, res) => {
         let passporting_C2 = req.body
         const StringfyData = JSON.stringify(passporting_C2);
         const reference = currentCase.Reference;
-        const folderId = currentCase.folderID;
-        updateFolderName(folderId, reference);
+
 
         try {
         const filledPdfBytes = await createLegalAidPassport(passporting_C2 , reference);
@@ -295,8 +295,6 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         let lowIncome_C2 = req.body
         const StringfyData = JSON.stringify(lowIncome_C2);
         const reference = currentCase.Reference;
-        const folderId = currentCase.folderID;
-        updateFolderName(folderId, reference);
 
         try {
             const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C2 , reference);
