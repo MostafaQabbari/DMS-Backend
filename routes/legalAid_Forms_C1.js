@@ -12,6 +12,8 @@ const fs = require('fs');
 const { PDFDocument } = require("pdf-lib");
 const path = require('path');
 const { stringify } = require('querystring');
+const { google } = require("googleapis");
+const stream = require("stream");
 
 const notifyCompany = function (compMail, clientDataName) {
 
@@ -34,12 +36,12 @@ const notifyCompany = function (compMail, clientDataName) {
 
     })
 
-     transporter.sendMail({
+    let info = transporter.sendMail({
         from: config.companyEmail,
         to: compMail,
         subject: `Legal Aid form has for applied for ${clientDataName} `,
         html: `<body>
-        <div style=" text-align: left;">
+        <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
         <h3>We love to inform you that Legal Aid form has been applied for ${clientDataName}</h3>
         <p> Best Regards </p>
         <p>DMS's Team </p> 
@@ -78,11 +80,11 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     })
 
 
-     transporter.sendMail({
+    let info = transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: `Applying To ${messageBodyinfo.formType} Form`,
-        html: ` <div style=" text-align: left; ">
+        html: ` <div style="background-color: #72A0C1 ; text-align: center; padding: 5vw; width: 75%; margin: auto;">
        <h1>Dear ${clientData.clientName}  </h1>
       <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
        we need you to complete an online form records basic information about you and your situation. </p>
@@ -97,14 +99,14 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     });
 
 
-    // transporter.sendMail(info, (error, info) => {
-    //     if (error) {
-    //         console.log('Error occurred while sending email:', error.message);
+    transporter.sendMail(info, (error, info) => {
+        if (error) {
+            console.log('Error occurred while sending email:', error.message);
 
-    //     } else {
-    //         console.log('Email sent successfully:', info.messageId);
-    //     }
-    // });
+        } else {
+            console.log('Email sent successfully:', info.messageId);
+        }
+    });
 
 }
 
@@ -118,14 +120,10 @@ router.patch("/passporting_c1/:id", async (req, res) => {
         let passporting_C1 = req.body
         const StringfyData = JSON.stringify(passporting_C1);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
-            try {
-            const filledPdfBytes = await createLegalAidPassport(passporting_C1 , reference);
-            await fs.promises.writeFile('legalAidPassportC1.pdf', filledPdfBytes);
-            console.log('PDF form filled and saved.');
-            } catch (error) {
-            console.error('Error:', error);
-            }
+        
 
 
         
@@ -141,7 +139,9 @@ router.patch("/passporting_c1/:id", async (req, res) => {
             const currentComp = await Case.findById(currentCase._id).populate('connectionData.companyID');
              companyData.email = currentComp.connectionData.companyID.email;
              companyData.companyName = currentComp.connectionData.companyID.companyName;
+            sharingGmail = currentComp.connectionData.companyID.sharingGmail;
 
+             await createLegalAidPassport(passporting_C1 , reference , currentCase._id, sharingGmail);
 
             const updatedCase = await Case.findById(req.params.id);
             clientData.clientName = `${updatedCase.MajorDataC1.fName} ${updatedCase.MajorDataC1.sName}`
@@ -159,6 +159,8 @@ router.patch("/passporting_c1/:id", async (req, res) => {
             res.status(400).json({ "message": "this from has been applied before" })
 
         }
+
+        
     } catch (err) {
         res.status(400).json(err.message)
     }
@@ -175,14 +177,16 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
         let lowIncome_C1 = req.body
         const StringfyData = JSON.stringify(lowIncome_C1);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
-        try {
-            const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C1 , reference);
-            await fs.promises.writeFile('legalAidLowIncomeC1.pdf', filledPdfBytes);
-            console.log('PDF form filled and saved.');
-            } catch (error) {
-            console.error('Error:', error);
-            }
+        // try {
+        //     const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C1 , reference);
+        //     await fs.promises.writeFile('legalAidLowIncomeC1.pdf', filledPdfBytes);
+        //     console.log('PDF form filled and saved.');
+        //     } catch (error) {
+        //     console.error('Error:', error);
+        //     }
 
 
 
@@ -198,8 +202,9 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
             const currentComp = await Case.findById(currentCase._id).populate('connectionData.companyID');
              companyData.email = currentComp.connectionData.companyID.email;
              companyData.companyName = currentComp.connectionData.companyID.companyName;
+             sharingGmail = currentComp.connectionData.companyID.sharingGmail;
 
-
+             await createLegalAidLowIncome(lowIncome_C1 , reference ,currentCase._id , sharingGmail);
             const updatedCase = await Case.findById(req.params.id);
             clientData.clientName = `${updatedCase.MajorDataC1.fName} ${updatedCase.MajorDataC1.sName}`
             clientData.email = updatedCase.MajorDataC1.mail
@@ -235,14 +240,16 @@ router.patch("/passporting_c2/:id", async (req, res) => {
         let passporting_C2 = req.body
         const StringfyData = JSON.stringify(passporting_C2);
         const reference = currentCase.Reference;
+ 
+        
 
-        try {
-        const filledPdfBytes = await createLegalAidPassport(passporting_C2 , reference);
-        await fs.promises.writeFile('legalAidPassportC2.pdf', filledPdfBytes);
-        console.log('PDF form filled and saved.');
-        } catch (error) {
-        console.error('Error:', error);
-        }
+        // try {
+        // const filledPdfBytes = await createLegalAidPassport(passporting_C2 , reference);
+        // await fs.promises.writeFile('legalAidPassportC2.pdf', filledPdfBytes);
+        // console.log('PDF form filled and saved.');
+        // } catch (error) {
+        // console.error('Error:', error);
+        // }
 
 //!currentCase.passporting_C2
         if (true) {
@@ -256,7 +263,9 @@ router.patch("/passporting_c2/:id", async (req, res) => {
             const currentComp = await Case.findById(currentCase._id).populate('connectionData.companyID');
              companyData.email = currentComp.connectionData.companyID.email;
              companyData.companyName = currentComp.connectionData.companyID.companyName;
+             sharingGmail = currentComp.connectionData.companyID.sharingGmail;
 
+             await createLegalAidPassport(passporting_C2 , reference , currentCase._id, sharingGmail);
 
             const updatedCase = await Case.findById(req.params.id);
             clientData.clientName = `${updatedCase.MajorDataC2.fName} ${updatedCase.MajorDataC2.sName}`
@@ -290,13 +299,15 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         const StringfyData = JSON.stringify(lowIncome_C2);
         const reference = currentCase.Reference;
 
-        try {
-            const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C2 , reference);
-            await fs.promises.writeFile('legalAidLowIncomeC2.pdf', filledPdfBytes);
-            console.log('PDF form filled and saved.');
-            } catch (error) {
-            console.error('Error:', error);
-            }
+        
+
+        // try {
+        //     const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C2 , reference);
+        //     await fs.promises.writeFile('legalAidLowIncomeC2.pdf', filledPdfBytes);
+        //     console.log('PDF form filled and saved.');
+        //     } catch (error) {
+        //     console.error('Error:', error);
+        //     }
 
 
 
@@ -313,8 +324,9 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             const currentComp = await Case.findById(currentCase._id).populate('connectionData.companyID');
              companyData.email = currentComp.connectionData.companyID.email;
              companyData.companyName = currentComp.connectionData.companyID.companyName;
+             sharingGmail = currentComp.connectionData.companyID.sharingGmail;
 
-
+             await createLegalAidLowIncome(lowIncome_C2 , reference ,currentCase._id, sharingGmail);
             const updatedCase = await Case.findById(req.params.id);
             clientData.clientName = `${updatedCase.MajorDataC2.fName} ${updatedCase.MajorDataC2.sName}`
             clientData.email = updatedCase.MajorDataC2.mail
@@ -339,7 +351,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 });
 
 
-    async function createLegalAidPassport(fieldData , reference , caseID) {
+    async function createLegalAidPassport(fieldData , reference , caseID , sharingGmail) {
         try {
           const pdfBytes = await fs.promises.readFile('../DMS-Backend/uploads/pdfs/Legal-aid.pdf');
           const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -561,14 +573,58 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             form.getField('CheckBox32').check();
         
             const modifiedPdfBytes = await pdfDoc.save();
-            return modifiedPdfBytes;
+
+            const auth = await google.auth.getClient({
+      
+                keyFile: config.credentialFile1,
+          
+                scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+              });
+          
+            
+          
+              const drive = google.drive({ version: "v3", auth });
+          
+              const currentCase = await Case.findById(caseID);
+
+              const folderId = currentCase.folderID;
+          
+          
+               // Create a readable stream from the PDF bytes
+                const readableStream = new stream.Readable({
+                    read() {
+                    this.push(modifiedPdfBytes);
+                    this.push(null);
+                    },
+                });
+            
+                // Upload the PDF to the created folder
+                const fileMetadata = {
+                    name: `"LegalAid-passport.pdf"`,
+                    parents: [folderId],
+                };
+            
+                const media = {
+                    mimeType: "application/pdf",
+                    body: readableStream,
+                };
+                await drive.files.create({
+                    resource: fileMetadata,
+                    media: media,
+                    fields: "id",
+                });
+
+                shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+                //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
+                console.log("PDF created and uploaded successfully");
+
             } catch (error) {
             console.error('Error:', error);
             return null;
             }
       }
 
-      async function createLegalAidLowIncome(fieldData , reference , caseID) {
+      async function createLegalAidLowIncome(fieldData , reference , caseID , sharingGmail) {
         try {
           const pdfBytes = await fs.promises.readFile('../DMS-Backend/uploads/pdfs/Legal-aid.pdf');
           const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -807,9 +863,57 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             }
         
             form.getField('CheckBox32').check();
-        
+
             const modifiedPdfBytes = await pdfDoc.save();
-            return modifiedPdfBytes;
+
+
+            const auth = await google.auth.getClient({
+      
+                keyFile: config.credentialFile1,
+          
+                scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+              });
+          
+            
+          
+              const drive = google.drive({ version: "v3", auth });
+          
+              const currentCase = await Case.findById(caseID);
+
+              const folderId = currentCase.folderID;
+          
+          
+               // Create a readable stream from the PDF bytes
+                const readableStream = new stream.Readable({
+                    read() {
+                    this.push(modifiedPdfBytes);
+                    this.push(null);
+                    },
+                });
+            
+                // Upload the PDF to the created folder
+                const fileMetadata = {
+                    name: `"LegalAid-LowIncome.pdf"`,
+                    parents: [folderId],
+                };
+            
+                const media = {
+                    mimeType: "application/pdf",
+                    body: readableStream,
+                };
+                await drive.files.create({
+                    resource: fileMetadata,
+                    media: media,
+                    fields: "id",
+                });
+
+                shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+                //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
+                console.log("PDF created and uploaded successfully");
+
+        
+            
+            
             } catch (error) {
             console.error('Error:', error);
             return null;
@@ -835,7 +939,55 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         return age < 18 ? "Yes" : "No";
       }
 
+      async function updateFolderName(folderId, newFolderName) {
+ 
+        const auth = await google.auth.getClient({
+          keyFile: config.credentialFile1,
+          scopes: ['https://www.googleapis.com/auth/drive'],
+        }); // Authenticate with your service account
+      
+        const drive = google.drive({ version: 'v3', auth });
+      
+        try {
+          const updatedFolderMetadata = await drive.files.update({
+            fileId: folderId,
+            resource: {
+              name: newFolderName,
+            },
+          });
+      
+          console.log(`Folder name updated to: ${updatedFolderMetadata.data.name}`);
+        } catch (error) {
+          console.error(`Error updating folder name: ${error.message}`);
+        }
+      }
 
+      async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+        try {
+          const authClient = await google.auth.getClient({
+            keyFile: config.credentialFile1,
+            scopes: ['https://www.googleapis.com/auth/drive'],
+          });
+      
+          const drive = google.drive({ version: 'v3', auth: authClient });
+      
+          const permission = {
+            type: 'user',
+            role: 'writer',
+            emailAddress: personalAccountEmail,
+          };
+      
+          await drive.permissions.create({
+            fileId: folderId,
+            requestBody: permission,
+          });
+      
+          console.log('Folder shared successfully!');
+        } catch (error) {
+          console.error('Error sharing folder:', error.message);
+        }
+      }
+      
 
 
 module.exports = router
