@@ -269,29 +269,33 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         if (req.body.caseType == 'private') {
           messageBodyinfo.formType = "MIAM 1"
           messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
-          sendMailMIAM1(companyData, clientData, messageBodyinfo)
+          sendMailMIAM1(companyData, clientData, messageBodyinfo);
+          res.status(200).json({ caseID: newCaseID })
 
         }
         else if (req.body.legalAidType == 'lowIncome' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = "low Income / No Income"
           messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
-          sendMailLowIncome(companyData, clientData, messageBodyinfo)
+          sendMailLowIncome(companyData, clientData, messageBodyinfo);
+          res.status(200).json({ caseID: newCaseID })
         }
         else if (req.body.legalAidType == 'passporting' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = 'Passporting'
           messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C1/${newCase[0]._id}`;
-          sendMailPassporting(companyData, clientData, messageBodyinfo)
+          sendMailPassporting(companyData, clientData, messageBodyinfo);
+          res.status(200).json({ caseID: newCaseID })
         }
         else {
           res.status(400).json({ "message": "please confirm case type" })
         }
 
+        
       }
       else {
         res.status(400).json({ "message": "please add the mediator first" })
       }
 
-      res.status(200).json({ caseID: newCaseID })
+      
     }
 
     else {
