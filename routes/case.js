@@ -507,7 +507,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
            C2Agreement,
            mediationRecords,
            caseSuitable,
-           caseLogs
+           caseLogs,
+           folderID
 
 
         }
@@ -597,7 +598,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           C2Agreement,
           mediationRecords,
           caseSuitable,
-          caseLogs
+          caseLogs,
+          folderID
         }
 
         res.status(200).json(CaseResponse)
