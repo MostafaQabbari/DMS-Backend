@@ -55,7 +55,7 @@ const config = require("../config/config");
       },
       attendees: [
         { email: mediatorEmail },
-        { email: client1Email },
+        // { email: client1Email },
         // { email: client2Email },
       ],
     };
@@ -67,7 +67,7 @@ const config = require("../config/config");
       sendUpdates: 'all', // Send invitations to the attendees
     });
 
-    console.log('Event created:', createdEvent.data);
+    console.log('Event created:',/* createdEvent.data*/);
 
     return { message: 'Event created successfully' };
   } catch (error) {

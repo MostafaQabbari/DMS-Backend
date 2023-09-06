@@ -7,7 +7,8 @@ const Company = require("../models/company");
 const nodemailer = require("nodemailer")
 const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
-const dateNow = require("../global/dateNow")
+const dateNow = require("../global/dateNow");
+const { google } = require("googleapis");
 
 
 
@@ -216,6 +217,38 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       }
 
       let Reference = `${surName} `;
+
+      const auth = await google.auth.getClient({
+      
+        keyFile: config.credentialFile1,
+  
+        scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+      });
+  
+    
+  
+      const drive = google.drive({ version: "v3", auth });
+  
+  
+  
+      // // Get the folder ID using the reference object (folder name)
+      // const response = await drive.files.list({
+      //   q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
+      // });
+  
+  
+      // Create the folder in Google Drive
+      const folderMetadata = {
+        name: Reference,
+        mimeType: "application/vnd.google-apps.folder",
+      };
+      const folder = await drive.files.create({
+        resource: folderMetadata,
+        fields: "id",
+      });
+      const folderId = folder.data.id;
+
+     
       let newCaseID;
       if (Themediator) {
 
@@ -239,7 +272,8 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
             },
 
-            connectionData: { companyID: req.user._id, mediatorID: Themediator._id }
+            connectionData: { companyID: req.user._id, mediatorID: Themediator._id },
+            folderID: folderId
           });
 
         let statusRemider = {
@@ -257,6 +291,8 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
 
 
         newCaseID = newCase[0]._id
+
+        
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });

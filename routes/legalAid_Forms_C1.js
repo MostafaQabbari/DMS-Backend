@@ -118,6 +118,8 @@ router.patch("/passporting_c1/:id", async (req, res) => {
         let passporting_C1 = req.body
         const StringfyData = JSON.stringify(passporting_C1);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
             try {
             const filledPdfBytes = await createLegalAidPassport(passporting_C1 , reference);
@@ -175,6 +177,8 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
         let lowIncome_C1 = req.body
         const StringfyData = JSON.stringify(lowIncome_C1);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
         try {
             const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C1 , reference);
@@ -235,6 +239,8 @@ router.patch("/passporting_c2/:id", async (req, res) => {
         let passporting_C2 = req.body
         const StringfyData = JSON.stringify(passporting_C2);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
         try {
         const filledPdfBytes = await createLegalAidPassport(passporting_C2 , reference);
@@ -289,6 +295,8 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         let lowIncome_C2 = req.body
         const StringfyData = JSON.stringify(lowIncome_C2);
         const reference = currentCase.Reference;
+        const folderId = currentCase.folderID;
+        updateFolderName(folderId, reference);
 
         try {
             const filledPdfBytes = await createLegalAidLowIncome(lowIncome_C2 , reference);
@@ -835,7 +843,28 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
         return age < 18 ? "Yes" : "No";
       }
 
-
+      async function updateFolderName(folderId, newFolderName) {
+ 
+        const auth = await google.auth.getClient({
+          keyFile: config.credentialFile1,
+          scopes: ['https://www.googleapis.com/auth/drive'],
+        }); // Authenticate with your service account
+      
+        const drive = google.drive({ version: 'v3', auth });
+      
+        try {
+          const updatedFolderMetadata = await drive.files.update({
+            fileId: folderId,
+            resource: {
+              name: newFolderName,
+            },
+          });
+      
+          console.log(`Folder name updated to: ${updatedFolderMetadata.data.name}`);
+        } catch (error) {
+          console.error(`Error updating folder name: ${error.message}`);
+        }
+      }
 
 
 module.exports = router
