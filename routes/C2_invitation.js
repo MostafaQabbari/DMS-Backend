@@ -40,9 +40,12 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
-    html: ` <div style=" text-align: center; ">
+    html: ` <div style=" text-align: left; ">
      <h1>Dear ${clientData.clientName}  </h1>
-    <p> Thank you for responding to the invitation to mediation. BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. Without this form completed, we cannot proceed with the appointment. </p>
+    <p> Thank you for responding to the invitation to mediation. 
+    BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, 
+    we need you to complete an online form that records basic information about you and your situation. 
+    Without this form completed, we cannot proceed with the appointment. </p>
     <p>YOU HAVE A DEADLINE OF THREE WORKING DAYS TO COMPLETE THIS FORM.</p>
     <p> Please click on the link below:</p>
      

@@ -44,7 +44,7 @@ const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo)
         from: config.companyEmail,
         to: clientData.email,
         subject: " MIAM I Form",
-        html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left; ">
        <h1>Dear ${clientData.clientName}  </h1>
        <h2>BEFORE your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>
      <p> Please click on the link below:</p>
@@ -100,7 +100,7 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
         from: config.companyEmail,
         to: clientData.email,
         subject: "MIAM I Form",
-        html: ` <div style="text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style="text-align: left; ">
        <h1>Dear ${clientData.clientName}  </h1>
       <h2>Thank you for the signed Legal Aid form. Your application for Legal Aid was SUCCESSFUL.
       BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>

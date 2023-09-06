@@ -19,6 +19,7 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
 
   
     */
+   console.log("from the function",pdfData)
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -40,11 +41,11 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
     })
 
 
-    let info = transporter.sendMail({
+    transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: " Court Form",
-        html: ` <div style=" text-align: center; padding: 5vw; width: 75%; margin: auto;">
+        html: ` <div style=" text-align: left; ">
        <h1>Dear ${clientData.clientName}  </h1>
    
       <h3>Direct Mediation Services.</h3>
@@ -59,37 +60,9 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
         ]
 
 
+    }).then((data)=>{ 
+            fs.unlinkSync(pdfData.path);
     });
-
-
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            try {
-                fs.unlinkSync(pdfData.path);
-                //console.log("File deleted successfully");
-            } catch (err) {
-               // console.error("Error deleting file:", err);
-            }
-            console.log('Error occurred while sending email:', error.message);
-
-        } else {
-
-            try {
-                fs.unlinkSync(pdfData.path);
-                //console.log("File deleted successfully");
-            } catch (err) {
-              //  console.error("Error deleting file:", err);
-            }
-
-            console.log('Email sent successfully:', info.messageId);
-        }
-    })
-
- 
-
-
-
-
 }
 
 
@@ -103,14 +76,13 @@ const uploadFile = multer({
     })
 });
 
-router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdf'), async (req, res, next) => {
+router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdfData'), async (req, res, next) => {
 
-    let CaseFound;
     try {
+        let CaseFound;
 
 
         const pdfData = req.file;
-        //console.log(pdfData)
         const TargetClient = req.body.TargetClient;
         //  console.log(TargetClient)
         let companyData = {}, clientData = {}
@@ -128,10 +100,13 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdf'), asyn
 
                 if (TargetClient == "C1") {
                     clientData.email = CaseFound.MajorDataC1.mail;
-                   // clientData.email = 'abdosamir023023@gmail.com'
+                   clientData.email = 'abdosamir023023@gmail.com'
                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email
+
+
+                    console.log("before calling the function",pdfData)
                     sendCourtForm(companyData, clientData, pdfData);
 
                     // .then((pdfData) => {
@@ -173,56 +148,56 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdf'), asyn
             }
 
         }
-        else if (req.userRole == 'mediator') {
-            let cases = await mediator.findById(req.user._id).populate('cases');
-            for (let i = 0; i < cases.cases.length; i++) {
-                if (cases.cases[i]._id == req.params.id) {
+        // else if (req.userRole == 'mediator') {
+        //     let cases = await mediator.findById(req.user._id).populate('cases');
+        //     for (let i = 0; i < cases.cases.length; i++) {
+        //         if (cases.cases[i]._id == req.params.id) {
 
-                    CaseFound = (cases.cases[i])
-                }
-            }
-            if (CaseFound) {
+        //             CaseFound = (cases.cases[i])
+        //         }
+        //     }
+        //     if (CaseFound) {
 
-                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-                let currentComp_ = mediatorCompanyData.companyId
+        //         const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+        //         let currentComp_ = mediatorCompanyData.companyId
 
-                if (TargetClient == "C1") {
-                    clientData.email = CaseFound.MajorDataC1.mail;
-                    //clientData.email = "abdosamir023023@gmail.com"
+        //         if (TargetClient == "C1") {
+        //             clientData.email = CaseFound.MajorDataC1.mail;
+        //             //clientData.email = "abdosamir023023@gmail.com"
 
-                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email
-                    sendCourtForm(companyData, clientData, pdfData);
-                    res.status(200).json({ "message": "court email has been sent ... " })
-
-
-
-                }
-                else if (TargetClient == "C2") {
-                    clientData.email = CaseFound.MajorDataC2.mail;
-                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email
-
-                    sendCourtForm(companyData, clientData, pdfData);
-                    res.status(200).json({ "message": "court email has been sent ... " })
+        //             clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+        //             companyData.companyName = currentComp_.companyName
+        //             companyData.email = currentComp_.email
+        //             sendCourtForm(companyData, clientData, pdfData);
+        //             res.status(200).json({ "message": "court email has been sent ... " })
 
 
-                }
-                else {
-                    res.status(400).json({ "message": "error with data ... " })
-                }
-            }
-            else {
-                res.status(400).json({ "message": "no case found ... " })
-            }
 
-        }
+        //         }
+        //         else if (TargetClient == "C2") {
+        //             clientData.email = CaseFound.MajorDataC2.mail;
+        //             clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+        //             companyData.companyName = currentComp_.companyName
+        //             companyData.email = currentComp_.email
 
-        else {
-            res.status(400).json({ res: "there is an arror with getting case access for the user" })
-        }
+        //             sendCourtForm(companyData, clientData, pdfData);
+        //             res.status(200).json({ "message": "court email has been sent ... " })
+
+
+        //         }
+        //         else {
+        //             res.status(400).json({ "message": "error with data ... " })
+        //         }
+        //     }
+        //     else {
+        //         res.status(400).json({ "message": "no case found ... " })
+        //     }
+
+        // }
+
+        // else {
+        //     res.status(400).json({ res: "there is an arror with getting case access for the user" })
+        // }
 
 
 
