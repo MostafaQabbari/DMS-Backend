@@ -46,7 +46,7 @@ const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInf
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: caseDetails.C2mail,
         subject: `Invitation to mediation by ${mediationDetails.companyName} `,

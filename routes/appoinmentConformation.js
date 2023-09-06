@@ -44,7 +44,7 @@ const sendAppointment = function (companyData, clientData, bodyDetails ,textBody
     }
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: ` Appointment Mail ${bodyDetails.caseType} case`,
@@ -77,14 +77,14 @@ const sendAppointment = function (companyData, clientData, bodyDetails ,textBody
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 }
 

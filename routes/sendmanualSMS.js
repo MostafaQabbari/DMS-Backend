@@ -103,7 +103,7 @@ const sendMail_Invitation = function (clientDetails, compnayDetails) {
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientDetails.email,
         subject: `Invitation Mail`,

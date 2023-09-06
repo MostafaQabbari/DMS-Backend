@@ -46,7 +46,7 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails , chil
 
     let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: `${mailList}` ,
         subject: `CIM Information`,
@@ -75,14 +75,14 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails , chil
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }
@@ -122,7 +122,7 @@ const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) 
     })
 
 let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: `${mailList}` ,
         subject: `Property & Finance`,
@@ -167,14 +167,14 @@ let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }

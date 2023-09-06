@@ -49,7 +49,7 @@ caseData.caseID
   */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: mediatorData.email,
         subject: `Mediation Session Record Form for  ${caseData.caseReference} `,
@@ -647,7 +647,7 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     </div>
     </body>`
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: reciever,
     subject: `You have a new submission of Mediation Session Record`,

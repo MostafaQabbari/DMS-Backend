@@ -36,7 +36,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
   })
 
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -60,14 +60,14 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
   });
 
 
-  transporter.sendMail(info, (error, info) => {
-    if (error) {
-      console.log('Error occurred while sending email:', error.message);
+  // transporter.sendMail(info, (error, info) => {
+  //   if (error) {
+  //     console.log('Error occurred while sending email:', error.message);
 
-    } else {
-      console.log('Email sent successfully:', info.messageId);
-    }
-  });
+  //   } else {
+  //     console.log('Email sent successfully:', info.messageId);
+  //   }
+  // });
 
 }
 const sendMailPassporting = function (companyData, clientData, messageBodyinfo) {
@@ -100,7 +100,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
   })
 
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -118,14 +118,14 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
   });
 
 
-  transporter.sendMail(info, (error, info) => {
-    if (error) {
-      console.log('Error occurred while sending email:', error.message);
+  // transporter.sendMail(info, (error, info) => {
+  //   if (error) {
+  //     console.log('Error occurred while sending email:', error.message);
 
-    } else {
-      console.log('Email sent successfully:', info.messageId);
-    }
-  });
+  //   } else {
+  //     console.log('Email sent successfully:', info.messageId);
+  //   }
+  // });
 
 }
 const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
@@ -158,7 +158,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
   })
 
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -176,14 +176,14 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
   });
 
 
-  transporter.sendMail(info, (error, info) => {
-    if (error) {
-      console.log('Error occurred while sending email:', error.message);
+  // transporter.sendMail(info, (error, info) => {
+  //   if (error) {
+  //     console.log('Error occurred while sending email:', error.message);
 
-    } else {
-      console.log('Email sent successfully:', info.messageId);
-    }
-  });
+  //   } else {
+  //     console.log('Email sent successfully:', info.messageId);
+  //   }
+  // });
 
 }
 
@@ -226,7 +226,7 @@ const notifyCompanytoCall_C2Refused = function (companyData, clientData) {
   }
 
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: companyData.email,
     subject: `C2 Invitation applied for  ${clientData.caseReference} `,
@@ -285,7 +285,7 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
     }
   }
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: companyData.email,
     subject: `C2 Invitation applied for  ${clientData.caseReference} `,

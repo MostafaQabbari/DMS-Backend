@@ -40,7 +40,7 @@ const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo)
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: " MIAM I Form",
@@ -58,14 +58,14 @@ const sendMIAM1Linkprivate = function (companyData, clientData, messageBodyinfo)
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 }
 const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo) {
@@ -96,7 +96,7 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
 
     })
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: "MIAM I Form",
@@ -115,14 +115,14 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 }
 

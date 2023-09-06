@@ -45,7 +45,7 @@ const MailInviationToMediation = function (meetingDetails, clientDetials, compan
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `MIAM Invitation`,
@@ -66,14 +66,14 @@ const MailInviationToMediation = function (meetingDetails, clientDetials, compan
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }
@@ -119,7 +119,7 @@ const MediationSessionMail = function (meetingDetails, clientDetials, companyDet
     let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
 //console.log("👆👆👆👆",mailList)
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to:`${mailList}`,
         subject: `Mediation Session Invitation`,
@@ -150,14 +150,14 @@ const MediationSessionMail = function (meetingDetails, clientDetials, companyDet
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }

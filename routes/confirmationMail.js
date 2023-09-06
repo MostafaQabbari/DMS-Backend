@@ -47,7 +47,7 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Confirmation Mail`,
@@ -88,14 +88,14 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }

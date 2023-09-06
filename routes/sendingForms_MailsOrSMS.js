@@ -70,7 +70,7 @@ const sendMail_M1C1 = function (companyData, clientData, messageBodyinfo) {
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: "Applying To MIAM Form",
@@ -87,14 +87,14 @@ const sendMail_M1C1 = function (companyData, clientData, messageBodyinfo) {
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 }
 
@@ -132,7 +132,7 @@ const sendMail_C2Invitation = function (caseDetails, mediationDetails, messageIn
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: caseDetails.C2mail,
         subject: `Invitation to mediation by ${mediationDetails.companyName} `,
@@ -217,7 +217,7 @@ const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: caseDetails.C2mail,
         subject: `Invitation to mediation by ${mediationDetails.companyName} `,

@@ -36,7 +36,7 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
 
 
-  let info = transporter.sendMail({
+   transporter.sendMail({
     from: config.companyEmail,
     to: mediatorData.email,
     subject: `MIAM 1 has been applied by ${clientData.fname} ${clientData.surName}`,

@@ -34,7 +34,7 @@ const notifyCompany = function (compMail, clientDataName) {
 
     })
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: compMail,
         subject: `Legal Aid form has for applied for ${clientDataName} `,
@@ -78,7 +78,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -97,14 +97,14 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 }
 

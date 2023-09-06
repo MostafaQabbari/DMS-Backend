@@ -40,7 +40,7 @@ const sendAgreementFormC1 = function (clientDetials, companyDetails, caseID) {
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Agreement Form`,
@@ -67,14 +67,14 @@ const sendAgreementFormC1 = function (clientDetials, companyDetails, caseID) {
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }
@@ -112,7 +112,7 @@ const sendAgreementFormC2 = function (clientDetials, companyDetails, caseID) {
     })
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Agreement Form`,
@@ -140,14 +140,14 @@ const sendAgreementFormC2 = function (clientDetials, companyDetails, caseID) {
     });
 
 
-    transporter.sendMail(info, (error, info) => {
-        if (error) {
-            console.log('Error occurred while sending email:', error.message);
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
 
-        } else {
-            console.log('Email sent successfully:', info.messageId);
-        }
-    });
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
 
 
 }
@@ -181,7 +181,7 @@ caseData.caseReference
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: companyData.email,
         subject: `Agreement_C1 form applied for  ${caseData.caseReference} `,
@@ -227,7 +227,7 @@ caseData.caseReference
     */
 
 
-    let info = transporter.sendMail({
+     transporter.sendMail({
         from: config.companyEmail,
         to: companyData.email,
         subject: `Agreement_C2 form applied for  ${caseData.caseReference} `,
