@@ -100,7 +100,7 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdfData'), 
 
                 if (TargetClient == "C1") {
                     clientData.email = CaseFound.MajorDataC1.mail;
-                   clientData.email = 'abdosamir023023@gmail.com'
+                 //  clientData.email = 'abdosamir023023@gmail.com'
                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email
