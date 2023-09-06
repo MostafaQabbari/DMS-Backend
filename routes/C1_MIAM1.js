@@ -367,22 +367,30 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // const drive = await getDriveApiClient();
 
-    // Get the folder ID using the reference object (folder name)
-    const response = await drive.files.list({
-      q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
-    });
+    // // Get the folder ID using the reference object (folder name)
+    // const response = await drive.files.list({
+    //   q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
+    // });
 
 
-    // Create the folder in Google Drive
-    const folderMetadata = {
-      name: folderName,
-      mimeType: "application/vnd.google-apps.folder",
-    };
-    const folder = await drive.files.create({
-      resource: folderMetadata,
-      fields: "id",
-    });
-    const folderId = folder.data.id;
+    // // Create the folder in Google Drive
+    // const folderMetadata = {
+    //   name: folderName,
+    //   mimeType: "application/vnd.google-apps.folder",
+    // };
+    // const folder = await drive.files.create({
+    //   resource: folderMetadata,
+    //   fields: "id",
+    // });
+    // const folderId = folder.data.id;
+
+    const currentCase = await Case.findById(caseID);
+
+    const folderId = currentCase.folderID;
+
+
+    // Usage
+    updateFolderName(folderId, folderName);
 
 
     // Create a readable stream from the PDF bytes
@@ -409,12 +417,12 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
       fields: "id",
     });
     console.log(folderId);
-    //put the FolderID into the database
-    await Case.findByIdAndUpdate(caseID, { folderID: folderId });
+    // //put the FolderID into the database
+    // await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, sharingGmail  );//the gmail sharing account that belong to the company
+    shareWithPersonalAccount(folderId, "hassantarekha@gmail.com");//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
@@ -450,6 +458,33 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
     console.error('Error sharing folder:', error.message);
   }
 }
+
+
+
+async function updateFolderName(folderId, newFolderName) {
+ 
+  const auth = await google.auth.getClient({
+    keyFile: config.credentialFile1,
+    scopes: ['https://www.googleapis.com/auth/drive'],
+  }); // Authenticate with your service account
+
+  const drive = google.drive({ version: 'v3', auth });
+
+  try {
+    const updatedFolderMetadata = await drive.files.update({
+      fileId: folderId,
+      resource: {
+        name: newFolderName,
+      },
+    });
+
+    console.log(`Folder name updated to: ${updatedFolderMetadata.data.name}`);
+  } catch (error) {
+    console.error(`Error updating folder name: ${error.message}`);
+  }
+}
+
+
 
     // generateAndSavePDF(client1data)
     // .then(message => console.log(message))
