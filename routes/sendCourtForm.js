@@ -47,8 +47,25 @@ const sendCourtForm = function (companyData, clientData, pdfData) {
         subject: " Court Form",
         html: ` <div style=" text-align: left; ">
        <h1>Dear ${clientData.clientName}  </h1>
-   
-      <h3>Direct Mediation Services.</h3>
+   <p>Thank you for using Direct Mediation Services.</p>
+   <p>The MIAM certificate signed by the mediator is attached. You will need this when you make your application to court. 
+   Please remember this is valid only <strong style="text-decortaion:underline"> for four months </strong> from the date of the certificate</p>
+   <p>Below are some links, which you may find helpful:</p>
+   <p>Child arrangements order  ( <a href="https://www.gov.uk/government/publications/form-c100-application-under-the-children-act-1989-for-a-child-arrangements-prohibited-steps-specific-issue-section-8-order-or-to-vary-or-discharge">C100 form </a>)</p>
+   <p>Financial order  ( <a href="https://www.gov.uk/government/publications/form-a-notice-of-intention-to-proceed-with-an-application-for-a-financial-order">Form A </a>)</p>
+<p>For support completing the court forms at no charge, you can contact the <a href="https://www.supportthroughcourt.org/locations">Support Through Court.</a> 
+ Also here is the link to <a href="https://www.gov.uk/government/publications/apply-for-help-with-court-and-tribunal-fees">Form EX160</a>  “Apply for help with fees”. If you submit this form, you may not have to pay a court or tribunal fee,
+ or you may get some money off.</p>
+
+
+ <p>We also have a <a href="https://www.directmediationservices.co.uk/sos-contacts/">Signposting</a>  page to external organisations, which provide assistance on varying matters. In addition to this, we have written a general guide to completing the C100 Form, which can be accessed <a href="https://www.directmediationservices.co.uk/c100-application-form/">here</a> .</p>
+ 
+ <p><a href="https://www.directmediationservices.co.uk/wp-content/uploads/2021/12/Closing-letter-20.12.21.pdf">Click here</a> for your closing letter. Please read this carefully.</p>
+
+<p>We have a client's satisfaction survey which you can fill out by clicking the following link: <a href=" https://dms-client-survey.paperform.co/"></a>. All your comments are very much appreciated as they help us to improve our services.</p>
+<p>If we can be of any further assistance to you, or you ever wish to return to mediation in the future, please do get in touch with us.</p> 
+<p>Kind Regards,</p>
+<h3>Direct Mediation Services.</h3>
       <h3>${companyData.companyName}</h3>
       <h3>${companyData.email}</h3>
        </div>`,
