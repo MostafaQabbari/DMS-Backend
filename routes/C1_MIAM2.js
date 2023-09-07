@@ -54,7 +54,7 @@ const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInf
         <div style=" text-align: left;">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>This is an invitation to mediation with your partner  ${caseDetails.C1name} and that's your link to apply your invitation form </h3>
-        <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+        <a href='${messageInfo.formUrl}' style="  padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
    
         <p> Best Regards </p>
         <p>${mediationDetails.companyName}'s Team </p>

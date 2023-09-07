@@ -89,7 +89,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
       <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
        we need you to complete an online form records basic information about you and your situation. </p>
        <p> Please click on the link below :</p>
-      <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px;"> ${messageBodyinfo.formUrl} </a>
+      <a href='${messageBodyinfo.formUrl}'  style="  padding:5px;"> ${messageBodyinfo.formUrl} </a>
       <h3>Direct Mediation Services</h3>
       <h4>${companyData.companyName}</h4>
       <h4>${companyData.email}</h4>

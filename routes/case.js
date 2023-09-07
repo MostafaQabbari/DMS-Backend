@@ -49,7 +49,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
      we need you to complete an online form records basic information about you and your situation. </p>
      <p> Please click on the link below :</p>
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px;"> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style=" padding:5px;"> ${messageBodyinfo.formUrl} </a>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
     <h4>${companyData.email}</h4>
@@ -107,7 +107,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
      <h1>Hi  ${clientData.clientName}  </h1>
     <p> Thank you for contacting us regarding your Legal Aid application for family mediation.
     To start your application please follow the link below:</p>
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style="  padding:5px; "> ${messageBodyinfo.formUrl} </a>
     <p>Applications are only considered via this route.</p>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
@@ -167,7 +167,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
     <p>Thank you for contacting us regarding your Legal Aid application for family mediation.
     To start your application please follow the link below::</p>
      
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style="  padding:5px; "> ${messageBodyinfo.formUrl} </a>
     <h3>Applications are only considered via this route .</h3>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
