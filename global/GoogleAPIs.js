@@ -34,8 +34,8 @@ const config = require("../config/config");
     const auth = await google.auth.getClient({
       
       keyFile: config.credentialFile1,
-
-      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+      subject: 'mkabary8@gmail.com', // User's email on behalf of whom you want to act
+      scopes: ['https://www.googleapis.com/auth/calendar.events'], // Scopes required for accessing Google Drive
     });
 
 
