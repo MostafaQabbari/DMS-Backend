@@ -669,7 +669,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   let mediationRecord = req.body;
   const StringfyData = JSON.stringify(mediationRecord);
 
-  // createMediationRecordUpload(mediationRecord  , currentCase._id);
+  await createMediationRecordUpload(mediationRecord  , req.params.id);
 
   // // Call the function
   // generateMediationSessionRecord(mediationRecord)
@@ -680,15 +680,15 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   // console.error('Error:', error);
   // });
 
-  // Call the function
-  generateMediationSessionRecord()
-    .then(pdfBytes => {
-      fs.writeFileSync('mediation_session_record2.pdf', pdfBytes);
+  // // Call the function
+  // generateMediationSessionRecord(mediationRecord)
+  //   .then(pdfBytes => {
+  //     fs.writeFileSync('mediation_session_record2.pdf', pdfBytes);
 
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  //   })
+  //   .catch(error => {
+  //     console.error('Error:', error);
+  //   });
   //   mediationRecord.submittedDate = getNowFormattedDate();
   //   const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
   //   let compData = {}
@@ -827,73 +827,94 @@ async function createMediationRecordUpload(data, caseID) {
   try {
 
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage();
-
+    let pages = pdfDoc.getPages;
+    let pageNumber = 0;
+    const pageHeight = 841.89;
+    pages[pageNumber] = pdfDoc.addPage();
+    // console.log(pages[pageNumber])
+    
+    const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
+    const font = await pdfDoc.embedFont('Helvetica');
+    
+    // const getLinesNumber = (string) => {
+    //   if (string === undefined || string === null) {
+    //     return 0;
+    //   }
+    //   return string.length / 35;
+    // }
+  
     const questionsAndAnswers = [
-      { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-      { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-      { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-      { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-      { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-      // ... other questions and answers ...
+      { question: 'Submitted At', answer: data.submittedDate},
+      { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
+      { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
+      { question: 'Name of the mediator', answer: data.clientData.mediatorName },
+      { question: 'Date of the session', answer: data.clientData.sessionDate },
+      { question: 'Type of case.', answer: data.clientData.caseType},
+      { question: 'Please specify location', answer: data.clientData.specifyLocation },
+      { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
+      { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
+      { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
+      { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
+      { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+      { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+      { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
+      { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
+      { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
+      { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
+      { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
+      { question: 'Do Lewis Lawson and Gemma Dickson agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?', answer: 'Yes' },
+      { question: 'Type of mediation', answer: 'Face to Face'},
+      { question: 'Do Lewis Lawson and Gemma Dickson agree to the Agreement to Mediate?', answer: 'Yes' },
+      { question: 'Please list the agreed agenda points', answer: 'Child Arrangements' },
+      { question: 'First agenda point discussed.', answer: 'Child Arrangements' },
+      { question: 'Issues identified', answer: 'Lewis and Gemma have come to mediation to work together with regards to arrangements for Louie and Rikki amicably and civilly together.' },
+      { question: 'Type of case.', answer: 'Child Issues'},
+      { question: 'Please specify location', answer: 'Online' },
     ];
-
-    const pageHeight = page.getHeight();
-    const startX = 50;
-    let currentY = pageHeight - 50;
-    const questionWidth = 400; // Adjust the width as needed
-
-
-    for (const { question, answer } of questionsAndAnswers) {
-      const wrappedQuestion = page.drawText(question, {
-        x: startX,
-        y: currentY,
-        maxWidth: questionWidth,
-        lineHeight: 18, // Adjust as needed for spacing
-      });
-
-      // Check if wrappedQuestion is defined before accessing its height property
-      const questionHeight = wrappedQuestion ? (wrappedQuestion.height || 0) : 0;
-      currentY -= questionHeight + 5;
-
-      if (answer) {
-        const wrappedAnswer = page.drawText(answer, {
-          x: startX,
-          y: currentY,
-          maxWidth: questionWidth,
-          lineHeight: 18,
-        });
-
-        // Check if wrappedAnswer is defined before accessing its height property
-        currentY -= wrappedAnswer ? (wrappedAnswer.height || 0) + 15 : 15;
-      } else {
-        currentY -= 15; // Space for empty answer
-      }
-
-      currentY -= answerHeight; // Add spacing between questions
-
+    
+        
+        const startX = 50;
+        let currentY = pageHeight - 50;
+        const questionWidth = 500; // Adjust the width as needed
+  
+  
+        for (const { question, answer } of questionsAndAnswers) {
+  
+        
+  
+          const validQuestion = question || 'N/A'; 
+          const validAnswer = answer  ||  'N/A'; 
+        
+          currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+        
+  
+        // Additional space between Question and Answer
+          const gapBetweenQA = 15;
+          currentY -= gapBetweenQA;
+  
+        if (answer) {
+          currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
+        }
+  
+        // Additional space between this Q&A and the next
+        const gapBetweenBlocks = 20;
+        currentY -= gapBetweenBlocks;
+  
+     
+  
       // Move to the next page if necessary
-      if (currentY <= 50) {
-        page.drawText('Continued on next page...', {
-          x: startX,
-          y: currentY,
-          maxWidth: page.getWidth() - startX * 2,
-          lineHeight: 18,
-        });
-
+      if (currentY <= 100) {
+  
         // Add a new page and reset currentY
-        currentY = page.getHeight() - 50;
-        pdfDoc.addPage();
-        page.drawText('Continued from previous page...', {
-          x: startX,
-          y: currentY,
-          maxWidth: page.getWidth() - startX * 2,
-          lineHeight: 18,
-        });
-
+        pageNumber += 1;
+        currentY = pageHeight - 50;
+        pages[pageNumber] = pdfDoc.addPage();
+  
         currentY -= 20;
       }
     }
+  
 
 
     const pdfBytes = await pdfDoc.save();
@@ -1026,6 +1047,126 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
 //   }
 
 // I want to add if condition if the number of lines is bigger than 3 or 4 add extra spacing 
+// async function generateMediationSessionRecord(data) {
+//   const pdfDoc = await PDFDocument.create();
+//   let pages = pdfDoc.getPages;
+//   let pageNumber = 0;
+//   const pageHeight = 841.89;
+//   pages[pageNumber] = pdfDoc.addPage();
+//   // console.log(pages[pageNumber])
+  
+//   const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
+//   const font = await pdfDoc.embedFont('Helvetica');
+  
+//   const getLinesNumber = (string) => {
+//     if (string === undefined || string === null) {
+//       return 0;
+//     }
+//     return string.length / 35;
+//   }
+
+//   const questionsAndAnswers = [
+//     { question: 'Submitted At', answer: data.submittedDate},
+//     { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
+//     { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
+//     { question: 'Name of the mediator', answer: data.clientData.mediatorName },
+//     { question: 'Date of the session', answer: data.clientData.sessionDate },
+//     { question: 'Type of case.', answer: data.clientData.caseType},
+//     { question: 'Please specify location', answer: data.clientData.specifyLocation },
+//     { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
+//     { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
+//     { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
+//     { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
+//     { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
+//     { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+//     { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+//     { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
+//     { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
+//     { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
+//     { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
+//     { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
+//     { question: 'Do Lewis Lawson and Gemma Dickson agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?', answer: 'Yes' },
+//     { question: 'Type of mediation', answer: 'Face to Face'},
+//     { question: 'Do Lewis Lawson and Gemma Dickson agree to the Agreement to Mediate?', answer: 'Yes' },
+//     { question: 'Please list the agreed agenda points', answer: 'Child Arrangements' },
+//     { question: 'First agenda point discussed.', answer: 'Child Arrangements' },
+//     { question: 'Issues identified', answer: 'Lewis and Gemma have come to mediation to work together with regards to arrangements for Louie and Rikki amicably and civilly together.' },
+//     { question: 'Type of case.', answer: 'Child Issues'},
+//     { question: 'Please specify location', answer: 'Online' },
+//   ];
+  
+  
+//   const startX = 50;
+//   let currentY = pageHeight - 50;
+//   const questionWidth = 500; // Adjust the width as needed
+
+
+//   for (const { question, answer } of questionsAndAnswers) {
+
+//     const numberOfLines = getLinesNumber(question)
+
+//     const wrappedQuestion = pages[pageNumber].drawText(`${question}`, {
+//       x: startX,
+//       y: currentY,
+//       font: BoldFont ,
+//       maxWidth: questionWidth,
+//       lineHeight: 25, // Adjust as needed for spacing
+//     });
+//     // Check if wrappedQuestion is defined before accessing its height property
+//     // const questionHeight = wrappedQuestion ? (wrappedQuestion.height || 0) : 0;
+
+//     currentY -=  (17 * numberOfLines) + 32;
+//     // console.log("Question Height", questionHeight)
+
+//     // if (answer) {
+//     //   const wrappedAnswer = pages[pageNumber].drawText(`${answer}`, {
+//     //     x: startX,
+//     //     y: currentY,
+//     //     font: font,
+//     //     maxWidth: questionWidth,
+//     //     lineHeight: 25,
+//     //   });
+
+//     //   const numOfAnswerLines = getLinesNumber(answer)
+
+//     //   // Check if wrappedAnswer is defined before accessing its height property
+//     //   currentY -= (17 * numOfAnswerLines) + 30;
+//     // } 
+
+
+//     if (answer) {
+//       const numOfAnswerLines = getLinesNumber(answer);
+
+//       pages[pageNumber].drawText(`${answer}`, {
+//         x: startX,
+//         y: currentY,
+//         font: font,
+//         maxWidth: questionWidth,
+//         lineHeight: 25,
+//       });
+
+//       currentY -= (17 * numOfAnswerLines) + 30;
+//     } 
+
+
+//     // Move to the next page if necessary
+//     if (currentY <= 100) {
+
+//       // Add a new page and reset currentY
+//       pageNumber += 1;
+//       currentY = pageHeight - 50;
+//       pages[pageNumber] = pdfDoc.addPage();
+
+//       currentY -= 20;
+//     }
+//   }
+
+
+//   const pdfBytes = await pdfDoc.save();
+//   return pdfBytes;
+// }
+
+
 async function generateMediationSessionRecord(data) {
   const pdfDoc = await PDFDocument.create();
   let pages = pdfDoc.getPages;
@@ -1037,28 +1178,30 @@ async function generateMediationSessionRecord(data) {
   const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
   const font = await pdfDoc.embedFont('Helvetica');
   
-  const getLinesNumber = (string) => {
-    return string.length / 35
-  }
-
+  // const getLinesNumber = (string) => {
+  //   if (string === undefined || string === null) {
+  //     return 0;
+  //   }
+  //   return string.length / 35;
+  // }
 
   const questionsAndAnswers = [
-    { question: 'Submitted At', answer: '09/08/2023 22:50:11'},
-    { question: 'What is the full name of Client 1?', answer: 'Lewis Lawson' },
-    { question: 'What is the full name of Client 2?', answer: 'Gemma Dickson' },
-    { question: 'Name of the mediator', answer: 'Donna Robinson' },
-    { question: 'Date of the session', answer: '04/08/2023' },
-    { question: 'Type of case.', answer: 'Child Issues'},
-    { question: 'Please specify location', answer: 'Online' },
-    { question: 'Specify the mediation session number', answer: 'Session 1' },
-    { question: 'Length of session plus length of writing (in minutes)', answer: '2 hours mediation 1 hour writing time' },
-    { question: 'Do Lewis Lawson and Gemma Dickson have any children?', answer: 'Yes' },
-    { question: 'What is the full name of the first child?', answer: 'Louie Lawson'},
-    { question: 'What is Louie Lawson’s date of birth?', answer: '29/03/2013' },
-    { question: 'Do both participants have Parental Responsibility for Louie Lawson?', answer: 'Yes' },
-    { question: 'Do Lewis Lawson and Gemma Dickson have a second child?', answer: 'Yes' },
-    { question: 'What is the full name of the second child?', answer: 'Rikki Lawson' },
-    { question: 'What is Rikki Lawson’s date of birth?', answer: '01/04/2015'},
+    { question: 'Submitted At', answer: data.submittedDate},
+    { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
+    { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
+    { question: 'Name of the mediator', answer: data.clientData.mediatorName },
+    { question: 'Date of the session', answer: data.clientData.sessionDate },
+    { question: 'Type of case.', answer: data.clientData.caseType},
+    { question: 'Please specify location', answer: data.clientData.specifyLocation },
+    { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
+    { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
+    { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
+    { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
+    { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
+    { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+    { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+    { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
+    { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
     { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
     { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
     { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
@@ -1072,43 +1215,35 @@ async function generateMediationSessionRecord(data) {
     { question: 'Please specify location', answer: 'Online' },
   ];
   
-  
-  const startX = 50;
-  let currentY = pageHeight - 50;
-  const questionWidth = 500; // Adjust the width as needed
+      
+      const startX = 50;
+      let currentY = pageHeight - 50;
+      const questionWidth = 500; // Adjust the width as needed
 
 
-  for (const { question, answer } of questionsAndAnswers) {
+      for (const { question, answer } of questionsAndAnswers) {
 
-    const numberOfLines = getLinesNumber(question)
+      
 
-    const wrappedQuestion = pages[pageNumber].drawText(`${question}`, {
-      x: startX,
-      y: currentY,
-      font: BoldFont ,
-      maxWidth: questionWidth,
-      lineHeight: 25, // Adjust as needed for spacing
-    });
-    // Check if wrappedQuestion is defined before accessing its height property
-    // const questionHeight = wrappedQuestion ? (wrappedQuestion.height || 0) : 0;
-    currentY -=  (17 * numberOfLines) + 32;
-    // console.log("Question Height", questionHeight)
+        const validQuestion = question || 'N/A'; 
+        const validAnswer = answer  ||  'N/A'; 
+      
+        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+      
 
-    if (answer) {
-      const wrappedAnswer = pages[pageNumber].drawText(`${answer}`, {
-        x: startX,
-        y: currentY,
-        font: font,
-        maxWidth: questionWidth,
-        lineHeight: 25,
-      });
+      // Additional space between Question and Answer
+        const gapBetweenQA = 15;
+        currentY -= gapBetweenQA;
 
-      const numOfAnswerLines = getLinesNumber(answer)
+      if (answer) {
+        currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
+      }
 
-      // Check if wrappedAnswer is defined before accessing its height property
-      currentY -= (17 * numOfAnswerLines) + 30;
-    } 
+      // Additional space between this Q&A and the next
+      const gapBetweenBlocks = 20;
+      currentY -= gapBetweenBlocks;
 
+   
 
     // Move to the next page if necessary
     if (currentY <= 100) {
@@ -1126,7 +1261,6 @@ async function generateMediationSessionRecord(data) {
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
 }
-
 // const generateAndSavePDF = async (MIAM2C1data) => {
 //   try {
 //     const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-2-temp.pdf');
@@ -1199,6 +1333,32 @@ async function generateMediationSessionRecord(data) {
 //     throw error;
 //   }
 // };
+
+
+function getLinesNumber(text) {
+  // Check if 'text' is defined and not null before accessing its 'length' property
+  if (text && typeof text === 'string') {
+    return text.length / 35;
+  } else {
+    // Handle the case where 'text' is undefined or not a string
+    return 0; // Or some default value or error handling logic
+  }
+}
+
+const drawTextBlock = (page, text, startX, startY, font, maxWidth, lineHeight) => {
+  if (typeof text === 'undefined' || text === null) {
+    return startY; // If text is not provided, don't draw and return the original Y-coordinate.
+  }
+  page.drawText(text, {
+    x: startX,
+    y: startY,
+    font,
+    maxWidth,
+    lineHeight,
+  });
+  const numberOfLines = getLinesNumber(text);
+  return startY - (lineHeight * numberOfLines);
+};
 
 
 
