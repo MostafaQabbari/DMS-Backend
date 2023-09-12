@@ -165,6 +165,10 @@ router.patch("/update-company/:id", authMiddleware, async (req, res, next) => {
     }
 
     // Update the company data
+    const existingCompany = await Company.findOne({ email: req.body.email });
+    if (existingCompany && existingCompany._id.toString() !== req.params.id.toString()) {
+        return res.status(400).json({ "Err": "this mail has been used before ..." });
+    }
     const updatedCompany = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
 
     res.status(200).json({ company: updatedCompany });

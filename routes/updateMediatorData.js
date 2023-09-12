@@ -19,6 +19,7 @@ router.get("/get-mediator-details/:id", authMiddleware, async (req, res) => {
                 if (mediatorsIDs[i] == req.params.id) {
                     medFound=true
                     const med = await mediator.findById(mediatorsIDs[i]);
+                  
                     res.status(200).json({
                         firstName: med.firstName, lastName: med.lastName, email: med.email
                     })
@@ -52,6 +53,10 @@ router.patch("/update-mediator-data/:id", authMiddleware, async (req, res) => {
             for (let i = 0; i < mediatorsIDs.length; i++) {
 
                 if (mediatorsIDs[i] == req.params.id) {
+                    const existingMediator = await mediator.findOne({ email: req.body.email });
+                    if (existingMediator && existingMediator._id.toString() !== req.params.id.toString()) {
+                        return res.status(400).json({ "Err": "this mail has been used before ..." });
+                    }
                     medFound=true
                   await mediator.findByIdAndUpdate(req.params.id, mediatorData);
                     res.status(200).json({ "message": "mediator data has been updated ... " })
