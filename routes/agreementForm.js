@@ -257,10 +257,13 @@ router.post("/sendAgreementForm/:id", authMiddleware, async (req, res) => {
     companyDetails.email
 
     caseID
-   
+    {targetClient  :  C1/C2}
+    📢patch("/replaceMediator/:id" ,  { "mediatorMail" : " "}
+    📢.post("/sendAgreementForm/:id",  {targetClient  :  C1|C2}
    */
     try {
-        let clientDetials1 = {}, clientDetials2 = {}, companyDetails = {}, caseID = ""
+        let clientDetials1 = {}, clientDetials2 = {}, companyDetails = {}, caseID = "";
+        let targetClient=req.body.targetClient
         if (req.userRole == "company") {
 
             let cases = await Company.findById(req.user._id).populate('cases');
@@ -283,10 +286,22 @@ router.post("/sendAgreementForm/:id", authMiddleware, async (req, res) => {
                 //clientDetials2.email = "abdosamir023023@gmail.com"
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
-                caseID = req.params.id
+                caseID = req.params.id;
 
-                sendAgreementFormC1(clientDetials1, companyDetails, caseID)
-                sendAgreementFormC2(clientDetials2, companyDetails, caseID)
+                if(targetClient=="C1")
+                {
+
+                    sendAgreementFormC1(clientDetials1, companyDetails, caseID)
+                }
+               else if(targetClient=="C2")
+                {
+
+                    sendAgreementFormC2(clientDetials2, companyDetails, caseID)
+                }
+                else{
+                    res.status(400).json({ 'meesage': "please select target client" })
+                }
+
 
                 res.status(200).json({ 'meesage': "Agreement form Mail has been sent" })
             }

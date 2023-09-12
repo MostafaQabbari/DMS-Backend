@@ -31,7 +31,10 @@ const cim = require('./routes/porperty&CIMmail');
 const courtForm = require ('./routes/sendCourtForm');
 const caseLog= require('./routes/caseLog');
 const compStatistics = require('./routes/getCompStatistics')
-const confirmationMail=require('./routes/confirmationMail')
+const confirmationMail=require('./routes/confirmationMail');
+
+const replaceMediator = require('./routes/replaceMediator');
+const updateMediatorData= require("./routes/updateMediatorData")
 
 
 
@@ -86,6 +89,9 @@ app.use(caseLog)
 
 app.use(compStatistics)
 app.use(confirmationMail)
+
+app.use(replaceMediator)
+app.use(updateMediatorData)
 
 
 
