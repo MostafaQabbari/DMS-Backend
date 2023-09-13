@@ -67,7 +67,7 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
 
 
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
     }
@@ -340,7 +340,7 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
       return res.status(400).json({ message: 'All fields are required!' });
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
     // Check if the password meets the minimum requirements
     if (!passwordRegex.test(password)) {
@@ -440,7 +440,7 @@ router.post("/reset-password", async (req, res, next) => {
     const { resetToken, newPassword } = req.body;
 
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
     // Check if the password meets the minimum requirements
     if (!passwordRegex.test(newPassword)) {
@@ -642,7 +642,7 @@ function generateResetToken() {
 //       }
 
 
-//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
 //       // Check if the password meets the minimum requirements
 //       if (!passwordRegex.test(password)) {
@@ -745,7 +745,7 @@ function generateResetToken() {
 //         return res.status(400).json({ message: "User already exists" });
 //       }
 
-//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+//       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 //       if (!passwordRegex.test(password)) {
 //         return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
 //       }
