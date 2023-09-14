@@ -360,7 +360,7 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
     // Update the company's mediators array with the new mediator ID
     await Company.findByIdAndUpdate(companyId, { $push: { mediators: mediator._id } });
-    mediator.email="abdo.samir.7719@gmail.com"
+  //  mediator.email="abdo.samir.7719@gmail.com"
     sendAddingMediatorPassword(mediator.email, mediator._id)
 
     res.status(201).json({ message: 'Mediator added successfully!' });
@@ -570,9 +570,9 @@ function sendAddingMediatorPassword(email, medID) {
     from: config.companyEmail, // your email address
     to: email, // recipient's email address
     text: `Welcome to DMS. Please click the link below to add your password:
-    ${config.baseUrlResetPassword}?id=${medID}`,
+    ${config.baseUrlCreatePassword}?id=${medID}`,
     html: `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
-    <a href="${config.baseUrlResetPassword}?id=${medID}">Add Password</a>`,
+    <a href="${config.baseUrlCreatePassword}?id=${medID}">Add Password</a>`,
   };
 
 
