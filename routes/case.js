@@ -359,17 +359,21 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
   let tempDate
 
   try {
+    let caseMediator ;
+    let mediatorName;
     if (req.userRole == "company") {
-
       let cases = await Company.findById(req.user._id).populate('cases');
       for (let i = 0; i < cases.cases.length; i++) {
-
+         caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+     //    console.log(caseMediator)
+         mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
-          closed:cases.cases[i].closed
+          closed:cases.cases[i].closed,
+          mediatorName
         }
 
         casesList.push(resposedCaseObj)
@@ -386,13 +390,15 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       let cases = await mediator.findById(req.user._id).populate('cases');
 
       for (let i = 0; i < cases.cases.length; i++) {
-
+        caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+        mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
-          closed:cases.cases[i].closed
+          closed:cases.cases[i].closed,
+          mediatorName
         }
 
         casesList.push(resposedCaseObj)

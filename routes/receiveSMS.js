@@ -36,23 +36,23 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
        result.forEach(message => {
          const messageBody = {
            id: message.sid,
-           // from: message.direction === 'outbound-api' ? 'Company' : 'Client',
-           // to: message.direction === 'outbound-api' ? 'Client' : 'Company',
+            from: message.direction === 'outbound-api' ? 'Company' : 'Client',
+           to: message.direction === 'outbound-api' ? 'Client' : 'Company',
            body: message.body,
            time: message.dateSent,
            status: message.status,
            direction : message.direction,
          };
-         if(message.direction  === 'outbound-api')
-         {
-           messageBody.from ='Company';
-           messageBody.to ='Client'
-         }
-         if(message.direction  === 'inbound')
-         {
-           messageBody.from ='Client';
-           messageBody.to ='Company'
-         }
+        //  if(message.direction  === 'outbound-api')
+        //  {
+        //    messageBody.from ='Company';
+        //    messageBody.to ='Client'
+        //  }
+        //  if(message.direction  === 'inbound')
+        //  {
+        //    messageBody.from ='Client';
+        //    messageBody.to ='Company'
+        //  }
    
          messages.push(messageBody);
         //  console.log(messageBody);

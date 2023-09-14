@@ -288,10 +288,11 @@ const validationMail = function (x) {
 
 /*
 
-/sendM1_sms_C1/:id
 /sendM1_mail_C1/:id
 /sendM1_mail_C2/:id
+
 /sendM1_sms_C2/:id
+/sendM1_sms_C1/:id
 
 /MailC2Invitaion/:id   C2mail=>in the body  
 /Resend_MailC2Invitaion/:id
