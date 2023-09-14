@@ -28,15 +28,15 @@ router.get("/get-mediator-details/:id", authMiddleware, async (req, res) => {
             if(!medFound)
             {
                 
-                    res.status(400).json({ "Err": "not found mediator" })
+                    res.status(400).json({ message: "not found mediator" })
                 
             }
         }
         else {
-            res.status(400).json({ "Err": "error with account role" })
+            res.status(400).json({ message: "error with account role" })
         }
     } catch (err) {
-        res.status(400).json({ "Err": err.message })
+        res.status(400).json({ message: err.message })
     }
 
 
@@ -55,10 +55,12 @@ router.patch("/update-mediator-data/:id", authMiddleware, async (req, res) => {
                 if (mediatorsIDs[i] == req.params.id) {
                     const existingMediator = await mediator.findOne({ email: req.body.email });
                     if (existingMediator && existingMediator._id.toString() !== req.params.id.toString()) {
-                        return res.status(400).json({ "Err": "this mail has been used before ..." });
+                        return res.status(400).json({ message: "this mail has been used before ..." });
                     }
                     medFound=true
-                  await mediator.findByIdAndUpdate(req.params.id, mediatorData);
+                  await mediator.findByIdAndUpdate(req.params.id, {
+                    firstName:req.body.firstName, lastName:req.body.lastName ,email:req.body.email
+                  });
                     res.status(200).json({ "message": "mediator data has been updated ... " })
                 }
            
@@ -67,15 +69,15 @@ router.patch("/update-mediator-data/:id", authMiddleware, async (req, res) => {
             if(!medFound)
             {
                 
-                    res.status(400).json({ "Err": "not found mediator" })
+                    res.status(400).json({ message: "not found mediator" })
                 
             }
         }
         else {
-            res.status(400).json({ "Err": "error with account role" })
+            res.status(400).json({ message: "error with account role" })
         }
     } catch (err) {
-        res.status(400).json({ "Err": err.message })
+        res.status(400).json({ message: err.message })
     }
 
 
@@ -108,16 +110,16 @@ router.delete("/remove-mediator/:id", authMiddleware, async (req, res) => {
             if(!medFound)
             {
                 
-                    res.status(400).json({ "Err": "not found mediator" })
+                    res.status(400).json({ message: "not found mediator" })
                 
             }
      
         }
         else {
-            res.status(400).json({ "Err": "error with account role" })
+            res.status(400).json({ message: "error with account role" })
         }
     } catch (err) {
-        res.status(400).json({ "Err": err.message })
+        res.status(400).json({ message: err.message })
     }
 
 

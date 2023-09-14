@@ -157,21 +157,34 @@ router.patch("/update-company/:id", authMiddleware, async (req, res, next) => {
   try {
     const companyId = req.params.id;
     const updateData = req.body;
-
+/*
+ 📢 patch("/update-company/:id  => {companyName , email , password}
+*/
     // Check if the company exists
     const company = await Company.findById(companyId);
     if (!company) {
-      return res.status(404).json({ message: "Company not found" });
+       res.status(404).json({ message: "Company not found" });
     }
+
 
     // Update the company data
     const existingCompany = await Company.findOne({ email: req.body.email });
     if (existingCompany && existingCompany._id.toString() !== req.params.id.toString()) {
-        return res.status(400).json({ "Err": "this mail has been used before ..." });
+         res.status(400).json({ message: "this mail has been used before ..." });
     }
-    const updatedCompany = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!passwordRegex.test(req.body.password)) {
+       res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    }
+    else{
+     const updatedCompany = await Company.findByIdAndUpdate(companyId, {
+      companyName:req.body.companyName,
+      email:req.body.email,
+      password:req.body.password
 
-    res.status(200).json({ company: updatedCompany });
+     }, { new: true })
+      res.status(200).json({ company: updatedCompany });
+    }
   } catch (error) {
     next(error);
   }

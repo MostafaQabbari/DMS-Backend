@@ -22,10 +22,10 @@ router.get("/getMediators", authMiddleware, async (req, res) => {
 
         }
         else {
-            res.status(400).json({ "Err": "error with account role" })
+            res.status(400).json({ message: "error with account role" })
         }
     } catch (err) {
-        res.status(400).json({ "Err": err.message })
+        res.status(400).json({ message: err.message })
     }
 
 
