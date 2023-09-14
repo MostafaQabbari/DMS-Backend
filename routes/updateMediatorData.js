@@ -125,6 +125,9 @@ router.delete("/remove-mediator/:id", authMiddleware, async (req, res) => {
 
 })
 
+
+
+
 /*
 .get("/get-mediator-details/:id"
 .patch("/update-mediator-data/:id"  =  >    // {firstName ,lastName ,email}

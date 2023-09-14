@@ -42,6 +42,8 @@ const upload = multer({
 }).single("companyLogo");
 
 
+
+
 router.post("/add-company", authMiddleware, async (req, res, next) => {
   try {
     // Code for authorization, file upload, and data extraction
@@ -325,7 +327,7 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
   try {
 
-    const { firstName, lastName, email, password, phoneNumber } = req.body;
+    const { firstName, lastName, email, phoneNumber } = req.body;
 
 
     const existingUser = await Mediator.findOne({ email });
@@ -336,19 +338,20 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
 
     // Validate input fields
-    if (!firstName || !lastName || !email || !password || !phoneNumber) {
+    if (!firstName || !lastName || !email || !phoneNumber) {
       return res.status(400).json({ message: 'All fields are required!' });
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+ //   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
 
     // Check if the password meets the minimum requirements
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
-    }
+    // if (!passwordRegex.test(password)) {
+    //   return res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+    // }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const mediator = new Mediator({ firstName, lastName, email, password: hashedPassword, phoneNumber, companyId: req.user._id });
+   // const hashedPassword = await bcrypt.hash(password, 10);
+   const tempDefaultPassword = "Qr$7nAe*9pGm@5Kt#1oWlZyXv3Bq#8rN2hIeLp@6mOuTgYwVc"
+    const mediator = new Mediator({ firstName, lastName, email, password: tempDefaultPassword, phoneNumber, companyId: req.user._id });
 
     await mediator.save();
 
@@ -356,6 +359,10 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 
     // Update the company's mediators array with the new mediator ID
     await Company.findByIdAndUpdate(companyId, { $push: { mediators: mediator._id } });
+
+
+
+
 
 
     res.status(201).json({ message: 'Mediator added successfully!' });
@@ -522,6 +529,7 @@ function sendResetPasswordEmail(email, resetToken) {
     }
   });
 }
+
 
 
 
