@@ -11,6 +11,7 @@ module.exports = {
   companyEmail:"abdo.samir.7719@gmail.com",
   appPassWord:"evhxpzdevqnrrtpa",
   GOOGLE_APPLICATION_CREDENTIALS:"/DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json",
+  baseUrlResetPassword:"https://direct-mediation-services-black.vercel.app/reset-password",
   
  
   MIAM_PART_1:"MIAM_PART_1",
