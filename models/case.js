@@ -94,7 +94,6 @@ const caseSchema = new Schema({
     otherPartyCity:  { type: String },
     otherPartyCountry: { type: String },
     otherPartyPostalCode: { type: String },
-
   },
   MIAMDates: {
     MIAM_C1_Date: { type: String },

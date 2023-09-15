@@ -663,7 +663,7 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
 
 
 router.patch("/addMediationRecord/:id", async (req, res) => {
-  // try {
+  try {
 
 
   let mediationRecord = req.body;
@@ -672,7 +672,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
   await createMediationRecordUpload(mediationRecord  , req.params.id);
 
-  // // Call the function
+  // Call the function
   // generateMediationSessionRecord(mediationRecord)
   // .then(pdfBytes => {
   // fs.writeFileSync('mediation_session_record.pdf', pdfBytes);
@@ -690,134 +690,134 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //   .catch(error => {
   //     console.error('Error:', error);
   //   });
-  //   mediationRecord.submittedDate = getNowFormattedDate();
-  //   const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
-  //   let compData = {}
-  //   compData.name = currentCompData.connectionData.companyID.companyName;
-  //   /*
-  //           reciever = mediationRecord.NextSteps.mediatorEmail;
-  //           reciever = mediationRecord.NextSteps.clientTwoEmail;
-  //           reciever = mediationRecord.NextSteps.clientOneEmail;
-  //   */
+    mediationRecord.submittedDate = getNowFormattedDate();
+    const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
+    let compData = {}
+    compData.name = currentCompData.connectionData.companyID.companyName;
+    /*
+            reciever = mediationRecord.NextSteps.mediatorEmail;
+            reciever = mediationRecord.NextSteps.clientTwoEmail;
+            reciever = mediationRecord.NextSteps.clientOneEmail;
+    */
 
-  // //  console.log("🤦‍♂️Med", mediationRecord.NextSteps.mediatorEmail)
-  //   sendMediationSession(mediationRecord.NextSteps.mediatorEmail, compData, mediationRecord)
+  //  console.log("🤦‍♂️Med", mediationRecord.NextSteps.mediatorEmail)
+    sendMediationSession(mediationRecord.NextSteps.mediatorEmail, compData, mediationRecord)
 
-  //  // console.log("😒C1", mediationRecord.NextSteps.clientOneEmail)
-  //   sendMediationSession(mediationRecord.NextSteps.clientOneEmail, compData, mediationRecord)
+   // console.log("😒C1", mediationRecord.NextSteps.clientOneEmail)
+    sendMediationSession(mediationRecord.NextSteps.clientOneEmail, compData, mediationRecord)
 
-  //   if (mediationRecord.NextSteps.isTwoClientWantCopy == 'Yes') {
-  //  //     console.log("🤦‍♂️C2", mediationRecord.NextSteps.clientTwoEmail)
-  //       sendMediationSession(mediationRecord.NextSteps.clientTwoEmail, compData, mediationRecord)
-  //   }
-
-
-
-
-
-  //   if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
-
-  //       await Case.findByIdAndUpdate(req.params.id, {
-  //           $inc: { mediationSessionsNo: 1 }
-  //       })
-  //       const updatedCase = await Case.findById(req.params.id);
-  //       console.log(updatedCase.mediationSessionsNo)
-
-  //       let statusRemider = {
-  //           reminderID: `${updatedCase._id}-statusRemider`,
-  //           reminderTitle: `${updatedCase.Reference}-Mediation Session ${updatedCase.mediationSessionsNo}`,
-  //           startDate: dateNow()
-  //       }
-
-  //       await Case.findByIdAndUpdate(req.params.id, {
-  //           $push: { mediationRecords: StringfyData },
-  //           $set: {
-  //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Mediation Session ${updatedCase.mediationSessionsNo}` ,mediatorOfTheCase
-  //       })
+    if (mediationRecord.NextSteps.isTwoClientWantCopy == 'Yes') {
+   //     console.log("🤦‍♂️C2", mediationRecord.NextSteps.clientTwoEmail)
+        sendMediationSession(mediationRecord.NextSteps.clientTwoEmail, compData, mediationRecord)
+    }
 
 
 
 
-  //   }
 
-  //   else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-  //       req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
-  //   ) {
+    if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
 
-  //       let statusRemider = {
-  //           reminderID: `${updatedCase._id}-statusRemider`,
-  //           reminderTitle: `${updatedCase.Reference}-Broken`,
-  //           startDate: dateNow()
-  //       }
+        await Case.findByIdAndUpdate(req.params.id, {
+            $inc: { mediationSessionsNo: 1 }
+        })
+        const updatedCase = await Case.findById(req.params.id);
+        console.log(updatedCase.mediationSessionsNo)
 
-  //       await Case.findByIdAndUpdate(req.params.id, {
-  //           $push: { mediationRecords: StringfyData },
-  //           $set: {
-  //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Broken`, closed: true,mediatorOfTheCase
-  //       })
+        let statusRemider = {
+            reminderID: `${updatedCase._id}-statusRemider`,
+            reminderTitle: `${updatedCase.Reference}-Mediation Session ${updatedCase.mediationSessionsNo}`,
+            startDate: dateNow()
+        }
 
-  //   }
-
-
-  //   else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-  //       req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
-  //   ) {
-
-  //       let statusRemider = {
-  //           reminderID: `${updatedCase._id}-statusRemider`,
-  //           reminderTitle: `${updatedCase.Reference}-Agreed`,
-  //           startDate: dateNow()
-  //       }
-
-  //       await Case.findByIdAndUpdate(req.params.id, {
-  //           $push: { mediationRecords: StringfyData },
-  //           $set: {
-  //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Agreed`, closed: true,mediatorOfTheCase
-  //       })
-
-  //   }
-  //   else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-  //       req.body.NextSteps.mediationFinishReason == "C - Successful - Parenting plan to be written" ||
-  //       req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
-  //       req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
-  //   ) {
-
-  //       let statusRemider = {
-  //           reminderID: `${updatedCase._id}-statusRemider`,
-  //           reminderTitle: `${updatedCase.Reference}-Successful`,
-  //           startDate: dateNow()
-  //       }
-
-  //       await Case.findByIdAndUpdate(req.params.id, {
-  //           $push: { mediationRecords: StringfyData },
-  //           $set: {
-  //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Successful`, closed: true,mediatorOfTheCase
-  //       })
-
-  //   }
-
-
-  //   let updateCase = await Case.findById(req.params.id);
-  //   let MedSession_Statistics = statisticFunctions.MedSession_Statistics(mediationRecord, updateCase);
-  //   const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
-  //   const targetCompID = targetComp.connectionData.companyID._id;
-  //   const stringfyStatiscs = JSON.stringify(MedSession_Statistics)
-  //   await Company.findByIdAndUpdate(targetCompID, {
-  //       $push: { statistics: stringfyStatiscs }
-  //   })
-
-  //   res.status(200).json({ "message": "Mediation session record has been added" })
+        await Case.findByIdAndUpdate(req.params.id, {
+            $push: { mediationRecords: StringfyData },
+            $set: {
+                'Reminders.statusRemider': statusRemider
+            }, status: `Mediation Session ${updatedCase.mediationSessionsNo}` ,mediatorOfTheCase
+        })
 
 
 
 
-  // } catch (err) {
-  //     res.status(400).json(err.message)
-  // }
+    }
+
+    else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+        req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
+    ) {
+
+        let statusRemider = {
+            reminderID: `${updatedCase._id}-statusRemider`,
+            reminderTitle: `${updatedCase.Reference}-Broken`,
+            startDate: dateNow()
+        }
+
+        await Case.findByIdAndUpdate(req.params.id, {
+            $push: { mediationRecords: StringfyData },
+            $set: {
+                'Reminders.statusRemider': statusRemider
+            }, status: `Broken`, closed: true,mediatorOfTheCase
+        })
+
+    }
+
+
+    else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+        req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
+    ) {
+
+        let statusRemider = {
+            reminderID: `${updatedCase._id}-statusRemider`,
+            reminderTitle: `${updatedCase.Reference}-Agreed`,
+            startDate: dateNow()
+        }
+
+        await Case.findByIdAndUpdate(req.params.id, {
+            $push: { mediationRecords: StringfyData },
+            $set: {
+                'Reminders.statusRemider': statusRemider
+            }, status: `Agreed`, closed: true,mediatorOfTheCase
+        })
+
+    }
+    else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
+        req.body.NextSteps.mediationFinishReason == "C - Successful - Parenting plan to be written" ||
+        req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
+        req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
+    ) {
+
+        let statusRemider = {
+            reminderID: `${updatedCase._id}-statusRemider`,
+            reminderTitle: `${updatedCase.Reference}-Successful`,
+            startDate: dateNow()
+        }
+
+        await Case.findByIdAndUpdate(req.params.id, {
+            $push: { mediationRecords: StringfyData },
+            $set: {
+                'Reminders.statusRemider': statusRemider
+            }, status: `Successful`, closed: true,mediatorOfTheCase
+        })
+
+    }
+
+
+    let updateCase = await Case.findById(req.params.id);
+    let MedSession_Statistics = statisticFunctions.MedSession_Statistics(mediationRecord, updateCase);
+    const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
+    const targetCompID = targetComp.connectionData.companyID._id;
+    const stringfyStatiscs = JSON.stringify(MedSession_Statistics)
+    await Company.findByIdAndUpdate(targetCompID, {
+        $push: { statistics: stringfyStatiscs }
+    })
+
+    res.status(200).json({ "message": "Mediation session record has been added" })
+
+
+
+
+  } catch (err) {
+      res.status(400).json(err.message)
+  }
 
 
 });

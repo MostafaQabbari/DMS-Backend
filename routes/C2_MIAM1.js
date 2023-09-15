@@ -61,7 +61,8 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
     let currentCase = await Case.findById(req.params.id);
     // console.log(currentCase)
     
-    let client2data = req.body
+    let client2data = req.body;
+    let majorDataC2FromM1 = req.body
     let Reference = `${req.body.otherParty.otherPartySurname} & ${req.body.personalContactAndCaseInfo.surName}`;
     let MajorDataC2 = {
       fName: req.body.personalContactAndCaseInfo.firstName,
