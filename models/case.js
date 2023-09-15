@@ -28,6 +28,7 @@ const caseSchema = new Schema({
     }
   },
 
+
   caseTypeC1: { type: String },
   caseTypeC2: { type: String },
   passporting_C1: { type: String },
@@ -80,6 +81,20 @@ const caseSchema = new Schema({
     sName: { type: String },
     mail: { type: String },
     phoneNumber: { type: String }
+  },
+  mediatorOfTheCase:  { type: String },
+  majorDataC2FromM1:{
+    otherPartyFirstName:  { type: String },
+    otherPartySurname: { type: String },
+    otherPartyDateOfBirth:  { type: String },
+    otherPartyEmail:  { type: String },
+    otherPartyPhone:  { type: String },
+    otherPartyAddressKnown:  { type: String },
+    otherPartyStreet:  { type: String },
+    otherPartyCity:  { type: String },
+    otherPartyCountry: { type: String },
+    otherPartyPostalCode: { type: String },
+
   },
   MIAMDates: {
     MIAM_C1_Date: { type: String },

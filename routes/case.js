@@ -204,6 +204,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
+      const mediatorOfTheCase = `${Themediator.firstName} ${Themediator.lastName}`
 
       let case_type;
       if (caseType == "private") {
@@ -260,6 +261,7 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
             status: `New Case`,
             caseTypeC1: case_type,
             Reference,
+            mediatorOfTheCase,
             MajorDataC1: {
               fName: firstName,
               sName: surName,
@@ -364,16 +366,16 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
     if (req.userRole == "company") {
       let cases = await Company.findById(req.user._id).populate('cases');
       for (let i = 0; i < cases.cases.length; i++) {
-         caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+     //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
      //    console.log(caseMediator)
-         mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
+      //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
           closed:cases.cases[i].closed,
-          mediatorName
+          mediatorName:cases.cases[i].mediatorOfTheCase
         }
 
         casesList.push(resposedCaseObj)
@@ -398,7 +400,7 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
           closed:cases.cases[i].closed,
-          mediatorName
+          mediatorName:cases.cases[i].mediatorOfTheCase
         }
 
         casesList.push(resposedCaseObj)

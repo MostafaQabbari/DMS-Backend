@@ -26,7 +26,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
         let MIAM2mediator = req.body;
         let MIAM_C2_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
-
+        let mediatorOfTheCase =  MIAM2mediator.mediationDetails.MediatorName
         if (caseSuitable == "Yes") {
 
             let MajorDataC2 = {
@@ -57,7 +57,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1sName,
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C2_Date': MIAM_C2_Date,
-                    }, MIAM2C2: stringfyMIAM2Data, MIAM2C2AddedData: true, status: "MIAM Part 2-C2", Reference
+                    }, MIAM2C2: stringfyMIAM2Data, MIAM2C2AddedData: true, status: "MIAM Part 2-C2", Reference ,mediatorOfTheCase
                 })
                 const miam1c1 = JSON.parse(updateCase.client1data)
                 const miam1c2 = JSON.parse(updateCase.client2data)
@@ -101,7 +101,7 @@ router.patch("/addC2MIAM2/:id", async (req, res) => {
                         'MajorDataC1.sName': MajorDataC1sName,
                     }, MIAM2C2: stringfyMIAM2Data,
                     MIAM2C2AddedData: true,
-                    status: "Not suitable for mediation", Reference, closed: true
+                    status: "Not suitable for mediation", Reference, closed: true,mediatorOfTheCase
                 })
 
                 const miam1c1 = JSON.parse(updateCase.client1data)

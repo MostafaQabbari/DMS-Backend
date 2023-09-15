@@ -86,7 +86,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
         let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
 
-
+       let mediatorOfTheCase =  MIAM2mediator.mediationDetails.MediatorName
         
 
         if (caseSuitable == "Yes") {
@@ -138,7 +138,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C1_Date': MIAM_C1_Date, 
 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
+                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference,mediatorOfTheCase
                   
                 })
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
@@ -190,7 +190,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'MajorDataC2.sName': MajorDataC2sName
                     }, MIAM2mediator: stringfyMIAM2Data,
                     MIAM2AddedData: true,
-                    status: "Not suitable for mediation"
+                    status: "Not suitable for mediation" ,mediatorOfTheCase
                 })
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
             

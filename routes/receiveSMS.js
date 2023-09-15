@@ -32,6 +32,7 @@ const getMessgaes = async function(from , to ,twillioInfo ,res){
        to: from 
      })
    ]).then(results => {
+  //📢📢📢📢  console.log({results})
      results.forEach(result => {
        result.forEach(message => {
          const messageBody = {
