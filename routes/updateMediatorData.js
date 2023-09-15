@@ -97,7 +97,8 @@ router.delete("/remove-mediator/:id", authMiddleware, async (req, res) => {
                         $pull: { mediators: req.params.id }
                     })
                   
-                        await mediator.findByIdAndRemove(req.params.id);
+                       // await mediator.findByIdAndRemove(req.params.id);
+                       await mediator.findByIdAndUpdate(req.params.id ,{removed:true});
 
                         res.status(200).json({ "message": "mediator data has been removed ... " })
                     

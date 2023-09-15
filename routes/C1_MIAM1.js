@@ -105,7 +105,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
     mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-
+    mediatorData.name="xxx"
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
@@ -126,11 +126,12 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
  
 
-      await Case.findByIdAndUpdate(req.params.id, {
+      const updatedCaseDetails= await Case.findByIdAndUpdate(req.params.id, {
         client1data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
         }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
       })
+      console.log(updatedCaseDetails)
       const updatedCase = await Case.findById(req.params.id);
 
       const parsedClientData = JSON.parse(updatedCase.client1data)
