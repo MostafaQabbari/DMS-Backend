@@ -667,6 +667,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
 
   let mediationRecord = req.body;
+  let mediatorOfTheCase = req.body.clientData.mediatorName
   const StringfyData = JSON.stringify(mediationRecord);
 
   await createMediationRecordUpload(mediationRecord  , req.params.id);
@@ -732,7 +733,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //           $push: { mediationRecords: StringfyData },
   //           $set: {
   //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Mediation Session ${updatedCase.mediationSessionsNo}`
+  //           }, status: `Mediation Session ${updatedCase.mediationSessionsNo}` ,mediatorOfTheCase
   //       })
 
 
@@ -754,7 +755,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //           $push: { mediationRecords: StringfyData },
   //           $set: {
   //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Broken`, closed: true
+  //           }, status: `Broken`, closed: true,mediatorOfTheCase
   //       })
 
   //   }
@@ -774,7 +775,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //           $push: { mediationRecords: StringfyData },
   //           $set: {
   //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Agreed`, closed: true
+  //           }, status: `Agreed`, closed: true,mediatorOfTheCase
   //       })
 
   //   }
@@ -794,7 +795,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //           $push: { mediationRecords: StringfyData },
   //           $set: {
   //               'Reminders.statusRemider': statusRemider
-  //           }, status: `Successful`, closed: true
+  //           }, status: `Successful`, closed: true,mediatorOfTheCase
   //       })
 
   //   }
