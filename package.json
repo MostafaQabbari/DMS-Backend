@@ -45,6 +45,7 @@
   "devDependencies": {
     "jasmine": "^5.0.0",
     "jasmine-spec-reporter": "^7.0.0",
+    "nodemon": "^3.0.1",
     "supertest": "^6.3.3"
   }
 }
