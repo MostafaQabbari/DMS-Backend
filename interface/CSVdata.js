@@ -71,7 +71,8 @@ module.exports = function airTableData(data) {
 
                 marriageDate: data["What was the date of your marriage/civil partnership?"]
             },
-            children: [{
+            children: [
+                {
                 "Child One": {
                     firstChildFirstName: data["Name Child 1"],
                     firstChildSurName: data["Surname Child 1"],
@@ -83,7 +84,6 @@ module.exports = function airTableData(data) {
                     firstChildResponsibility: data["Child 1 parental responsibility?"],
                     secondChildCheck: data["Is there a 2nd child?"]
                 }},
-
 
              { "Child Two": {
                     secondChildFirstName: data["Name Child 2"],

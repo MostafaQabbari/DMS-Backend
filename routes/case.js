@@ -10,8 +10,114 @@ const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
 
+const sendSMS_MIAM1 = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
 
+  /*
+    twillioInfo={twillioSID , twillioToken , twillioNumber}
+   companyData ={companyName }
+   clientData = {clientName ,clientNumber}
+   messageBodyinfo = {formtype,formUrl}
 
+  */
+
+  
+  const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+  const phoneNumber = twillioInfo.twillioNumber;
+
+  const messageBody = `Dear ${clientData.clientName}  ,
+  Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
+  we need you to complete an online ${messageBodyinfo.formtype} form records basic information about you and your situation.
+  Please click on the link   ${messageBodyinfo.formUrl} ,
+  Best Regards ${companyData.companyName} ` 
+  x.messages.create({
+      body: messageBody,
+      from: phoneNumber,
+      to: clientData.clientNumber
+  }).then(message => {
+      console.log({ message: "form message sent succesfully", messageID: message.sid });
+      res.status(200).json({ message: "MIAM 1 link has been sent " })
+  }
+  ).catch((err) => {
+
+      console.log(err.message)
+      res.status(400).json({ message:err.message})
+  });
+
+}
+const sendSMS_Passporting = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
+
+  /*
+    twillioInfo={twillioSID , twillioToken , twillioNumber}
+   companyData ={companyName }
+   clientData = {clientName ,clientNumber}
+   messageBodyinfo = {formtype,formUrl}
+  */
+
+  
+  const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+  const phoneNumber = twillioInfo.twillioNumber;
+
+  const messageBody = `Dear ${clientData.clientName}  ,
+  Thank you for contacting us regarding your Legal Aid application for family mediation.
+    To start your application please follow the link  ${messageBodyinfo.formtype} form records basic information about you and your situation.
+  Please click on the link   ${messageBodyinfo.formUrl} Applications are only considered via this route.,
+  Best Regards ${companyData.companyName} ` 
+  x.messages.create({
+      body: messageBody,
+      from: phoneNumber,
+      to: clientData.clientNumber
+  }).then(message => {
+      console.log({ message: "form message sent succesfully", messageID: message.sid });
+      res.status(200).json({ message: "Passporting form link has been sent " })
+  }
+  ).catch((err) => {
+
+      console.log(err.message)
+      res.status(400).json({ message:err.message})
+  });
+
+}
+const sendSMS_LowIncome = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
+
+  /*
+    twillioInfo={twillioSID , twillioToken , twillioNumber}
+   companyData ={companyName }
+   clientData = {clientName ,clientNumber}
+   messageBodyinfo = {formtype,formUrl}
+  /*
+
+   companyData ={companyName , email}
+   clientData = {clientName ,email}
+   messageBodyinfo = {formUrl}
+
+  
+
+  */
+
+  
+  const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+  const phoneNumber = twillioInfo.twillioNumber;
+
+  const messageBody = ` Dear ${clientData.clientName}  ,
+  Thank you for contacting us regarding your Legal Aid application for family mediation.
+    To start your application please follow the link  ${messageBodyinfo.formtype} form records basic information about you and your situation.
+  Please click on the link   ${messageBodyinfo.formUrl} Applications are only considered via this route.,
+  Best Regards ${companyData.companyName} ` 
+  x.messages.create({
+      body: messageBody,
+      from: phoneNumber,
+      to: clientData.clientNumber
+  }).then(message => {
+      console.log({ message: "form message sent succesfully", messageID: message.sid });
+      res.status(200).json({ message: "LowIncome form link has been sent " })
+  }
+  ).catch((err) => {
+
+      console.log(err.message)
+      res.status(400).json({ message:err.message})
+  });
+
+}
 const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
 
   /*
@@ -48,7 +154,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
      we need you to complete an online form records basic information about you and your situation. </p>
-     <p> Please click on the link below :</p>
+     Please click on the link below 
     <a href='${messageBodyinfo.formUrl}'  style=" padding:5px;"> ${messageBodyinfo.formUrl} </a>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
@@ -191,7 +297,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 
 
 
-router.post('/creatCase', authMiddleware, async (req, res, next) => {
+router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, next) => {
 
   let companyData = {};
   let clientData = {};
@@ -229,9 +335,6 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
     
   
       const drive = google.drive({ version: "v3", auth });
-  
-  
-  
       // // Get the folder ID using the reference object (folder name)
       // const response = await drive.files.list({
       //   q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
@@ -299,10 +402,13 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
+        clientData.clientNumber = phoneNumber;
         clientData.email = email;
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
         companyData.companyName = req.user.companyName;
         companyData.email = req.user.email;
+        let twillioInfo = req.twillioInfo;
+
 
         if (req.body.caseType == 'private') {
           messageBodyinfo.formType = "MIAM 1"
@@ -314,14 +420,18 @@ router.post('/creatCase', authMiddleware, async (req, res, next) => {
         else if (req.body.legalAidType == 'lowIncome' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = "low Income / No Income"
           messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
-          sendMailLowIncome(companyData, clientData, messageBodyinfo);
-          res.status(200).json({ caseID: newCaseID })
+         // sendMailLowIncome(companyData, clientData, messageBodyinfo);
+         sendSMS_LowIncome (twillioInfo,companyData, clientData, messageBodyinfo , res)
+         // res.status(200).json({ caseID: newCaseID })
         }
         else if (req.body.legalAidType == 'passporting' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = 'Passporting'
           messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C1/${newCase[0]._id}`;
-          sendMailPassporting(companyData, clientData, messageBodyinfo);
-          res.status(200).json({ caseID: newCaseID })
+        //  sendMailPassporting(companyData, clientData, messageBodyinfo);
+
+        sendSMS_Passporting(twillioInfo,companyData, clientData, messageBodyinfo , res)
+
+          //res.status(200).json({ caseID: newCaseID })
         }
         else {
           res.status(400).json({ "message": "please confirm case type" })
