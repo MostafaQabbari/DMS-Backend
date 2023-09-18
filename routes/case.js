@@ -428,7 +428,7 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
   let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement , mediationRecords=[],
-      caseSuitable , caseLogs,folderID;
+      caseSuitable , caseLogs,folderID ,majorDataC2FromM1;
 
 
 
@@ -484,7 +484,9 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           caseSuitable = "MIAM2_C2 not filled"
         }
         
-        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet"
+        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet";
+
+        CaseFound.majorDataC2FromM1 ? majorDataC2FromM1 = CaseFound.majorDataC2FromM1 : majorDataC2FromM1 = "Client 2 data did not add yet"
 
 
         Reminders = CaseFound.Reminders
@@ -517,7 +519,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
            mediationRecords,
            caseSuitable,
            caseLogs,
-           folderID
+           folderID,
+           majorDataC2FromM1
 
 
         }
@@ -574,7 +577,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         else{
           caseSuitable = "MIAM2_C2 not filled"
         }
-        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet"
+        CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet";
+        CaseFound.majorDataC2FromM1 ? majorDataC2FromM1 = CaseFound.majorDataC2FromM1 : majorDataC2FromM1 = "Client 2 data did not add yet"
 
 
         Reminders = CaseFound.Reminders
@@ -609,7 +613,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           mediationRecords,
           caseSuitable,
           caseLogs,
-          folderID
+          folderID,
+          majorDataC2FromM1
         }
 
         res.status(200).json(CaseResponse)

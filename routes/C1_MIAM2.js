@@ -85,8 +85,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
         let MIAM2mediator = req.body;
         let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
-
-       let mediatorOfTheCase =  MIAM2mediator.mediationDetails.MediatorName
+        let mediatorOfTheCase =  MIAM2mediator.mediationDetails.MediatorName
         
 
         if (caseSuitable == "Yes") {
