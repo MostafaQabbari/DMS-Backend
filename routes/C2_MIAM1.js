@@ -62,7 +62,19 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
     // console.log(currentCase)
 
     let client2data = req.body;
-    let majorDataC2FromM1 = req.body
+
+    let majorDataC2FromM1 = {
+      otherPartyFirstName:req.body.personalContactAndCaseInfo.firstName,
+      otherPartySurname: req.body.personalContactAndCaseInfo.surName,
+      otherPartyDateOfBirth:  req.body.personalContactAndCaseInfo.dateOfBirth,
+      otherPartyEmail: req.body.personalContactAndCaseInfo.email,
+      otherPartyPhone:  req.body.personalContactAndCaseInfo.phoneNumber,
+      otherPartyAddressKnown:"",
+      otherPartyStreet:  req.body.personalContactAndCaseInfo.street,
+      otherPartyCity:  req.body.personalContactAndCaseInfo.city,
+      otherPartyCountry:  req.body.personalContactAndCaseInfo.country,
+      otherPartyPostalCode:  req.body.personalContactAndCaseInfo.postCode
+    }
     let Reference = `${req.body.otherParty.otherPartySurname} & ${req.body.personalContactAndCaseInfo.surName}`;
     let MajorDataC2 = {
       fName: req.body.personalContactAndCaseInfo.firstName,
@@ -103,11 +115,13 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
         startDate: dateNow()
       }
 
-      await Case.findByIdAndUpdate(req.params.id, {
+  
+      let updatedCaseTest =   await Case.findByIdAndUpdate(req.params.id, {
         client2data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client2AddedData: true, MajorDataC2, availableTimes_C2, status: "MIAM Part 1-C2"
-      })
+        }, Reference, client2AddedData: true, MajorDataC2,availableTimes_C2,status: "MIAM Part 1-C2" ,majorDataC2FromM1
+      });
+  
       const updatedCase = await Case.findById(req.params.id);
 
       const parsedClientData = JSON.parse(updatedCase.client2data)
