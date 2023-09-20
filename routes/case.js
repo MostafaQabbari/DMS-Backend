@@ -85,7 +85,7 @@ const confirmationMIAMforBooking = function (meetingDetails, clientDetials, comp
        <p>My colleague mediator <span style="color:#9900ff;"> ${meetingDetails.mediatorName}</span>  will contact you at the allocated date & time </p>
 
         <p> <span style="color:red">IMPORTANT</span> Please complete the MIAM Part 1 form prior to your appointment, which can be accessed here:
-        <a style="color:#9900ff" href='${meetingDetails.MIAM1Link}'>(PLEASE INSERT LINK HERE)</a>  </p>
+        <a style="color:#9900ff" href='${meetingDetails.MIAM1Link}'>${meetingDetails.MIAM1Link}</a>  </p>
         </p>
 
         <p>If you have any questions, please get in touch </p>
