@@ -53,7 +53,55 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
   });
 
 }
+const sendReplyMailToClient = function (companyData, clientData) {
 
+  /*
+
+   companyData ={companyName  , phoneNumber}
+   clientData = {clientName ,email}
+  */
+
+  let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      starttls: {
+          enable: true
+      },
+      starttls: {
+          enable: true
+      },
+
+      secureConnection: false,
+
+      auth: {
+          user: config.companyEmail,
+          pass: config.appPassWord,
+      },
+
+  })
+
+
+   transporter.sendMail({
+      from: config.companyEmail,
+      to: clientData.email,
+      subject: " MIAM I Applied Successfully",
+      html: ` <div style=" text-align: left; ">
+     <h1>Dear ${clientData.clientName}  </h1>
+     <p>Thank you for filling out your MIAM part 1. </p>
+   <p> This email is to confirm we have received your submission.</p>
+   <p> This form will be very useful to the mediator when you have your MIAM meeting.</p>
+   <p> If you have not been booked for an appointment yet, a member of the staff will get in touch shortly to book you in.</p>
+    <p>If you have any questions in the meantime, feel free to call us on ${companyData.phoneNumber}</p>
+    <p> Regards </p>
+    <p>${companyData.companyName}</p>
+
+     </div>`,
+
+
+  })
+
+
+}
 router.patch("/addC2MIAM1/:id", async (req, res) => {
 
 
@@ -104,6 +152,8 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
+    mediatorData.email = "abdo.samir.7719@gmail.com"
+
 
     //!currentCase.client2AddedData
     if (true) {
@@ -130,7 +180,16 @@ router.patch("/addC2MIAM1/:id", async (req, res) => {
       clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
       messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C2/${updatedCase._id}`;
 
-      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
+
+     let companyDataObj={}
+     const getCompData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+     companyDataObj.companyName = getCompData.connectionData.companyID.companyName;
+     companyDataObj.phoneNumber = getCompData.connectionData.companyID.phoneNumberTwillio;
+     clientData.clientName = `${parsedClientData.personalContactAndCaseInfo.firstName} ${parsedClientData.personalContactAndCaseInfo.surName}`;
+     clientData.email = parsedClientData.personalContactAndCaseInfo.email;
+     clientData.email ="abdo.samir.7719@gmail.com";
+     sendReplyMailToClient (companyDataObj, clientData)
+     sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
 
       res.status(200).json({ "message": "M1_C2 has been added " })
 

@@ -10,7 +10,109 @@ const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
 
-const sendSMS_MIAM1 = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
+
+function extractDateTime(timestamp) {
+  const dateObj = new Date(timestamp);
+
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth() + 1; // Months are zero-based, so we add 1
+  const day = dateObj.getDate();
+  const hours = dateObj.getHours();
+  const minutes = dateObj.getMinutes();
+  const seconds = dateObj.getSeconds();
+
+  const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+  return {
+    date: formattedDate,
+    startTime: formattedTime
+  };
+}
+
+const confirmationMIAMforBooking = function (meetingDetails, clientDetials, companyDetails) {
+  /*
+
+  meetingDetails.date
+  meetingDetails.startTime
+  meetingDetails.location
+  meetingDetails.mediatorName
+  meetingDetails.MIAM1Link
+
+  clientDetials.email,
+  clientDetials.clientName
+
+   companyDetails.companyName
+   companyDetails.email
+   companyDetails.mediatorEmail
+  
+  */
+
+
+
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    starttls: {
+      enable: true
+    },
+    starttls: {
+      enable: true
+    },
+
+    secureConnection: false,
+
+    auth: {
+      user: config.companyEmail,
+      pass: config.appPassWord,
+    },
+
+  })
+
+  let mailList = `${clientDetials.email},${companyDetails.mediatorEmail}`;
+  console.log("mailList" ,mailList)
+  transporter.sendMail({
+    from: config.companyEmail,
+    to: `${mailList}`,
+    subject: `MIAM Confirmation Mail`,
+    html: ` <div style=" text-align: left;">
+       <h1>Dear  <span style="color:#9900ff"> ${clientDetials.clientName} </span> </h1>
+
+       <p>Thank you for booking your MIAM , Your appointment is <span style="color:#9900ff">${meetingDetails.date}</span>  at<span style="color:#9900ff">${meetingDetails.startTime}</span>  via  
+       <span style="color:#9900ff"> ${meetingDetails.location}</span>. </p>
+       <p>${meetingDetails.zoomLink}</p>
+
+       <p>My colleague mediator <span style="color:#9900ff;"> ${meetingDetails.mediatorName}</span>  will contact you at the allocated date & time </p>
+
+        <p> <span style="color:red">IMPORTANT</span> Please complete the MIAM Part 1 form prior to your appointment, which can be accessed here:
+        <a style="color:#9900ff" href='${meetingDetails.MIAM1Link}'>(PLEASE INSERT LINK HERE)</a>  </p>
+        </p>
+
+        <p>If you have any questions, please get in touch </p>
+       <p>Kind Regards</p>
+      <h3>Direct Mediation Services</h3>
+      <h4>${companyDetails.companyName}</h4>
+      <h4>${companyDetails.email}</h4>
+       </div>`
+
+
+  });
+
+
+  // transporter.sendMail(info, (error, info) => {
+  //     if (error) {
+  //         console.log('Error occurred while sending email:', error.message);
+
+  //     } else {
+  //         console.log('Email sent successfully:', info.messageId);
+  //     }
+  // });
+
+
+}
+
+
+const sendSMS_MIAM1 = function (twillioInfo, companyData, clientData, messageBodyinfo, res) {
 
   /*
     twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -20,7 +122,7 @@ const sendSMS_MIAM1 = function (twillioInfo,companyData, clientData, messageBody
 
   */
 
-  
+
   const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
   const phoneNumber = twillioInfo.twillioNumber;
 
@@ -28,23 +130,23 @@ const sendSMS_MIAM1 = function (twillioInfo,companyData, clientData, messageBody
   Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
   we need you to complete an online ${messageBodyinfo.formtype} form records basic information about you and your situation.
   Please click on the link   ${messageBodyinfo.formUrl} ,
-  Best Regards ${companyData.companyName} ` 
+  Best Regards ${companyData.companyName} `
   x.messages.create({
-      body: messageBody,
-      from: phoneNumber,
-      to: clientData.clientNumber
+    body: messageBody,
+    from: phoneNumber,
+    to: clientData.clientNumber
   }).then(message => {
-      console.log({ message: "form message sent succesfully", messageID: message.sid });
-      res.status(200).json({ message: "MIAM 1 link has been sent " })
+    console.log({ message: "form message sent succesfully", messageID: message.sid });
+    res.status(200).json({ message: "MIAM 1 link has been sent " })
   }
   ).catch((err) => {
 
-      console.log(err.message)
-      res.status(400).json({ message:err.message})
+    console.log(err.message)
+    res.status(400).json({ message: err.message })
   });
 
 }
-const sendSMS_Passporting = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
+const sendSMS_Passporting = function (twillioInfo, companyData, clientData, messageBodyinfo, res) {
 
   /*
     twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -53,31 +155,31 @@ const sendSMS_Passporting = function (twillioInfo,companyData, clientData, messa
    messageBodyinfo = {formtype,formUrl}
   */
 
-  
+
   const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
   const phoneNumber = twillioInfo.twillioNumber;
 
   const messageBody = `Dear ${clientData.clientName}  ,
   Thank you for contacting us regarding your Legal Aid application for family mediation.
-    To start your application please follow the link  ${messageBodyinfo.formtype} form records basic information about you and your situation.
+    To start your application please follow the link passporting form records basic information about you and your situation.
   Please click on the link   ${messageBodyinfo.formUrl} Applications are only considered via this route.,
-  Best Regards ${companyData.companyName} ` 
+  Best Regards ${companyData.companyName} `
   x.messages.create({
-      body: messageBody,
-      from: phoneNumber,
-      to: clientData.clientNumber
+    body: messageBody,
+    from: phoneNumber,
+    to: clientData.clientNumber
   }).then(message => {
-      console.log({ message: "form message sent succesfully", messageID: message.sid });
-      res.status(200).json({ message: "Passporting form link has been sent " })
+    console.log({ message: "form message sent succesfully", messageID: message.sid });
+    res.status(200).json({ message: "Passporting form link has been sent " })
   }
   ).catch((err) => {
 
-      console.log(err.message)
-      res.status(400).json({ message:err.message})
+    console.log(err.message)
+    res.status(400).json({ message: err.message })
   });
 
 }
-const sendSMS_LowIncome = function (twillioInfo,companyData, clientData, messageBodyinfo , res) {
+const sendSMS_LowIncome = function (twillioInfo, companyData, clientData, messageBodyinfo, res) {
 
   /*
     twillioInfo={twillioSID , twillioToken , twillioNumber}
@@ -94,27 +196,27 @@ const sendSMS_LowIncome = function (twillioInfo,companyData, clientData, message
 
   */
 
-  
+
   const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
   const phoneNumber = twillioInfo.twillioNumber;
 
   const messageBody = ` Dear ${clientData.clientName}  ,
   Thank you for contacting us regarding your Legal Aid application for family mediation.
-    To start your application please follow the link  ${messageBodyinfo.formtype} form records basic information about you and your situation.
+    To start your application please follow the link  low-income form records basic information about you and your situation.
   Please click on the link   ${messageBodyinfo.formUrl} Applications are only considered via this route.,
-  Best Regards ${companyData.companyName} ` 
+  Best Regards ${companyData.companyName} `
   x.messages.create({
-      body: messageBody,
-      from: phoneNumber,
-      to: clientData.clientNumber
+    body: messageBody,
+    from: phoneNumber,
+    to: clientData.clientNumber
   }).then(message => {
-      console.log({ message: "form message sent succesfully", messageID: message.sid });
-      res.status(200).json({ message: "LowIncome form link has been sent " })
+    console.log({ message: "form message sent succesfully", messageID: message.sid });
+    res.status(200).json({ message: "LowIncome form link has been sent " })
   }
   ).catch((err) => {
 
-      console.log(err.message)
-      res.status(400).json({ message:err.message})
+    console.log(err.message)
+    res.status(400).json({ message: err.message })
   });
 
 }
@@ -134,7 +236,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     starttls: {
       enable: true
     },
-  
+
 
     secureConnection: false,
 
@@ -144,14 +246,14 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     },
 
   })
- 
 
-   transporter.sendMail({
+
+  transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
     html: ` <div style=" text-align: left; ">
-     <h1>Dear ${clientData.clientName}  </h1>
+     <h6>Dear ${clientData.clientName}  </h6>
     <p> Thanks for booking you MIAM . BEFORE your Mediation information & Assessment Meeting (MIAM) with one of our family mediators ,
      we need you to complete an online form records basic information about you and your situation. </p>
      Please click on the link below 
@@ -205,7 +307,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
   })
 
 
-   transporter.sendMail({
+  transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -264,7 +366,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
   })
 
 
-   transporter.sendMail({
+  transporter.sendMail({
     from: config.companyEmail,
     to: clientData.email,
     subject: `Applying To ${messageBodyinfo.formType} Form`,
@@ -297,16 +399,31 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 
 
 
-router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, next) => {
+router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
   let companyData = {};
   let clientData = {};
   let messageBodyinfo = {};
 
+  /*
+  req.body {
+      "firstName": "hassan",
+      "surName": "fgvds",
+      "phoneNumber": "+447476544877",
+      "email": "doaa51094@gmail.com",
+      "mediatorMail": "comp@comp.com",
+      "caseType": "private | LegalAid",
+      "legalAidType": "passporting | lowIncome ",
+       "dateOfMAIM": "2023-09-14T00:00:00",
+      "location": "Whatsapp video",
+      "zoomLink":"xxxxxxxxx"
+  }
+  
+  */
 
   try {
     if (req.userRole == 'company') {
-      const { firstName, surName, phoneNumber, email, dateOfMAIM, location, mediatorMail, caseType, legalAidType } = req.body;
+      let { firstName, surName, phoneNumber, email, dateOfMAIM, location, zoomLink, mediatorMail, caseType, legalAidType } = req.body;
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
       const companyId = req.user._id;
@@ -325,22 +442,22 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
 
       let Reference = `${surName} `;
 
+
       const auth = await google.auth.getClient({
-      
+
         keyFile: config.credentialFile1,
-  
+
         scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
       });
-  
-    
-  
+
+
       const drive = google.drive({ version: "v3", auth });
       // // Get the folder ID using the reference object (folder name)
       // const response = await drive.files.list({
       //   q: `name='${folderName}' and mimeType='application/vnd.google-apps.folder'`,
       // });
-  
-  
+
+
       // Create the folder in Google Drive
       const folderMetadata = {
         name: Reference,
@@ -352,11 +469,21 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
       });
       const folderId = folder.data.id;
 
-     
+
       let newCaseID;
       if (Themediator) {
 
- 
+        if (dateOfMAIM) {
+
+          dateOfMAIM = extractDateTime(dateOfMAIM).date
+          console.log("date", dateOfMAIM)
+
+        } else {
+          dateOfMAIM = "00-00-0000"
+          console.log("date", dateOfMAIM)
+
+        }
+
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location, caseType, legalAidType },
@@ -381,6 +508,8 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
             folderID: folderId
           });
 
+        console.log("newCase", newCase[0].startDate)
+
         let statusRemider = {
           reminderID: `${newCase[0]._id}-statusRemider`,
           reminderTitle: `${Reference}-${newCase[0].status}`,
@@ -397,13 +526,14 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
 
         newCaseID = newCase[0]._id
 
-        
+
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
         clientData.clientNumber = phoneNumber;
         clientData.email = email;
+        // console.log(clientData.email )
         clientData.clientName = `${newCase[0].client1ContactDetails.firstName} ${newCase[0].client1ContactDetails.surName}`;
         companyData.companyName = req.user.companyName;
         companyData.email = req.user.email;
@@ -411,6 +541,19 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
 
 
         if (req.body.caseType == 'private') {
+          let  meetingDetails={} , clientDetials={} , companyDetails={} ; 
+          meetingDetails.date = extractDateTime(req.body.dateOfMAIM).date
+          meetingDetails.startTime  = extractDateTime(req.body.dateOfMAIM).startTime
+          meetingDetails.location = req.body.location
+          meetingDetails.mediatorName = mediatorOfTheCase
+          meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
+          clientDetials.email = req.body.email ; 
+          clientDetials.clientName =  `${req.body.firstName} ${req.body.surName}`
+          companyDetails.companyName =  req.user.companyName
+          companyDetails.email = req.user.email
+          companyDetails.mediatorEmail = req.body.mediatorMail
+          confirmationMIAMforBooking  (meetingDetails, clientDetials, companyDetails);
+
           messageBodyinfo.formType = "MIAM 1"
           messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
           sendMailMIAM1(companyData, clientData, messageBodyinfo);
@@ -420,16 +563,16 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
         else if (req.body.legalAidType == 'lowIncome' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = "low Income / No Income"
           messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
-         // sendMailLowIncome(companyData, clientData, messageBodyinfo);
-         sendSMS_LowIncome (twillioInfo,companyData, clientData, messageBodyinfo , res)
-         // res.status(200).json({ caseID: newCaseID })
+          // sendMailLowIncome(companyData, clientData, messageBodyinfo);
+          sendSMS_LowIncome(twillioInfo, companyData, clientData, messageBodyinfo, res)
+          // res.status(200).json({ caseID: newCaseID })
         }
         else if (req.body.legalAidType == 'passporting' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = 'Passporting'
           messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C1/${newCase[0]._id}`;
-        //  sendMailPassporting(companyData, clientData, messageBodyinfo);
+          //  sendMailPassporting(companyData, clientData, messageBodyinfo);
 
-        sendSMS_Passporting(twillioInfo,companyData, clientData, messageBodyinfo , res)
+          sendSMS_Passporting(twillioInfo, companyData, clientData, messageBodyinfo, res)
 
           //res.status(200).json({ caseID: newCaseID })
         }
@@ -437,13 +580,13 @@ router.post('/creatCase', authMiddleware,decryptTwillioData, async (req, res, ne
           res.status(400).json({ "message": "please confirm case type" })
         }
 
-        
+
       }
       else {
         res.status(400).json({ "message": "please add the mediator first" })
       }
 
-      
+
     }
 
     else {
@@ -471,21 +614,21 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
   let tempDate
 
   try {
-    let caseMediator ;
+    let caseMediator;
     let mediatorName;
     if (req.userRole == "company") {
       let cases = await Company.findById(req.user._id).populate('cases');
       for (let i = 0; i < cases.cases.length; i++) {
-     //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
-     //    console.log(caseMediator)
-      //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
+        //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+        //    console.log(caseMediator)
+        //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
         resposedCaseObj = {
           _id: cases.cases[i]._id,
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
-          closed:cases.cases[i].closed,
-          mediatorName:cases.cases[i].mediatorOfTheCase
+          closed: cases.cases[i].closed,
+          mediatorName: cases.cases[i].mediatorOfTheCase
         }
 
         casesList.push(resposedCaseObj)
@@ -509,8 +652,8 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
           Reference: cases.cases[i].Reference,
           status: cases.cases[i].status,
           startDate: cases.cases[i].startDate,
-          closed:cases.cases[i].closed,
-          mediatorName:cases.cases[i].mediatorOfTheCase
+          closed: cases.cases[i].closed,
+          mediatorName: cases.cases[i].mediatorOfTheCase
         }
 
         casesList.push(resposedCaseObj)
@@ -537,8 +680,8 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
   let CaseFound, CaseResponse, MIAM1_C1, MIAM1_C2, MIAM2_C1, MIAM2_C2, MajorDataC1, MajorDataC2, C2invitation;
-  let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement , mediationRecords=[],
-      caseSuitable , caseLogs,folderID ,majorDataC2FromM1;
+  let Reminders, MIAMDates, availableTimes_C1, availableTimes_C2, caseTypeC1, caseTypeC2, C1Agreement, C2Agreement, mediationRecords = [],
+    caseSuitable, caseLogs, folderID, majorDataC2FromM1;
 
 
 
@@ -561,39 +704,36 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet";
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
 
-        if (CaseFound.mediationRecords){
-          for(let i=0 ; i<CaseFound.mediationRecords.length ; i++)
-          {
+        if (CaseFound.mediationRecords) {
+          for (let i = 0; i < CaseFound.mediationRecords.length; i++) {
             mediationRecords.push(JSON.parse(CaseFound.mediationRecords[i]))
           }
         }
-        
+
         else mediationRecords = "there is no mediation session yet";
 
 
         CaseFound.MIAMDates ? MIAMDates = CaseFound.MIAMDates : MIAMDates = "MIAM Dates didn't added yet"
         CaseFound.availableTimes_C1 ? availableTimes_C1 = CaseFound.availableTimes_C1 : availableTimes_C1 = "Available times didn't added yet"
-        
+
         CaseFound.availableTimes_C2 ? availableTimes_C2 = CaseFound.availableTimes_C2 : availableTimes_C2 = "Available times didn't added yet"
-        
+
         CaseFound.caseTypeC1 ? caseTypeC1 = CaseFound.caseTypeC1 : caseTypeC1 = "Case type with client1 still ignored"
         CaseFound.caseTypeC2 ? caseTypeC2 = CaseFound.caseTypeC2 : caseTypeC2 = "Case type with client2 still ignored"
-        
+
         CaseFound.C1Agreement ? C1Agreement = JSON.parse(CaseFound.C1Agreement) : C1Agreement = ""
         CaseFound.C2Agreement ? C2Agreement = JSON.parse(CaseFound.C2Agreement) : C2Agreement = "";
-        
-        if(MIAM2_C1.FinalComments?.isSuitable=="Yes" && MIAM2_C2.FinalComments?.isSuitable=="Yes")
-        {
+
+        if (MIAM2_C1.FinalComments?.isSuitable == "Yes" && MIAM2_C2.FinalComments?.isSuitable == "Yes") {
           caseSuitable = "Suitable"
-          
-        }else if(MIAM2_C1.FinalComments?.isSuitable=="NO" || MIAM2_C2.FinalComments?.isSuitable=="No")
-        {
+
+        } else if (MIAM2_C1.FinalComments?.isSuitable == "NO" || MIAM2_C2.FinalComments?.isSuitable == "No") {
           caseSuitable = "Not Suitable"
         }
-        else{
+        else {
           caseSuitable = "MIAM2_C2 not filled"
         }
-        
+
         CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet";
 
         CaseFound.majorDataC2FromM1 ? majorDataC2FromM1 = CaseFound.majorDataC2FromM1 : majorDataC2FromM1 = "Client 2 data did not add yet"
@@ -623,14 +763,14 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
           availableTimes_C1,
           availableTimes_C2,
           caseTypeC1,
-          caseTypeC2 ,
-           C1Agreement,
-           C2Agreement,
-           mediationRecords,
-           caseSuitable,
-           caseLogs,
-           folderID,
-           majorDataC2FromM1
+          caseTypeC2,
+          C1Agreement,
+          C2Agreement,
+          mediationRecords,
+          caseSuitable,
+          caseLogs,
+          folderID,
+          majorDataC2FromM1
 
 
         }
@@ -658,9 +798,8 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         if (CaseFound.client2data) MIAM1_C2 = JSON.parse(CaseFound.client2data); else MIAM1_C2 = "Data didn't added yet"
         if (CaseFound.MIAM2C2) MIAM2_C2 = JSON.parse(CaseFound.MIAM2C2); else MIAM2_C2 = "Data didn't added yet"
         if (CaseFound.C2invitation) C2invitation = JSON.parse(CaseFound.C2invitation); else C2invitation = "Data didn't added yet";
-        if (CaseFound.mediationRecords){
-          for(let i=0 ; i<CaseFound.mediationRecords.length ; i++)
-          {
+        if (CaseFound.mediationRecords) {
+          for (let i = 0; i < CaseFound.mediationRecords.length; i++) {
             mediationRecords.push(JSON.parse(CaseFound.mediationRecords[i]))
           }
         } else mediationRecords = "there is no mediation session yet";
@@ -676,15 +815,13 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
         CaseFound.C1Agreement ? C1Agreement = JSON.parse(CaseFound.C1Agreement) : C1Agreement = ""
         CaseFound.C2Agreement ? C2Agreement = JSON.parse(CaseFound.C2Agreement) : C2Agreement = "";
 
-        if(MIAM2_C1.FinalComments?.isSuitable === "Yes" && MIAM2_C2.FinalComments?.isSuitable === "Yes")
-        {
+        if (MIAM2_C1.FinalComments?.isSuitable === "Yes" && MIAM2_C2.FinalComments?.isSuitable === "Yes") {
           caseSuitable = "Suitable"
 
-        }else if(MIAM2_C1.FinalComments?.isSuitable=="NO" || MIAM2_C2.FinalComments?.isSuitable=="No")
-        {
+        } else if (MIAM2_C1.FinalComments?.isSuitable == "NO" || MIAM2_C2.FinalComments?.isSuitable == "No") {
           caseSuitable = "Not Suitable"
         }
-        else{
+        else {
           caseSuitable = "MIAM2_C2 not filled"
         }
         CaseFound.folderID ? folderID = CaseFound.folderID : folderID = "folderID  didn't added yet";

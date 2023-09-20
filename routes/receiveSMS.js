@@ -144,7 +144,9 @@ router.get("/chatSMSbyNumber/:number", authMiddleware,decryptTwillioData, async 
   let otherNumber = req.params.number;
  // console.log(twillioInfo)
 
+  // getMessgaes("+447476544877" ,otherNumber ,twillioInfo,res);
    getMessgaes(twillioInfo.twillioNumber ,otherNumber ,twillioInfo,res);
+  
   
 
 });

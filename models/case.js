@@ -12,7 +12,7 @@ const caseSchema = new Schema({
     surName: { type: String },
     email: { type: String },
     phoneNumber: { type: String },
-    dateOfMAIM: { type: Date },
+    dateOfMAIM: { type: String },
     location: { type: String },
     caseType: { type: String, required: true },   //private , LegalAid , passporting , lowIncome
     legalAidType: { type: String }

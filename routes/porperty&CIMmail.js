@@ -44,7 +44,7 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails, child
 
     })
 
-    let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
+    let mailList = `${clientDetials.c1email},${clientDetials.c2email}`
 
     transporter.sendMail({
         from: config.companyEmail,
@@ -207,15 +207,16 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
 
-                //clientDetials.c2email = 'abdosamir023023@gmail.com'
-                //  clientDetials.c1email = 'abdosamir023023@gmail.com'
+              //  clientDetials.c2email = 'abdo.samir.7719@gmail.com'
+               // clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
-
+            
                 childNames = ""
 
                 //JSON.parse()
+                console.log("arr child 📢📢" , CaseFound.client1data)
                 let childrensArr = JSON.parse(CaseFound.client1data).children;
                 if (childrensArr) {
                     if (childrensArr[0]) childNames += childrensArr[0]['Child One'].firstChildFirstName
@@ -234,7 +235,7 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
 
 
 
-
+               
 
 
                 sendCIMMail(mediatorData, clientDetials, companyDetails, childNames);
