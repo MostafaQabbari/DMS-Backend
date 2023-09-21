@@ -151,7 +151,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
-    // const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+     const sharingGmail = companyData.connectionData.companyID.sharingGmail;
 
     // await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );
 
