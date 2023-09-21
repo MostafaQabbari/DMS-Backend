@@ -10,6 +10,7 @@ const getDataFromTwillio = async function (user, role ,res) {
     // console.log(user.twillioData)
     const Data = CryptoJS.AES.decrypt(user.twillioData, 'ourTwillioEncyptionKey');
     const decryptedData = JSON.parse(Data.toString(CryptoJS.enc.Utf8))
+   // console.log("decryptedData from middle are" ,decryptedData)
     return decryptedData[0]
 
 

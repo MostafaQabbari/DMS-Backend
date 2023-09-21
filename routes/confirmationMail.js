@@ -202,7 +202,8 @@ function extractDateTime(timestamp) {
 
 
 /*
-😒post("/BOOK_MEDIATION_SESSION/:id" body = > {textBody : "xxxxxx"}
+😒post  /BOOK_MEDIATION_SESSION/:id  , {"dates":[" "," "],"location":" " ,"textBody":""}
+ 
 😒post("/MIAM1_Confirmation_C1/:id"
 😒post("/MIAM1_Confirmation_C2/:id"
 😒post("/CONFIRM_MEDIATION_SESSION/:id"

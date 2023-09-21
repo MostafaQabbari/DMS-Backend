@@ -114,7 +114,6 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdfData'), 
             }
             if (CaseFound) {
                 const currentComp = await Company.findById(req.user._id)
-
                 if (TargetClient == "C1") {
                     clientData.email = CaseFound.MajorDataC1.mail;
                  //  clientData.email = 'abdosamir023023@gmail.com'
@@ -125,18 +124,6 @@ router.post('/sendCourtForm/:id', authMiddleware, uploadFile.single('pdfData'), 
 
                     console.log("before calling the function",pdfData)
                     sendCourtForm(companyData, clientData, pdfData);
-
-                    // .then((pdfData) => {
-                    //     try {
-                    //         fs.unlinkSync(pdfData.path);
-                    //         console.log("File deleted successfully");
-                    //     } catch (err) {
-                    //         console.error("Error deleting file:", err);
-                    //     }
-                    // })
-
-
-
                     res.status(200).json({ "message": "court email has been sent ... " })
 
 
