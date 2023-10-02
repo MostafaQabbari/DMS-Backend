@@ -485,13 +485,12 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
       fields: "id",
     });
     console.log(folderId);
-    console.log(sharingGmail);
     // //put the FolderID into the database
     // await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 
 
     // Call the function with the folder ID and personal account email
-    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+    shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
