@@ -223,8 +223,8 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
     try {
         let meetingDetails = {}, clientDetials = {}, companyDetails = {};
         let reqBody = req.body
-        let formatedDateTimeObject = extractDateTime(reqBody.date);
-        meetingDetails.date = formatedDateTimeObject.date
+        let formatedDateTimeObject = extractDateTime(reqBody.date);//booking for this date
+        meetingDetails.date = formatedDateTimeObject.date 
         meetingDetails.startTime = formatedDateTimeObject.startTime
         meetingDetails.type = reqBody.type
         meetingDetails.location = reqBody.location
@@ -367,14 +367,14 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
                 //! for c2
                 meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                clientDetials.email = CaseFound.MajorDataC2.mail
-                clientDetials.email = 'abdosamir023023@gmail.com'
+                clientDetials.email = CaseFound.MajorDataC2.mail// email client 2
+               // clientDetials.email = 'abdosamir023023@gmail.com'
                 confirmationMIAM(meetingDetails, clientDetials, companyDetails)
                 //! for c1
                 meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                clientDetials.email = CaseFound.MajorDataC1.mail
-               clientDetials.email = 'hassantarekha@gmail.com'
+                clientDetials.email = CaseFound.MajorDataC1.mail //email data clinet 1
+              // clientDetials.email = 'hassantarekha@gmail.com'
                 confirmationMIAM(meetingDetails, clientDetials, companyDetails)
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
