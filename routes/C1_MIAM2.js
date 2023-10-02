@@ -11,7 +11,39 @@ const { google } = require("googleapis");
 const { PDFDocument } = require("pdf-lib");
 const statisticFunctions = require("../global/statisticsFunctions");
 const Company = require("../models/company");
+const CryptoJS = require("crypto-js");
 
+
+
+
+const sendSMS_C2Invitation = function (twillioInfo, clientNumber, messageBodyData ) {
+
+  /*
+    twillioInfo={twillioSID , twillioToken , twillioNumber}
+    clientNumber = {clientNumber}
+    messageBodyData = {clientName ,companyName, formLink   }
+  */
+  const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+  const phoneNumber = twillioInfo.twillioNumber;
+
+  const messageBody = `Hello ${messageBodyData.clientName}  ,
+   Here is your link to apply to the mediation invitation ${messageBodyData.formLink} ,
+   Best Regards ${messageBodyData.companyName} `
+  x.messages.create({
+      body: messageBody,
+      from: phoneNumber,
+      to: clientNumber
+  }).then(message => {
+      console.log({ message: "form message sent succesfully", messageID: message.sid });
+
+  }
+  ).catch((err) => {
+
+      console.log(err.message)
+
+  });
+
+}
 const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInfo) {
 
     let transporter = nodemailer.createTransport({
@@ -54,7 +86,7 @@ const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInf
         <div style=" text-align: left;">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>This is an invitation to mediation with your partner  ${caseDetails.C1name} and that's your link to apply your invitation form </h3>
-        <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+        <a href='${messageInfo.formUrl}' style="  padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
    
         <p> Best Regards </p>
         <p>${mediationDetails.companyName}'s Team </p>
@@ -67,6 +99,14 @@ const sendMailC2Invitation = function (caseDetails, mediationDetails, messageInf
 
 }
 
+function handleTwillioData(targetComp){
+  console.log(targetComp.connectionData.companyID.twillioData)
+  const targetCompTwilioData = targetComp.connectionData.companyID.twillioData;
+  const data = CryptoJS.AES.decrypt(targetCompTwilioData, 'ourTwillioEncyptionKey');
+ const decryptedTwillioData = JSON.parse(data.toString(CryptoJS.enc.Utf8))
+ return decryptedTwillioData[0]
+
+ }
 const validationMail = function (x) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -75,6 +115,10 @@ const validationMail = function (x) {
     } else {
         return false
     }
+}
+function validationPhoneNumber(phoneNumber) {
+  const pattern = /^\+/;
+  return pattern.test(phoneNumber);
 }
 
 router.patch("/addC1MIAM2/:id", async (req, res) => {
@@ -85,8 +129,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
         let MIAM2mediator = req.body;
         let MIAM_C1_Date = MIAM2mediator.mediationDetails.DateOfMIAM
         let caseSuitable = MIAM2mediator.FinalComments.isSuitable;   // Yes or No
-
-
+        let mediatorOfTheCase =  MIAM2mediator.mediationDetails.MediatorName
         
 
         if (caseSuitable == "Yes") {
@@ -100,23 +143,14 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
             // generateAndSavePDF(MIAM2mediator)
             // .then(message => console.log(message))
             // .catch(error => console.error('Error:', error));
-            
-
-
             let MajorDataC2sName = req.body.mediationDetails.otherPartySurname;
-
             let currentCase = await Case.findById(req.params.id);
-
-            
-            
             let Reference = `${req.body.mediationDetails.clientSurName} & ${currentCase.MajorDataC2.sName}`;
             let statusRemider = {
                 reminderID: `${currentCase._id}-statusRemider`,
                 reminderTitle: `${currentCase.Reference}-MIAM Part 2-C1`,
                 startDate: dateNow()
             }
-  
-
             caseDetails.C2mail = currentCase.MajorDataC2.mail
             caseDetails.C2name = `${currentCase.MajorDataC2.fName} ${currentCase.MajorDataC2.sName}`
             caseDetails.C1name = `${currentCase.MajorDataC1.fName} ${currentCase.MajorDataC1.sName}`
@@ -138,7 +172,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'Reminders.statusRemider': statusRemider,
                         'MIAMDates.MIAM_C1_Date': MIAM_C1_Date, 
 
-                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference
+                    }, MIAM2mediator: stringfyMIAM2Data, MIAM2AddedData: true, status: "MIAM Part 2-C1" ,Reference,mediatorOfTheCase
                   
                 })
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
@@ -148,20 +182,77 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                 const miam1c1  = JSON.parse(updateCase.client1data)
                 let MIAM2_C1_Statistics= statisticFunctions.MIAM2_Statistics_C1(MIAM2mediator,updateCase,miam1c1);
                 const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
-               const targetCompID = targetComp.connectionData.companyID._id;
-               const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
+    
+
+
+
+                const targetCompID = targetComp.connectionData.companyID._id;
+                const stringfyStatiscs=JSON.stringify(MIAM2_C1_Statistics)
                 await Company.findByIdAndUpdate(targetCompID, {
                  $push: { statistics: stringfyStatiscs }
                 })
 
-                if (validationMail(caseDetails.C2mail)) {
+
+                if(req.body.FinalComments.sendInvitationToClientTwo== "Send SMS & email")
+                {
+                  if(validationMail(caseDetails.C2mail) && validationPhoneNumber(currentCase.MajorDataC2.phoneNumber) )
+                  {
 
                     sendMailC2Invitation(caseDetails, mediationDetails, messageInfo)
-                    res.status(200).json({ "message": " MIAM2 has been added and Inviation sent to C2" })
+
+                    const twillioInfo =  handleTwillioData(targetComp)
+                    let clientNumber = currentCase.MajorDataC2.phoneNumber
+                    let messageBodyData={}
+                    messageBodyData.clientName = caseDetails.C2name
+                    messageBodyData.companyName =  mediationDetails.companyName
+                    messageBodyData.formLink = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
+                    sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
+
+                    res.status(200).json({ "message": "this MIAM2 has  added as invitation email&sms has been sent to C2" })
+
+
+                  }
+                  if(validationMail(caseDetails.C2mail) && !validationPhoneNumber(currentCase.MajorDataC2.phoneNumber) ) {
+
+                    sendMailC2Invitation(caseDetails, mediationDetails, messageInfo);
+                    res.status(200).json({ "message": "this MIAM2 has  added as invitation email onle has been sent to C2 as  number is invalid" })
+                  }
+            
+                if(!validationMail(caseDetails.C2mail) && validationPhoneNumber(currentCase.MajorDataC2.phoneNumber))
+                {
+
+                 const twillioInfo =  handleTwillioData(targetComp)
+                 let clientNumber = currentCase.MajorDataC2.phoneNumber
+                 let messageBodyData={}
+                 messageBodyData.clientName = caseDetails.C2name
+                 messageBodyData.companyName =  mediationDetails.companyName
+                 messageBodyData.formLink = `${config.baseUrlC2Invitation}/${config.C2_Invitaion}/${req.params.id}`;
+                 sendSMS_C2Invitation(twillioInfo, clientNumber, messageBodyData)
+                 res.status(200).json({ "message": "this MIAM2 has been  added as invitation sms onle has been sent to C2 as  mail is invalid" })
+
                 }
-                else {
-                    res.status(200).json({ "message": "MIAM2 added but Client 2 did not add valid email to recieve the invitation " })
+                if(!validationMail(caseDetails.C2mail) && !validationPhoneNumber(currentCase.MajorDataC2.phoneNumber)){
+                  res.status(200).json({ "message": "this MIAM2 has been added as mail and number are invalid" })
+
                 }
+
+                
+
+                }
+                else{
+                  res.status(200).json({ "message": "this MIAM2 has been Only added " })
+
+                }
+
+           
+              
+
+
+
+
+
+
+
 
             }
             else {
@@ -190,7 +281,7 @@ router.patch("/addC1MIAM2/:id", async (req, res) => {
                         'MajorDataC2.sName': MajorDataC2sName
                     }, MIAM2mediator: stringfyMIAM2Data,
                     MIAM2AddedData: true,
-                    status: "Not suitable for mediation"
+                    status: "Not suitable for mediation" ,mediatorOfTheCase
                 })
                 const sharingGmail = companyData.connectionData.companyID.sharingGmail;
             

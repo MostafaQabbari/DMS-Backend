@@ -140,134 +140,134 @@ const sendAppointment = function (companyData, clientData, bodyDetails ,textBody
 */
 
 
-router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
-
-    let CaseFound;
-    try {
-        /*
-        {
-         targetClient:"" , caseType:""  , eventType:"" , dates:["" , ""] , location :""
-        }
+// router.post('/sendAppointment/:id', authMiddleware, async (req, res, next) => {
+//! we have commented by me and hassan as we dont need it anymore till now
+//     let CaseFound;
+//     try {
+//         /*
+//         {
+//          targetClient:"" , caseType:""  , eventType:"" , dates:["" , ""] , location :""
+//         }
     
             
       
-      bodyDetails = {caseType , dates ,location}
+//       bodyDetails = {caseType , dates ,location}
         
         
-        */
-        const appointmentData = req.body;
-        const textBody = req.body.textBody
-        let companyData = {}, clientData = {}, bodyDetails = {};
+//         */
+//         const appointmentData = req.body;
+//         const textBody = req.body.textBody
+//         let companyData = {}, clientData = {}, bodyDetails = {};
 
-        bodyDetails.caseType = req.body.caseType
-        bodyDetails.dates = req.body.dates
-        bodyDetails.location = req.body.location
-
-
-        if (req.userRole == 'company') {
-            let cases = await Company.findById(req.user._id).populate('cases');
-            for (let i = 0; i < cases.cases.length; i++) {
-                if (cases.cases[i]._id == req.params.id) {
-
-                    CaseFound = (cases.cases[i])
-                }
-            }
-            if (CaseFound) {
-                const currentComp = await Company.findById(req.user._id)
-
-                if (req.body.targetClient == "C1") {
-                    clientData.email = CaseFound.MajorDataC1.mail;
-                  //  clientData.email = 'abdosamir023023@gmail.com'
-                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                    companyData.companyName = currentComp.companyName
-                    companyData.email = currentComp.email;
-
-                    sendAppointment(companyData, clientData, bodyDetails ,textBody);
-                    res.status(200).json({ "message": "appointment email has been sent ... " })
+//         bodyDetails.caseType = req.body.caseType
+//         bodyDetails.dates = req.body.dates
+//         bodyDetails.location = req.body.location
 
 
-                }
-                else if (req.body.targetClient == "C2") {
-                    clientData.email = CaseFound.MajorDataC2.mail;
-                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                    companyData.companyName = currentComp.companyName
-                    companyData.email = currentComp.email;
+//         if (req.userRole == 'company') {
+//             let cases = await Company.findById(req.user._id).populate('cases');
+//             for (let i = 0; i < cases.cases.length; i++) {
+//                 if (cases.cases[i]._id == req.params.id) {
 
-                    sendAppointment(companyData, clientData, bodyDetails,textBody);
-                    res.status(200).json({ "message": "appointment email has been sent ... " })
+//                     CaseFound = (cases.cases[i])
+//                 }
+//             }
+//             if (CaseFound) {
+//                 const currentComp = await Company.findById(req.user._id)
 
+//                 if (req.body.targetClient == "C1") {
+//                     clientData.email = CaseFound.MajorDataC1.mail;
+//                   //  clientData.email = 'abdosamir023023@gmail.com'
+//                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+//                     companyData.companyName = currentComp.companyName
+//                     companyData.email = currentComp.email;
 
-                }
-                else {
-                    res.status(400).json({ "message": "error with data ... " })
-                }
-
-            }
-            else {
-                res.status(400).json({ "message": "no case found ... " })
-            }
-
-        }
-        else if (req.userRole == 'mediator') {
-            let cases = await mediator.findById(req.user._id).populate('cases');
-            for (let i = 0; i < cases.cases.length; i++) {
-                if (cases.cases[i]._id == req.params.id) {
-
-                    CaseFound = (cases.cases[i])
-                }
-            }
-            if (CaseFound) {
-
-                const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
-                let currentComp_ = mediatorCompanyData.companyId
-
-                if (req.body.targetClient == "C1") {
-                    clientData.email = CaseFound.MajorDataC1.mail;
-                    //clientData.email = "abdosamir023023@gmail.com"
-
-                    clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email
+//                     sendAppointment(companyData, clientData, bodyDetails ,textBody);
+//                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
-                    sendAppointment(companyData, clientData, bodyDetails,textBody)
-                    res.status(200).json({ "message": "appointment email has been sent ... " })
+//                 }
+//                 else if (req.body.targetClient == "C2") {
+//                     clientData.email = CaseFound.MajorDataC2.mail;
+//                     clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+//                     companyData.companyName = currentComp.companyName
+//                     companyData.email = currentComp.email;
+
+//                     sendAppointment(companyData, clientData, bodyDetails,textBody);
+//                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
-                }
-                else if (req.body.targetClient == "C2") {
-                    clientData.email = CaseFound.MajorDataC2.mail;
-                    clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                    companyData.companyName = currentComp_.companyName
-                    companyData.email = currentComp_.email;
+//                 }
+//                 else {
+//                     res.status(400).json({ "message": "error with data ... " })
+//                 }
+
+//             }
+//             else {
+//                 res.status(400).json({ "message": "no case found ... " })
+//             }
+
+//         }
+//         else if (req.userRole == 'mediator') {
+//             let cases = await mediator.findById(req.user._id).populate('cases');
+//             for (let i = 0; i < cases.cases.length; i++) {
+//                 if (cases.cases[i]._id == req.params.id) {
+
+//                     CaseFound = (cases.cases[i])
+//                 }
+//             }
+//             if (CaseFound) {
+
+//                 const mediatorCompanyData = await mediator.findById(req.user._id).populate('companyId');
+//                 let currentComp_ = mediatorCompanyData.companyId
+
+//                 if (req.body.targetClient == "C1") {
+//                     clientData.email = CaseFound.MajorDataC1.mail;
+//                     //clientData.email = "abdosamir023023@gmail.com"
+
+//                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+//                     companyData.companyName = currentComp_.companyName
+//                     companyData.email = currentComp_.email
 
 
-                    sendAppointment(companyData, clientData, bodyDetails,textBody);
-                    res.status(200).json({ "message": "appointment email has been sent ... " })
+//                     sendAppointment(companyData, clientData, bodyDetails,textBody)
+//                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
 
-                }
-                else {
-                    res.status(400).json({ "message": "error with data ... " })
-                }
-            }
-            else {
-                res.status(400).json({ "message": "no case found ... " })
-            }
-
-        }
-
-        else {
-            res.status(400).json({ res: "there is an arror with getting case access for the user" })
-        }
+//                 }
+//                 else if (req.body.targetClient == "C2") {
+//                     clientData.email = CaseFound.MajorDataC2.mail;
+//                     clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+//                     companyData.companyName = currentComp_.companyName
+//                     companyData.email = currentComp_.email;
 
 
+//                     sendAppointment(companyData, clientData, bodyDetails,textBody);
+//                     res.status(200).json({ "message": "appointment email has been sent ... " })
 
-    } catch (err) {
-        res.status(400).json(err.message)
-    }
 
-});
+//                 }
+//                 else {
+//                     res.status(400).json({ "message": "error with data ... " })
+//                 }
+//             }
+//             else {
+//                 res.status(400).json({ "message": "no case found ... " })
+//             }
+
+//         }
+
+//         else {
+//             res.status(400).json({ res: "there is an arror with getting case access for the user" })
+//         }
+
+
+
+//     } catch (err) {
+//         res.status(400).json(err.message)
+//     }
+
+// });
 
 
 module.exports = router

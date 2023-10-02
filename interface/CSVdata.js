@@ -12,25 +12,16 @@ module.exports = function airTableData(data) {
                 dateOfBirth: data["Date of Birth"],
                 phoneNumber: data["What is your telephone number?"],
                 email: data["Client Email Address"],
-
                 street: data["Street"],
                 city: data["City/Town"],
                 postCode: data["Post Code"],
                 country: data["Country"],
                 doesOtherPartyKnow: data["Other party knows my details"],
                 makeDetailsConfidential: data["Do we need to keep your details confidential?"],
-
-
-
                 isClientVulnerable: data["Are You A Vulnerable Adult?"],
                 disabilityRegistered: data["Are you registered disabled?"],
                 gender: data["Gender"],
-
-
                 isWillingToTryMediation: data["Are you willing to try mediation to sort out your issues?"],
-
-
-
                 areChangesToServicesRequired: data["Do we have to make any changes to our services to allow you to attend mediation?"],
 
                 changesRequired: data["What can we do to assist?"],
@@ -80,7 +71,8 @@ module.exports = function airTableData(data) {
 
                 marriageDate: data["What was the date of your marriage/civil partnership?"]
             },
-            children: [{
+            children: [
+                {
                 "Child One": {
                     firstChildFirstName: data["Name Child 1"],
                     firstChildSurName: data["Surname Child 1"],
@@ -92,7 +84,6 @@ module.exports = function airTableData(data) {
                     firstChildResponsibility: data["Child 1 parental responsibility?"],
                     secondChildCheck: data["Is there a 2nd child?"]
                 }},
-
 
              { "Child Two": {
                     secondChildFirstName: data["Name Child 2"],

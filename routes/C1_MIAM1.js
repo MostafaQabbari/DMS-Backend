@@ -13,6 +13,7 @@ const drive = google.drive('v3');
 const dateNow = require("../global/dateNow");
 const fs = require('fs');
 const path = require('path');
+
 const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
 
   let transporter = nodemailer.createTransport({
@@ -44,7 +45,7 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
       <div style=" text-align: left;">
       <h1>Hello ${mediatorData.name} 's Teams  </h1>
       <h3>MIAM 1 has been applied by C1 ${clientData.fname} ${clientData.surName} and that's your link to apply your MIAM 2 </h3>
-      <a href='${messageBodyinfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+      <a href='${messageBodyinfo.formUrl}' style="  padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
       <h4> MIAM 1_C1 is attached as a pdf file </h4>
 
       <p> Best Regards </p>
@@ -56,6 +57,64 @@ const sendMailForMIAM2 = function (mediatorData, clientData, messageBodyinfo) {
   });
 
 }
+const sendReplyMailToClient = function (companyData, clientData) {
+
+  /*
+
+   companyData ={companyName  , phoneNumber}
+   clientData = {clientName ,email}
+  */
+
+  let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      starttls: {
+          enable: true
+      },
+      starttls: {
+          enable: true
+      },
+
+      secureConnection: false,
+
+      auth: {
+          user: config.companyEmail,
+          pass: config.appPassWord,
+      },
+
+  })
+
+
+   transporter.sendMail({
+      from: config.companyEmail,
+      to: clientData.email,
+      subject: " MIAM I Applied Successfully",
+      html: ` <div style=" text-align: left; ">
+     <h1>Dear ${clientData.clientName}  </h1>
+     <p>Thank you for filling out your MIAM part 1. </p>
+   <p> This email is to confirm we have received your submission.</p>
+   <p> This form will be very useful to the mediator when you have your MIAM meeting.</p>
+   <p> If you have not been booked for an appointment yet, a member of the staff will get in touch shortly to book you in.</p>
+    <p>If you have any questions in the meantime, feel free to call us on ${companyData.phoneNumber}</p>
+    <p> Regards </p>
+    <p>${companyData.companyName}</p>
+
+     </div>`,
+
+
+  })
+
+
+  // transporter.sendMail(info, (error, info) => {
+  //     if (error) {
+  //         console.log('Error occurred while sending email:', error.message);
+
+  //     } else {
+  //         console.log('Email sent successfully:', info.messageId);
+  //     }
+  // });
+
+}
 
 router.patch("/addC1MIAM1/:id", async (req, res) => {
 
@@ -63,7 +122,8 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
   try {
 
     let currentCase = await Case.findById(req.params.id);
-    GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+    let majorDataC2FromM1 = req.body.otherParty ;
+   //! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
@@ -91,7 +151,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
-    // const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+     const sharingGmail = companyData.connectionData.companyID.sharingGmail;
 
     // await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );
 
@@ -103,10 +163,12 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
     let mediatorData = {}, clientData = {}, messageBodyinfo = {};
     mediatorData.name = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-
+  //  mediatorData.name="xxx"
     // will replace this by medEmail
     const medEmail = medData.connectionData.mediatorID.email;
     mediatorData.email = medEmail
+   
+
 
 
     // GoogleFunctions.createEvent(currentCase._id, currentCase.startDate, medEmail, MajorDataC1.mail, MajorDataC2.mail);
@@ -124,11 +186,12 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
  
 
-      await Case.findByIdAndUpdate(req.params.id, {
+      const updatedCaseDetails= await Case.findByIdAndUpdate(req.params.id, {
         client1data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1"
+        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
       })
+      //console.log("📢📢",updatedCaseDetails.majorDataC2FromM1)
       const updatedCase = await Case.findById(req.params.id);
 
       const parsedClientData = JSON.parse(updatedCase.client1data)
@@ -136,13 +199,18 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
       clientData.fname = parsedClientData.personalContactAndCaseInfo.firstName;
       clientData.surName = parsedClientData.personalContactAndCaseInfo.surName;
       messageBodyinfo.formUrl = `${config.baseUrlMIAM2}/${config.MIAM_PART_2}/C1/${updatedCase._id}`;
-
-      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo)
-
-
-      //console.log("client_data_fromDB", parsedClientData)
+      let companyDataObj={}
+      const getCompData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+      companyDataObj.companyName = getCompData.connectionData.companyID.companyName;
+      companyDataObj.phoneNumber = getCompData.connectionData.companyID.phoneNumberTwillio;
+      clientData.clientName = `${parsedClientData.personalContactAndCaseInfo.firstName} ${parsedClientData.personalContactAndCaseInfo.surName}`;
+      clientData.email = parsedClientData.personalContactAndCaseInfo.email;
+    
+      
+      sendReplyMailToClient (companyDataObj, clientData)
+      sendMailForMIAM2(mediatorData, clientData, messageBodyinfo);
       res.status(200).json({ "message": "M1_C1 has been added" })
-
+ 
     }
     else {
       res.status(400).json({ "message": "this from has been applied before" })

@@ -8,9 +8,20 @@ module.exports = {
   baseUrlC2AgreementForm :'https://agreement-to-mediate.vercel.app',
   baseUrlRecordSessionForm:'https://mediation-session.vercel.app',
 
-  companyEmail:"abdo.samir.7719@gmail.com",
-  appPassWord:"evhxpzdevqnrrtpa",
+  //companyEmail:"abdo.samir.7719@gmail.com",
+  //appPassWord:"evhxpzdevqnrrtpa",
+  
+  companyEmail:"info@directmediationservices.co.uk",
+  appPassWord:"qgnlqiitosffhdap",
+
+
+
+
+
+
   GOOGLE_APPLICATION_CREDENTIALS:"/DMS-Backend/credentials-folder/direct-mediation-services-d25d2e9c4d7e.json",
+  baseUrlResetPassword:"https://direct-mediation-services-black.vercel.app/reset-password",
+  baseUrlCreatePassword:"https://direct-mediation-services-black.vercel.app/create-password",
   
  
   MIAM_PART_1:"MIAM_PART_1",
@@ -46,7 +57,7 @@ RecordSessionForm/:id
 
 
   projectID1: " direct-mediation-services-web", 
-  credentialFile1:'/etc/secrets/direct-mediation-services-web-f8ebfd3e36fc.json' || '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' ,
+  credentialFile1:  '/etc/secrets/direct-mediation-services-web-f8ebfd3e36fc.json'||   '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' ,
  
 
   

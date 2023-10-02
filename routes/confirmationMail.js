@@ -100,7 +100,86 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
 
 }
 
-
+const confirmationMIAMforBooking = function (meetingDetails, clientDetials, companyDetails) {
+    /*
+  
+    meetingDetails.date
+    meetingDetails.startTime
+    meetingDetails.location
+    meetingDetails.mediatorName
+    meetingDetails.MIAM1Link
+  
+    clientDetials.email,
+    clientDetials.clientName
+  
+     companyDetails.companyName
+     companyDetails.email
+     companyDetails.mediatorEmail
+    
+    */
+  
+  
+  
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      starttls: {
+        enable: true
+      },
+      starttls: {
+        enable: true
+      },
+  
+      secureConnection: false,
+  
+      auth: {
+        user: config.companyEmail,
+        pass: config.appPassWord,
+      },
+  
+    })
+  
+    let mailList = `${clientDetials.email}, ${companyDetails.mediatorEmail}`;
+    console.log("mailList" ,mailList)
+    transporter.sendMail({
+      from: config.companyEmail,
+      to: `${mailList}`,
+      subject: `MIAM Confirmation Mail`,
+      html: ` <div style=" text-align: left;">
+         <h1>Dear  <span style="color:#9900ff"> ${clientDetials.clientName} </span> </h1>
+  
+         <p>Thank you for booking your MIAM , Your appointment is <span style="color:#9900ff">${meetingDetails.date}</span>  at<span style="color:#9900ff">${meetingDetails.startTime}</span>  via  
+         <span style="color:#9900ff"> ${meetingDetails.location}</span>. </p>
+         <p>${meetingDetails.zoomLink}</p>
+  
+         <p>My colleague mediator <span style="color:#9900ff;"> ${meetingDetails.mediatorName}</span>  will contact you at the allocated date & time </p>
+  
+          <p> <span style="color:red">IMPORTANT</span> Please complete the MIAM Part 1 form prior to your appointment, which can be accessed here:
+          <a style="color:#9900ff" href='${meetingDetails.MIAM1Link}'>${meetingDetails.MIAM1Link}</a>  </p>
+          </p>
+  
+          <p>If you have any questions, please get in touch </p>
+         <p>Kind Regards</p>
+        <h3>Direct Mediation Services</h3>
+        <h4>${companyDetails.companyName}</h4>
+        <h4>${companyDetails.email}</h4>
+         </div>`
+  
+  
+    });
+  
+  
+    // transporter.sendMail(info, (error, info) => {
+    //     if (error) {
+    //         console.log('Error occurred while sending email:', error.message);
+  
+    //     } else {
+    //         console.log('Email sent successfully:', info.messageId);
+    //     }
+    // });
+  
+  
+  }
 
 function extractDateTime(timestamp) {
     const dateObj = new Date(timestamp);
@@ -123,7 +202,8 @@ function extractDateTime(timestamp) {
 
 
 /*
-😒post("/BOOK_MEDIATION_SESSION/:id" body = > {textBody : "xxxxxx"}
+😒post  /BOOK_MEDIATION_SESSION/:id  , {"dates":[" "," "],"location":" " ,"textBody":""}
+ 
 😒post("/MIAM1_Confirmation_C1/:id"
 😒post("/MIAM1_Confirmation_C2/:id"
 😒post("/CONFIRM_MEDIATION_SESSION/:id"
@@ -168,15 +248,17 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
 
                 const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 meetingDetails.mediatorName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-                meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${req.params.id}`
+                 companyDetails.mediatorEmail = medData.connectionData.mediatorID.email
+              //  companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
+                meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                clientDetials.email = CaseFound.MajorDataC1.mail
-               // clientDetials.email = 'abdosamir023023@gmail.com'
+               clientDetials.email = CaseFound.MajorDataC1.mail
+                //clientDetials.email = "abdosamir023023@gmail.com"
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
+               
 
-
-                confirmationMIAM(meetingDetails, clientDetials, companyDetails)
+                confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails) 
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
             }
@@ -222,15 +304,15 @@ router.post("/MIAM1_Confirmation_C2/:id", authMiddleware, async (req, res) => {
 
                 const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 meetingDetails.mediatorName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-                meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${req.params.id}`
+                companyDetails.mediatorEmail = medData.connectionData.mediatorID.email
+               // companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
+                meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                 clientDetials.email = CaseFound.MajorDataC2.mail
-               // clientDetials.email = 'abdosamir023023@gmail.com'
+           //    clientDetials.email ='abdosamir023023@gmail.com'
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
-
-
-                confirmationMIAM(meetingDetails, clientDetials, companyDetails)
+                confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails)
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
             }

@@ -49,7 +49,7 @@ const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
     <p>YOU HAVE A DEADLINE OF THREE WORKING DAYS TO COMPLETE THIS FORM.</p>
     <p> Please click on the link below:</p>
      
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px;"> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style="  padding:5px;"> ${messageBodyinfo.formUrl} </a>
     <p>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</p>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
@@ -108,7 +108,7 @@ const sendMailPassporting = function (companyData, clientData, messageBodyinfo) 
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM booking you MIAM  , here is your passporting form </p>
      <p> Please click on the link below :</p>
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style="  padding:5px; "> ${messageBodyinfo.formUrl} </a>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
     <h4>${companyData.email}</h4>
@@ -166,7 +166,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
      <h1>Dear ${clientData.clientName}  </h1>
     <p> Thanks for booking you MIAM , here is your low income / no income form </p>
      <p> Please click on the link below :</p>
-    <a href='${messageBodyinfo.formUrl}'  style="color:white; padding:5px; "> ${messageBodyinfo.formUrl} </a>
+    <a href='${messageBodyinfo.formUrl}'  style="  padding:5px; "> ${messageBodyinfo.formUrl} </a>
     <h3>Direct Mediation Services</h3>
     <h4>${companyData.companyName}</h4>
     <h4>${companyData.email}</h4>

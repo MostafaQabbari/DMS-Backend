@@ -6,6 +6,7 @@ const { google } = require('googleapis');
 const authMiddleware = require("../middleware/authMiddleware");
 const CryptoJS = require("crypto-js");
 const { ContentAndApprovalsListInstance } = require("twilio/lib/rest/content/v1/contentAndApprovals");
+const bcrypt = require("bcrypt");
 router.get("/get-companies", authMiddleware, async (req, res, next) => {
 
   if (req.userRole !== "admin") {
@@ -157,17 +158,49 @@ router.patch("/update-company/:id", authMiddleware, async (req, res, next) => {
   try {
     const companyId = req.params.id;
     const updateData = req.body;
-
+/*
+ 📢 patch("/update-company/:id  => {companyName , email , password}
+*/
     // Check if the company exists
     const company = await Company.findById(companyId);
     if (!company) {
-      return res.status(404).json({ message: "Company not found" });
+       res.status(404).json({ message: "Company not found" });
     }
 
-    // Update the company data
-    const updatedCompany = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
 
-    res.status(200).json({ company: updatedCompany });
+    // Update the company data
+    const existingCompany = await Company.findOne({ email: req.body.email });
+    if (existingCompany && existingCompany._id.toString() !== req.params.id.toString()) {
+         res.status(400).json({ message: "this mail has been used before ..." });
+    }
+    if(req.body.password)
+    {
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{8,}$/;
+      if (!passwordRegex.test(req.body.password)) {
+         res.status(400).json({ message: "Password must be at least 8 characters long and contain at least one letter and one number" });
+      }
+      else{
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+       const updatedCompany = await Company.findByIdAndUpdate(companyId, {
+        companyName:req.body.companyName,
+        email:req.body.email,
+        password:hashedPassword
+  
+       }, { new: true })
+        res.status(200).json({ company: updatedCompany });
+      }
+
+    }
+    else{
+
+        const updatedCompany = await Company.findByIdAndUpdate(companyId, {
+        companyName:req.body.companyName,
+        email:req.body.email,
+       }, { new: true })
+        res.status(200).json({ company: updatedCompany });
+      
+    }
+
   } catch (error) {
     next(error);
   }

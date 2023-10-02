@@ -80,8 +80,18 @@ function getSessionNo(inputString) {
     return null;
   }
 }
- 
 
+function formatStartDate(inputDate) {
+  const dateParts = inputDate.split('-');
+  if (dateParts.length !== 3) {
+    return "Invalid date format";
+  }
+  const year = dateParts[0];
+  const month = dateParts[1];
+  const day = dateParts[2];
+  const formattedDate = `${day}/${month}/${year}`;
+  return formattedDate;
+}
 
 const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
 
@@ -94,7 +104,7 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
   statisticsObj.date = miam2c1.mediationDetails.DateOfMIAM;
   statisticsObj.Type = "MIAM"
   statisticsObj.caseReference = currentCase.Reference
-  statisticsObj.caseStartDate = currentCase.startDate
+  statisticsObj.caseStartDate =formatStartDate(currentCase.startDate) 
   statisticsObj.claimId = "000"
 
   statisticsObj.uniqueCaseId = `${startDateFormated}/${statisticsObj.claimId}`
@@ -110,11 +120,16 @@ const MIAM2_Statistics_C1 = function (miam2c1, currentCase, miam1c1) {
   statisticsObj.client1Disability =creatDisabiltySymbols(miam1c1.personalContactAndCaseInfo.disabilityRegistered) 
   statisticsObj.client1LegallyAided =checkPrivateCase(currentCase.caseTypeC1) 
 
-  statisticsObj.client2ForeName = currentCase.MajorDataC2.fName
-  statisticsObj.client2surName = currentCase.MajorDataC2.sName
-  statisticsObj.client2dateOfBirth = miam1c1.otherParty.otherPartyDateOfBirth
-  statisticsObj.client2UCN = c2UCN
-  statisticsObj.client2postCode = miam1c1.otherParty.otherPartyPostalCode
+  // statisticsObj.client2ForeName = currentCase.MajorDataC2.fName
+  // statisticsObj.client2surName = currentCase.MajorDataC2.sName
+  // statisticsObj.client2dateOfBirth = miam1c1.otherParty.otherPartyDateOfBirth
+  // statisticsObj.client2UCN = c2UCN
+  // statisticsObj.client2postCode = miam1c1.otherParty.otherPartyPostalCode
+  statisticsObj.client2ForeName = ""
+  statisticsObj.client2surName =''
+  statisticsObj.client2dateOfBirth =""
+  statisticsObj.client2UCN = ''
+  statisticsObj.client2postCode = ""
   statisticsObj.client2Gender = ""
   statisticsObj.client2Ethincity = ""
   statisticsObj.client2Disability = ""
@@ -167,7 +182,7 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
   statisticsObj.date = miam2c2.mediationDetails.DateOfMIAM;
   statisticsObj.Type = "MIAM"
   statisticsObj.caseReference = currentCase.Reference
-  statisticsObj.caseStartDate = currentCase.startDate
+  statisticsObj.caseStartDate = formatStartDate(currentCase.startDate)
   statisticsObj.claimId = "000"
 
   statisticsObj.uniqueCaseId = `${startDateFormated}/${statisticsObj.claimId}`
@@ -183,17 +198,25 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
   statisticsObj.client1Disability =creatDisabiltySymbols(miam1c2.personalContactAndCaseInfo.disabilityRegistered) 
   statisticsObj.client1LegallyAided =checkPrivateCase(currentCase.caseTypeC2) 
 
-  statisticsObj.client2ForeName = currentCase.MajorDataC1.fName
-  statisticsObj.client2surName = currentCase.MajorDataC1.sName
-  statisticsObj.client2dateOfBirth = miam1c2.otherParty.otherPartyDateOfBirth
-  statisticsObj.client2UCN = c2UCN
-  statisticsObj.client2postCode = miam1c2.otherParty.otherPartyPostalCode
+  // statisticsObj.client2ForeName = currentCase.MajorDataC1.fName
+  // statisticsObj.client2surName = currentCase.MajorDataC1.sName
+  // statisticsObj.client2dateOfBirth = miam1c2.otherParty.otherPartyDateOfBirth
+  // statisticsObj.client2UCN = c2UCN
+  // statisticsObj.client2postCode = miam1c2.otherParty.otherPartyPostalCode
+  // statisticsObj.client2Gender = getCapitalizedFirstLetter(miam1c1.personalContactAndCaseInfo.gender)
+  // statisticsObj.client2Ethincity =getEthincityNumber(miam1c1.personalContactAndCaseInfo.ethnicOrigin) 
+  // statisticsObj.client2Disability =creatDisabiltySymbols(miam1c1.personalContactAndCaseInfo.disabilityRegistered) 
+  // statisticsObj.client2LegallyAided =checkPrivateCase(currentCase.caseTypeC1)
 
-
-  statisticsObj.client2Gender = getCapitalizedFirstLetter(miam1c1.personalContactAndCaseInfo.gender)
-  statisticsObj.client2Ethincity =getEthincityNumber(miam1c1.personalContactAndCaseInfo.ethnicOrigin) 
-  statisticsObj.client2Disability =creatDisabiltySymbols(miam1c1.personalContactAndCaseInfo.disabilityRegistered) 
-  statisticsObj.client2LegallyAided =checkPrivateCase(currentCase.caseTypeC1)
+  statisticsObj.client2ForeName = ""
+  statisticsObj.client2surName = ""
+  statisticsObj.client2dateOfBirth = ""
+  statisticsObj.client2UCN = ""
+  statisticsObj.client2postCode = ''
+  statisticsObj.client2Gender = ""
+  statisticsObj.client2Ethincity = ""
+  statisticsObj.client2Disability ="" 
+  statisticsObj.client2LegallyAided = ""
 
 
   statisticsObj.NoOfMediationSessions = ""
@@ -245,7 +268,7 @@ const MedSession_Statistics = function (medsession, currentCase) {
   statisticsObj.date = medsession.clientData.sessionDate;
   statisticsObj.Type = "Mediation Session"
   statisticsObj.caseReference = currentCase.Reference
-  statisticsObj.caseStartDate = currentCase.startDate
+  statisticsObj.caseStartDate =formatStartDate(currentCase.startDate)
   statisticsObj.claimId = "000"
 
   statisticsObj.uniqueCaseId = `${startDateFormated}/${statisticsObj.claimId}`;

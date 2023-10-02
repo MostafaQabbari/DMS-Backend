@@ -140,7 +140,7 @@ const sendMail_C2Invitation = function (caseDetails, mediationDetails, messageIn
         <div style=" text-align: left; ">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>This is an invitation to mediation with your partner  ${caseDetails.C1name} and that's your link to apply your invitation form </h3>
-        <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+        <a href='${messageInfo.formUrl}' style="  padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
    
         <p> Best Regards </p>
         <p>${mediationDetails.companyName}'s Team </p>
@@ -225,7 +225,7 @@ const sendMail_C2_M1 = function (caseDetails, mediationDetails, messageInfo) {
         <div style="text-align: left; ">
         <h1>Hello ${caseDetails.C2name}  </h1>
         <h3>Thanks for applying you invitation to mediation with your partner ${caseDetails.C1name} and that's your link to apply your MIAM form </h3>
-        <a href='${messageInfo.formUrl}' style="color:white; padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
+        <a href='${messageInfo.formUrl}' style="  padding:5px; font-size: larger; font-weight: bolder;border:solid 5px">Click here </a>
    
         <p> Best Regards </p>
         <p>${mediationDetails.companyName}'s Team </p>
@@ -288,10 +288,11 @@ const validationMail = function (x) {
 
 /*
 
-/sendM1_sms_C1/:id
 /sendM1_mail_C1/:id
 /sendM1_mail_C2/:id
+
 /sendM1_sms_C2/:id
+/sendM1_sms_C1/:id
 
 /MailC2Invitaion/:id   C2mail=>in the body  
 /Resend_MailC2Invitaion/:id

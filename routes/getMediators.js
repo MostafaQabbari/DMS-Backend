@@ -13,7 +13,7 @@ router.get("/getMediators", authMiddleware, async (req, res) => {
             let response = [];
             for (let i = 0; i < mediatorsIDs.length; i++) {
                 const med = await mediator.findById(mediatorsIDs[i]);
-                response.push({ name: `${med.firstName} ${med.lastName}`, email: med.email })
+                response.push({ name: `${med.firstName} ${med.lastName}`, email: med.email , id:med._id })
 
             }
             console.log(response)
@@ -21,14 +21,11 @@ router.get("/getMediators", authMiddleware, async (req, res) => {
             res.status(200).json(response)
 
         }
-        else if (req.userRole == 'mediator') {
-            res.status(400).json({ "Err": "mediator account does not have mediators" })
-        }
         else {
-            res.status(400).json({ "Err": "error with account role" })
+            res.status(400).json({ message: "error with account role" })
         }
     } catch (err) {
-        res.status(400).json({ "Err": err.message })
+        res.status(400).json({ message: err.message })
     }
 
 

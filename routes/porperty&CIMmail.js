@@ -10,7 +10,7 @@ const mediator = require('../models/mediator');
 
 
 
-const sendCIMMail = function (mediatorData, clientDetials, companyDetails , childNames) {
+const sendCIMMail = function (mediatorData, clientDetials, companyDetails, childNames) {
     /*
 
     mediatorData.name
@@ -24,7 +24,7 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails , chil
      companyDetails.email
     
     */
-   
+
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         port: 587,
@@ -44,11 +44,11 @@ const sendCIMMail = function (mediatorData, clientDetials, companyDetails , chil
 
     })
 
-    let mailList = `${clientDetials.c1email}, ${clientDetials.c2email}`
+    let mailList = `${clientDetials.c1email},${clientDetials.c2email}`
 
-     transporter.sendMail({
+    transporter.sendMail({
         from: config.companyEmail,
-        to: `${mailList}` ,
+        to: `${mailList}`,
         subject: `CIM Information`,
         html: ` <div style=" direction: ltr">
          <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
@@ -94,6 +94,7 @@ const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) 
 
     clientDetials.c1.email,
     clientDetials.c1.clientName
+
     clientDetials.c2.email,
     clientDetials.c2.clientName
 
@@ -101,7 +102,7 @@ const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) 
      companyDetails.email
     
     */
-   
+
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         port: 587,
@@ -121,13 +122,13 @@ const sendPropertyMail = function (mediatorData, clientDetials, companyDetails) 
 
     })
 
-let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
-     transporter.sendMail({
+    // let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
+    transporter.sendMail({
         from: config.companyEmail,
-        to: `${mailList}` ,
+        to: clientDetials.c1email,
         subject: `Property & Finance`,
         html: ` <div style="padding: 2vw; direction: ltr">
-         <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span> & <span style ="color:red">${clientDetials.c2clientName}</span> </h2>
+         <h2>Dear <span style ="color:blue">${clientDetials.c1clientName}</span>  </h2>
 
          <p>I hope this email finds you well.</p>
          <p>Further to your MIAM I’m pleased to confirm both of you have said you wish to proceed with mediation on a joint basis.
@@ -156,12 +157,12 @@ let mailList = `${clientDetials.c1email}, ${clientDetials.c2email} `
         <h4>${companyDetails.companyName}</h4>
         <h4>${companyDetails.email}</h4>
          </div>`,
-         attachments: [
+        attachments: [
             {
-              filename: 'FINANCIAL-DISCLOSURE-PACK.docx', 
-              path: './FINANCIAL-DISCLOSURE-PACK.docx', 
+                filename: 'FINANCIAL-DISCLOSURE-PACK.docx',
+                path: './FINANCIAL-DISCLOSURE-PACK.docx',
             },
-          ],
+        ],
 
 
     });
@@ -183,8 +184,8 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
 
     let CaseFound;
     try {
- 
-        let companyDetails = {}, clientDetials = {}, mediatorData = {} ,childNames ;
+
+        let companyDetails = {}, clientDetials = {}, mediatorData = {}, childNames;
 
         if (req.userRole == 'company') {
             let cases = await Company.findById(req.user._id).populate('cases');
@@ -200,44 +201,44 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 const currentMediator = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 mediatorData.name = `${currentMediator.connectionData.mediatorID.firstName} ${currentMediator.connectionData.mediatorID.lastName} `;
 
-            
+
                 clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                 clientDetials.c2email = CaseFound.MajorDataC2.mail
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
-                
-                 //clientDetials.c2email = 'abdosamir023023@gmail.com'
-              //  clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+              //  clientDetials.c2email = 'abdo.samir.7719@gmail.com'
+               // clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
+            
+                childNames = ""
 
-                childNames=""
- 
                 //JSON.parse()
+                console.log("arr child 📢📢" , CaseFound.client1data)
                 let childrensArr = JSON.parse(CaseFound.client1data).children;
-                if(childrensArr)
-                {
-                    if(childrensArr[0]) childNames+= childrensArr[0]['Child One'].firstChildFirstName
-                
-                    if(childrensArr[1]) childNames+=" and "+childrensArr[1]['Child Two'].secondChildFirstName
-                    if(childrensArr[2]) childNames+=" and "+childrensArr[2]['Child Three'].thirdChildFirstName
-                  
-                    if(childrensArr[3]) childNames+=" and "+childrensArr[3]['Child Four'].forthChildFirstName
-                    if(childrensArr[4]) childNames+=" and "+childrensArr[4]['Child Five'].fifthChildFirstName
-                    if(childrensArr[5]) childNames+=" and "+childrensArr[5]['Child Six'].sixthChildFirstName
-               
-                }
-                else{
-                    childNames=" "
-                }
-               
-                
-   
+                if (childrensArr) {
+                    if (childrensArr[0]) childNames += childrensArr[0]['Child One'].firstChildFirstName
 
-          
+                    if (childrensArr[1]) childNames += " and " + childrensArr[1]['Child Two'].secondChildFirstName
+                    if (childrensArr[2]) childNames += " and " + childrensArr[2]['Child Three'].thirdChildFirstName
 
-                sendCIMMail(mediatorData, clientDetials, companyDetails ,childNames);
+                    if (childrensArr[3]) childNames += " and " + childrensArr[3]['Child Four'].forthChildFirstName
+                    if (childrensArr[4]) childNames += " and " + childrensArr[4]['Child Five'].fifthChildFirstName
+                    if (childrensArr[5]) childNames += " and " + childrensArr[5]['Child Six'].sixthChildFirstName
+
+                }
+                else {
+                    childNames = " "
+                }
+
+
+
+               
+
+
+                sendCIMMail(mediatorData, clientDetials, companyDetails, childNames);
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -259,41 +260,40 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 console.log(currentMediator)
                 mediatorData.name = `${currentMediator.firstName} ${currentMediator.lastName} `;
 
-            
+
                 clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                 clientDetials.c2email = CaseFound.MajorDataC2.mail
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
-                
-              //   clientDetials.c2email = 'abdosamir023023@gmail.com'
+
+                //   clientDetials.c2email = 'abdosamir023023@gmail.com'
                 //clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = mediatorCompanyData.companyId.companyName
                 companyDetails.email = mediatorCompanyData.companyId.email;
 
-                childNames=""
- 
+                childNames = ""
+
                 //JSON.parse()
                 let childrensArr = JSON.parse(CaseFound.client1data).children;
-                if(childrensArr)
-                {
-                    if(childrensArr[0]) childNames+= childrensArr[0]['Child One'].firstChildFirstName
-                
-                    if(childrensArr[1]) childNames+=" and "+childrensArr[1]['Child Two'].secondChildFirstName
-                    if(childrensArr[2]) childNames+=" and "+childrensArr[2]['Child Three'].thirdChildFirstName
-                  
-                    if(childrensArr[3]) childNames+=" and "+childrensArr[3]['Child Four'].forthChildFirstName
-                    if(childrensArr[4]) childNames+=" and "+childrensArr[4]['Child Five'].fifthChildFirstName
-                    if(childrensArr[5]) childNames+=" and "+childrensArr[5]['Child Six'].sixthChildFirstName
-               
+                if (childrensArr) {
+                    if (childrensArr[0]) childNames += childrensArr[0]['Child One'].firstChildFirstName
+
+                    if (childrensArr[1]) childNames += " and " + childrensArr[1]['Child Two'].secondChildFirstName
+                    if (childrensArr[2]) childNames += " and " + childrensArr[2]['Child Three'].thirdChildFirstName
+
+                    if (childrensArr[3]) childNames += " and " + childrensArr[3]['Child Four'].forthChildFirstName
+                    if (childrensArr[4]) childNames += " and " + childrensArr[4]['Child Five'].fifthChildFirstName
+                    if (childrensArr[5]) childNames += " and " + childrensArr[5]['Child Six'].sixthChildFirstName
+
                 }
-                else{
-                    childNames=" "
+                else {
+                    childNames = " "
                 }
 
-           
 
-                sendCIMMail(mediatorData, clientDetials, companyDetails , childNames);
+
+                sendCIMMail(mediatorData, clientDetials, companyDetails, childNames);
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -318,8 +318,10 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
 
     let CaseFound;
     try {
- 
-        let companyDetails = {}, clientDetials = {}, mediatorData = {}
+        /* post('/sendProperty_Mail/:id'   {targetClient:C1/C2} */
+
+        let companyDetails = {}, clientDetials = {}, mediatorData = {};
+        let targetClient = req.body.targetClient
 
         if (req.userRole == 'company') {
             let cases = await Company.findById(req.user._id).populate('cases');
@@ -335,21 +337,34 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
                 const currentMediator = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 mediatorData.name = `${currentMediator.connectionData.mediatorID.firstName} ${currentMediator.connectionData.mediatorID.lastName} `;
 
-            
-                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                clientDetials.c2email = CaseFound.MajorDataC2.mail
-                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                clientDetials.c1email = CaseFound.MajorDataC1.mail
-                
-              //  clientDetials.c2email = 'abdosamir023023@gmail.com'
-              // clientDetials.c1email = 'abdosamir023023@gmail.com'
+
+
 
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
 
-          
 
-                sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                //       clientDetials.c1email , clientDetials.c1clientName
+                if (targetClient == "C1") {
+                    clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                    clientDetials.c1email = CaseFound.MajorDataC1.mail
+                    sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                }
+                if (targetClient == "C2") {
+                    clientDetials.c1clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                    clientDetials.c1email = CaseFound.MajorDataC2.mail
+                    sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                }
+
+
+
+
+
+
+
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -371,19 +386,23 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
                 console.log(currentMediator)
                 mediatorData.name = `${currentMediator.firstName} ${currentMediator.lastName} `;
 
-            
-                clientDetials.c2clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
-                clientDetials.c2email = CaseFound.MajorDataC2.mail
-                clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-                clientDetials.c1email = CaseFound.MajorDataC1.mail
-                
-              //   clientDetials.c2email = 'abdosamir023023@gmail.com'
-                //clientDetials.c1email = 'abdosamir023023@gmail.com'
-
                 companyDetails.companyName = mediatorCompanyData.companyId.companyName
                 companyDetails.email = mediatorCompanyData.companyId.email;
 
-           
+                if (targetClient == "C1") {
+                    clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                    clientDetials.c1email = CaseFound.MajorDataC1.mail
+                    sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                }
+                if (targetClient == "C2") {
+                    clientDetials.c1clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                    clientDetials.c1email = CaseFound.MajorDataC2.mail
+                    sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                }
+
+
 
                 sendPropertyMail(mediatorData, clientDetials, companyDetails);
                 res.status(200).json({ "message": "Property mail has been  sent ... " })
