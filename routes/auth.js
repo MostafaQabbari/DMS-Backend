@@ -147,11 +147,11 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
       // Other code for creating service account, generating refresh token, and storing it
       // await createServiceAccount(companyName, user._id);
 
-      const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-      await Company.findByIdAndUpdate(user._id, { refreshToken });
+      // const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+      await Company.findByIdAndUpdate(user._id/*, { refreshToken }*/);
 
-      // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-      res.status(201).json({ refreshToken, message: "Company account created successfully" });
+      const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+      res.status(201).json({ accessToken , /*refreshToken,*/ message: "Company account created successfully" });
     } catch (error) {
       if (error.code === 11000) {
         // Duplicate key error
@@ -224,12 +224,12 @@ router.post("/admin-login", async (req, res, next) => {
 
 
     const accessToken = jwt.sign({ id: user._id, role: "admin", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "admin", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    // const refreshToken = jwt.sign({ id: user._id, role: "admin", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
 
-    // Store refresh token in database
-    await Admin.findByIdAndUpdate(user._id, { refreshToken });
+    // // Store refresh token in database
+    // await Admin.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({ accessToken, refreshToken });
+    res.status(201).json({ accessToken/*, refreshToken*/ });
   } catch (error) {
     next(error);
   }
@@ -260,12 +260,12 @@ router.post("/company-login", async (req, res, next) => {
 
 
     const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    // const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
 
-    // Store refresh token in database
-    await Company.findByIdAndUpdate(user._id, { refreshToken });
+    // // Store refresh token in database
+    // await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({ accessToken, refreshToken });
+    res.status(201).json({ accessToken/*, refreshToken*/ });
   } catch (error) {
     next(error);
   }
@@ -294,11 +294,11 @@ router.post("/mediator-login", async (req, res, next) => {
 
 
     const accessToken = jwt.sign({ id: user._id, role: "mediator", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ id: user._id, role: "mediator", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
-    // Store refresh token in database
-    await Mediator.findByIdAndUpdate(user._id, { refreshToken });
+    // const refreshToken = jwt.sign({ id: user._id, role: "mediator", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
+    // // Store refresh token in database
+    // await Mediator.findByIdAndUpdate(user._id, { refreshToken });
 
-    res.status(201).json({ accessToken, refreshToken });
+    res.status(201).json({ accessToken/*, refreshToken */});
   } catch (error) {
     next(error);
   }
@@ -368,37 +368,37 @@ router.post('/add-mediator', authMiddleware, async (req, res, next) => {
 });
 
 
-router.post("/refresh-token", async (req, res, next) => {
-  try {
-    const { refreshToken } = req.body;
-    const decoded = jwt.verify(refreshToken, config.jwtSecret);
+// router.post("/refresh-token", async (req, res, next) => {
+//   try {
+//     const { refreshToken } = req.body;
+//     const decoded = jwt.verify(refreshToken, config.jwtSecret);
 
-    if (decoded.type === "access") {
-      return res.status(401).json({ message: "Invalid token this an access token it must be a refresh token" });
-    } 
+//     if (decoded.type === "access") {
+//       return res.status(401).json({ message: "Invalid token this an access token it must be a refresh token" });
+//     } 
 
-    let user = await Company.findById(decoded.id);
-    if (!user) {
-      user = await Mediator.findById(decoded.id);
-      if (!user) {
-        user = await Admin.findById(decoded.id);
-        if (!user) {
-          return res.status(401).json({ message: "Invalid token user not found " });
-        }
-      }
-    }
+//     let user = await Company.findById(decoded.id);
+//     if (!user) {
+//       user = await Mediator.findById(decoded.id);
+//       if (!user) {
+//         user = await Admin.findById(decoded.id);
+//         if (!user) {
+//           return res.status(401).json({ message: "Invalid token user not found " });
+//         }
+//       }
+//     }
 
-    if (user.refreshToken !== refreshToken) {
-      return res.status(401).json({ message: "Invalid token" });
-    }
+//     if (user.refreshToken !== refreshToken) {
+//       return res.status(401).json({ message: "Invalid token" });
+//     }
 
-    const accessToken = jwt.sign({ id: user._id, role: decoded.role, type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+//     const accessToken = jwt.sign({ id: user._id, role: decoded.role, type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
 
-    res.status(200).json({ accessToken });
-  } catch (error) {
-    next(error);
-  }
-});
+//     res.status(200).json({ accessToken });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 
 
