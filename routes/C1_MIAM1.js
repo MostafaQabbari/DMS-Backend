@@ -152,8 +152,9 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
     const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
 
      const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+     
 
-    // await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );
+    await createMIAM1Upload(client1data , Reference , sharingGmail ,req.params.id );
 
 
 
@@ -485,6 +486,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
       fields: "id",
     });
     console.log(folderId);
+    console.log(sharingGmail);
     // //put the FolderID into the database
     // await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 

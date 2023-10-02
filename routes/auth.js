@@ -153,8 +153,8 @@ router.post("/add-company", authMiddleware, async (req, res, next) => {
         const refreshToken = jwt.sign({ id: user._id, role: "company", type: 'refresh' }, config.jwtSecret, { expiresIn: '7d' });
         await Company.findByIdAndUpdate(user._id, { refreshToken });
 
-        // const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
-        res.status(201).json({ refreshToken, message: "Company account created successfully" });
+        const accessToken = jwt.sign({ id: user._id, role: "company", type: 'access' }, config.jwtSecret, { expiresIn: "7d" });
+        res.status(201).json({accessToken , refreshToken, message: "Company account created successfully" });
       } catch (error) {
         if (error.code === 11000) {
           // Duplicate key error
