@@ -353,14 +353,16 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 
     async function createLegalAidPassport(fieldData , reference , caseID , sharingGmail) {
         try {
-          const pdfBytes = await fs.promises.readFile('../uploads/pdfs/Legal-Aid.pdf');
+
+          const filePath = path.resolve(__dirname, '../uploads/pdfs/Legal-Aid.pdf');
+          const pdfBytes = await fs.promises.readFile(filePath);
           const pdfDoc = await PDFDocument.load(pdfBytes);
           const form = pdfDoc.getForm();
       
           const personalDetails = fieldData.personalDetails;
       
           // Set personal details
-          form.getTextField('FillText1').setText(reference); // Get from the database
+           form.getTextField('FillText1').setText(reference); // Get from the database
           form.getTextField('FillText2').setText(personalDetails.surname);
           form.getTextField('FillText4').setText(personalDetails.firstName);
           form.getTextField('FillText3').setText(personalDetails.differentSurnameAtBirth);
