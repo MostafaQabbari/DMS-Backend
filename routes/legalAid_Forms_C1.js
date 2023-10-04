@@ -628,7 +628,8 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 
       async function createLegalAidLowIncome(fieldData , reference , caseID , sharingGmail) {
         try {
-          const pdfBytes = await fs.promises.readFile('../uploads/pdfs/Legal-Aid.pdf');
+          const filePath = path.resolve(__dirname, '../uploads/pdfs/Legal-Aid.pdf');
+          const pdfBytes = await fs.promises.readFile(filePath);
           const pdfDoc = await PDFDocument.load(pdfBytes);
           const form = pdfDoc.getForm();
       
