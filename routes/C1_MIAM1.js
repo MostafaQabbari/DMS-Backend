@@ -123,7 +123,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     let currentCase = await Case.findById(req.params.id);
     let majorDataC2FromM1 = req.body.otherParty ;
-   //! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+  //  ! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
@@ -485,8 +485,8 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
       media: media,
       fields: "id",
     });
-    console.log(folderId);
-    console.log(sharingGmail);
+    // console.log(folderId);
+    // console.log(sharingGmail);
     // //put the FolderID into the database
     // await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 

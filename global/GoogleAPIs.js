@@ -35,7 +35,7 @@ const config = require("../config/config");
       
       keyFile: config.credentialFile1,
       subject: 'mkabary8@gmail.com', // User's email on behalf of whom you want to act
-      scopes: ['https://www.googleapis.com/auth/calendar.events'], // Scopes required for accessing Google Drive
+      scopes: ['https://www.googleapis.com/auth/calendar'], // Scopes required for accessing Google Drive
     });
 
 
@@ -55,7 +55,7 @@ const config = require("../config/config");
       },
       attendees: [
         { email: mediatorEmail },
-        // { email: client1Email },
+        { email: client1Email },
         // { email: client2Email },
       ],
     };

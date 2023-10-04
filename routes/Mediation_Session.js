@@ -18,6 +18,7 @@ const { PDFDocument , rgb } = require("pdf-lib");
 
 
 const statisticFunctions = require("../global/statisticsFunctions");
+const { dataform } = require('googleapis/build/src/apis/dataform');
 
 const MailRecordFormToMed = function (mediatorData, caseData) {
 
@@ -670,10 +671,10 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   let mediatorOfTheCase = req.body.clientData.mediatorName
   const StringfyData = JSON.stringify(mediationRecord);
 
-  await createMediationRecordUpload(mediationRecord  , req.params.id);
+  
 
-  // Call the function
-  // generateMediationSessionRecord(mediationRecord)
+  // // Call the function
+  // await generateMediationSessionRecord(mediationRecord)
   // .then(pdfBytes => {
   // fs.writeFileSync('mediation_session_record.pdf', pdfBytes);
   // })
@@ -691,6 +692,9 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   //     console.error('Error:', error);
   //   });
     mediationRecord.submittedDate = getNowFormattedDate();
+
+    await createMediationRecordUpload(mediationRecord  , req.params.id , mediationRecord.submittedDate);
+
     const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
     let compData = {}
     compData.name = currentCompData.connectionData.companyID.companyName;
@@ -824,7 +828,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
 
 //this function create pdf and folder and then upload it to that google drive folder 
-async function createMediationRecordUpload(data, caseID) {
+async function createMediationRecordUpload(data, caseID ,subDate) {
   try {
 
     const pdfDoc = await PDFDocument.create();
@@ -845,7 +849,7 @@ async function createMediationRecordUpload(data, caseID) {
     // }
   
     const questionsAndAnswers = [
-      { question: 'Submitted At', answer: data.submittedDate},
+      { question: 'Submitted At', answer: subDate},
       { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
       { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
       { question: 'Name of the mediator', answer: data.clientData.mediatorName },
@@ -855,23 +859,117 @@ async function createMediationRecordUpload(data, caseID) {
       { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
       { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
+      
       { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
-      { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
-      { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
-      { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+      { question: `What is ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}’s date of birth?`, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+      { question: `Who has parental resposibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFullName}?`, answer: data.keyFacts.children[0]?.['Child One'].firstChildParentalResponsibility },
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+     
       { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
-      { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
-      { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
-      { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
-      { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
-      { question: 'Do Lewis Lawson and Gemma Dickson agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?', answer: 'Yes' },
-      { question: 'Type of mediation', answer: 'Face to Face'},
-      { question: 'Do Lewis Lawson and Gemma Dickson agree to the Agreement to Mediate?', answer: 'Yes' },
-      { question: 'Please list the agreed agenda points', answer: 'Child Arrangements' },
-      { question: 'First agenda point discussed.', answer: 'Child Arrangements' },
-      { question: 'Issues identified', answer: 'Lewis and Gemma have come to mediation to work together with regards to arrangements for Louie and Rikki amicably and civilly together.' },
-      { question: 'Type of case.', answer: 'Child Issues'},
-      { question: 'Please specify location', answer: 'Online' },
+      { question: `What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildDateOfBirth},
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildBothParentalResponsibility },
+      { question: `Who has parental resposibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildParentalResponsibility },
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a third child ?`, answer: data.keyFacts.children[1]?.['Child Two'].thirdChildCheck },
+
+      { question: 'What is the full name of the third child?', answer: data.keyFacts.children[2]?.['Child Three'].thirdChildFullName},
+      { question: `What is ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}’s date of birth?`, answer: data.keyFacts.children[2]?.['Child Three'].thirdChildDateOfBirth },
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}?`, answer: data.keyFacts.children[2]?.['Child Three'].bothHaveParentalResponsibilityForFirstChild },
+      { question: `Who has parental resposibility for ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}?`, answer: data.keyFacts.children[2]?.['Child Three'].thirdChildParentalResponsibility },
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a forth child?`, answer: data.keyFacts.children[2]?.['Child Three'].fourthChildCheck },
+
+      { question: 'What is the full name of the forth child?', answer: data.keyFacts.children[3]?.['Child Four'].fourthChildFullName},
+      { question: `What is ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}’s date of birth?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildDateOfBirth },
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[0]?.['Child Four'].fourthChildBothParentalResponsibility },
+      { question: `Who has parental resposibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildParentalResponsibility },
+
+     
+      
+      
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName}  agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?`, answer: data.keyFacts.clientsAgreedToAttendMediationChild },
+      { question: 'Type of mediation', answer: data.recordOfMattersDiscussed.mediationType},
+      { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} agree to the Agreement to Mediate?`, answer: 'Yes' },
+      { question: 'Please list the agreed agenda points', answer: data.recordOfMattersDiscussed.agendaListPoints },
+     
+      { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a second agenda point?', answer: data.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+      
+      { question: 'Second agenda point discussed.', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a third agenda point?', answer: data.discussions[1]?.['Discussion Two']?.secondAgendaCheck },
+
+      { question: 'Third agenda point discussed.', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a forth agenda point?', answer: data.discussions[2]?.['Discussion Three']?.secondAgendaCheck },
+    
+      { question: 'Forth agenda point discussed.', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a fifth agenda point?', answer: data.discussions[3]?.['Discussion Four']?.secondAgendaCheck },
+    
+    
+      { question: 'Fifth agenda point discussed.', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a sixth agenda point?', answer: data.discussions[4]?.['Discussion Five']?.secondAgendaCheck },
+    
+      { question: 'Sixth agenda point discussed.', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a seventh agenda point?', answer: data.discussions[5]?.['Discussion Six']?.secondAgendaCheck },
+
+      { question: 'Seveth agenda point discussed.', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaClientsActionPoints },
+      { question: 'Is there a eighth agenda point?', answer: data.discussions[6]?.['Discussion Seven']?.secondAgendaCheck },
+
+      { question: 'Eighth agenda point discussed.', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaPointDiscussed },
+      { question: 'Issues identified', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaIssuesIdentified },
+      { question: 'Options discussed', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaOptionsDiscussed},
+      { question: 'Any agreements reached?', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaAnyAgreementsReached },
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Action points for the clients', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaClientsActionPoints },
+
+      
+      { question: 'Are there any additional documents to upload?', answer: data.documentUpload.additionalDocumentsToUpload },
+      { question: 'Has a further mediation session been planned?', answer: data.NextSteps.isFurtherSessionPlanned },
+      { question: 'Issues for discussion in next session?', answer: data.NextSteps.nextSessionIssues},
+      { question: 'What is the reason mediation has been finished?', answer: data.NextSteps.mediationFinishReason },
+      { question: 'Have both clients agreed on a date and time to come back to mediation?', answer: data.NextSteps.bothClientsAgreed},
+      { question: 'Do you want to upload the C100 and/or Form A?', answer: data.NextSteps.isC100OrFormA },
+      { question: 'What is the date they are returning to mediation?', answer: data.NextSteps.returnToMediationDate },
+      
+      { question: 'What time is their appointment?', answer: data.NextSteps.appointmentTime },
+      { question: 'Do both clients want the session record emailing to them?', answer: data.NextSteps.isTwoClientWantCopy},
+      { question: 'Do you as the mediator want a copy of this record sending to you?', answer: data.NextSteps.isMediatorWantCopy },
+      { question: `Input email address of ${data.clientData.clientOneFullName}`, answer: data.NextSteps.clientOneEmail },
+      { question: 'Input email address of mediator', answer: data.NextSteps.mediatorEmail },
+      
     ];
     
         
@@ -880,42 +978,74 @@ async function createMediationRecordUpload(data, caseID) {
         const questionWidth = 500; // Adjust the width as needed
   
   
-        for (const { question, answer } of questionsAndAnswers) {
+    //     for (const { question, answer } of questionsAndAnswers) {
   
         
   
-          const validQuestion = question || 'N/A'; 
-          const validAnswer = answer  ||  'N/A'; 
+    //       const validQuestion = question || ''; 
+    //       const validAnswer = answer  ||  ''; 
         
-          currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+    //       currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
         
   
-        // Additional space between Question and Answer
-          const gapBetweenQA = 15;
-          currentY -= gapBetweenQA;
+    //     // Additional space between Question and Answer
+    //       const gapBetweenQA = 15;
+    //       currentY -= gapBetweenQA;
   
-        if (answer) {
-          currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
-        }
+    //     if (answer) {
+    //       currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
+    //     }
   
-        // Additional space between this Q&A and the next
-        const gapBetweenBlocks = 20;
-        currentY -= gapBetweenBlocks;
+    //     // Additional space between this Q&A and the next
+    //     const gapBetweenBlocks = 20;
+    //     currentY -= gapBetweenBlocks;
   
      
   
+    //   // Move to the next page if necessary
+    //   if (currentY <= 100) {
+  
+    //     // Add a new page and reset currentY
+    //     pageNumber += 1;
+    //     currentY = pageHeight - 50;
+    //     pages[pageNumber] = pdfDoc.addPage();
+  
+    //     currentY -= 20;
+    //   }
+    // }
+    
+    for (const { question, answer } of questionsAndAnswers) {
+      const validQuestion = question || '';
+      const validAnswer = answer || '';
+    
+      // Check if the answer is not an empty string before drawing
+      if (validAnswer.trim() !== '') {
+        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+    
+        // Additional space between Question and Answer
+        const gapBetweenQA = 15;
+        currentY -= gapBetweenQA;
+    
+        currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
+
+        // Additional space between this Q&A and the next
+        const gapBetweenBlocks = 25;
+        currentY -= gapBetweenBlocks;
+      }
+    
+
+    
       // Move to the next page if necessary
       if (currentY <= 100) {
-  
         // Add a new page and reset currentY
         pageNumber += 1;
         currentY = pageHeight - 50;
         pages[pageNumber] = pdfDoc.addPage();
-  
+    
         currentY -= 20;
       }
     }
-  
+    
 
 
     const pdfBytes = await pdfDoc.save();
@@ -928,7 +1058,8 @@ async function createMediationRecordUpload(data, caseID) {
 
     const folderId = currentCase.folderID;
 
-    console.log(folderId);
+    // console.log(folderId);
+    // console.log(sharingGmail);
 
 
     const auth = await google.auth.getClient({
@@ -941,10 +1072,6 @@ async function createMediationRecordUpload(data, caseID) {
 
 
     const drive = google.drive({ version: "v3", auth });
-
-
-
-
 
     // Create a readable stream from the PDF bytes
     const readableStream = new stream.Readable({
@@ -973,7 +1100,7 @@ async function createMediationRecordUpload(data, caseID) {
 
 
     // Call the function with the folder ID and personal account email
-    await shareWithPersonalAccount(folderId, "mkabary8@gmail.com");//the gmail sharing account that belong to the company
+    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
@@ -1010,330 +1137,202 @@ async function shareWithPersonalAccount(folderId, personalAccountEmail) {
   }
 }
 
-//   async function generateMediationSessionRecord(data) {
-//     const pdfDoc = await PDFDocument.create();
-//     const page = pdfDoc.addPage([600, 800]);
+
+// async function generateMediationSessionRecord(data) {
+//   const pdfDoc = await PDFDocument.create();
+//     let pages = pdfDoc.getPages;
+//     let pageNumber = 0;
+//     const pageHeight = 841.89;
+//     pages[pageNumber] = pdfDoc.addPage();
+//     // console.log(pages[pageNumber])
+    
+//     const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
 //     const font = await pdfDoc.embedFont('Helvetica');
-//     page.setFont(font);
-//     page.setFontSize(12);
+    
+//     // const getLinesNumber = (string) => {
+//     //   if (string === undefined || string === null) {
+//     //     return 0;
+//     //   }
+//     //   return string.length / 35;
+//     // }
+  
+//     const questionsAndAnswers = [
+//       { question: 'Submitted At', answer: data.submittedDate},
+//       { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
+//       { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
+//       { question: 'Name of the mediator', answer: data.clientData.mediatorName },
+//       { question: 'Date of the session', answer: data.clientData.sessionDate },
+//       { question: 'Type of case.', answer: data.clientData.caseType},
+//       { question: 'Please specify location', answer: data.clientData.specifyLocation },
+//       { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
+//       { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
+//       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
+      
+//       { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
+//       { question: `What is ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}’s date of birth?`, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
+//       { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+//       { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
+//       { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
+     
+//       { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
+//       { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildDateOfBirth},
+//       { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: 'Yes' },
+//       { question: `Who has parental resposibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildParentalResponsibility },
+//       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a third child ?`, answer: data.keyFacts.children[1]?.['Child Two'].thirdChildCheck },
+      
+//       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName}  agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?`, answer: data.keyFacts.clientsAgreedToAttendMediationChild },
+//       { question: 'Type of mediation', answer: data.recordOfMattersDiscussed.mediationType},
+//       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} agree to the Agreement to Mediate?`, answer: 'Yes' },
+//       { question: 'Please list the agreed agenda points', answer: data.recordOfMattersDiscussed.agendaListPoints },
+     
+//       { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       { question: 'Action points for the clients', answer: data.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       { question: 'Is there a second agenda point?', answer: data.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+      
+//       { question: 'Second agenda point discussed.', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaPointDiscussed },
+//       { question: 'Issues identified', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaIssuesIdentified },
+//       { question: 'Options discussed', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaOptionsDiscussed},
+//       { question: 'Any agreements reached?', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAnyAgreementsReached },
+//       { question: 'Please bullet point any agreements reached ', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAgreedBulletsPoints},
+//       { question: 'Action points for the clients', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaClientsActionPoints },
+//       { question: 'Is there a third agenda point?', answer: data.discussions[1]?.['Discussion Two']?.secondAgendaCheck },
 
-//     const questions = [
-//       'Mediation Session Record',
-//       'Submitted At',
-//       'What is the full name of Client 1?',
-//       'What is the full name of Client 2?',
-//       'Name of the mediator',
-//       'Date of the session',
-//       // ... add other questions ...
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: mediationRecord.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+    
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: mediationRecord.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+    
+    
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: mediationRecord.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+    
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: mediationRecord.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: data.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: data.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+
+//       // { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
+//       // { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
+//       // { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+//       // { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
+//       // { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+//       // { question: 'Action points for the clients', answer: data.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
+//       // { question: 'Is there a second agenda point?', answer: data.discussions[0]?.['Discussion One']?.secondAgendaCheck },
+
+
+    
 //     ];
+    
+        
+//         const startX = 50;
+//         let currentY = pageHeight - 50;
+//         const questionWidth = 500; // Adjust the width as needed
+  
+  
+//     //     for (const { question, answer } of questionsAndAnswers) {
+  
+        
+  
+//     //       const validQuestion = question || ''; 
+//     //       const validAnswer = answer  ||  ''; 
+        
+//     //       currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+        
+  
+//     //     // Additional space between Question and Answer
+//     //       const gapBetweenQA = 15;
+//     //       currentY -= gapBetweenQA;
+  
+//     //     if (answer) {
+//     //       currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
+//     //     }
+  
+//     //     // Additional space between this Q&A and the next
+//     //     const gapBetweenBlocks = 20;
+//     //     currentY -= gapBetweenBlocks;
+  
+     
+  
+//     //   // Move to the next page if necessary
+//     //   if (currentY <= 100) {
+  
+//     //     // Add a new page and reset currentY
+//     //     pageNumber += 1;
+//     //     currentY = pageHeight - 50;
+//     //     pages[pageNumber] = pdfDoc.addPage();
+  
+//     //     currentY -= 20;
+//     //   }
+//     // }
+    
+//     for (const { question, answer } of questionsAndAnswers) {
+//       const validQuestion = question || '';
+//       const validAnswer = answer || '';
+    
+//       // Check if the answer is not an empty string before drawing
+//       if (validAnswer.trim() !== '') {
+//         currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+    
+//         // Additional space between Question and Answer
+//         const gapBetweenQA = 15;
+//         currentY -= gapBetweenQA;
+    
+//         currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
 
-//     let yPosition = 750; // Initial y-position for the first question
-
-//     for (const question of questions) {
-//       const answer = data[question.replace(/[? ]/g, '')]; // Get answer from data
-//       const wrappedText = page.drawText(question, { x: 50, y: yPosition, maxWidth: 500 });
-//       const textHeight = wrappedText.height;
-//       yPosition -= textHeight + 5;
-
-//       if (answer) {
-//         const wrappedAnswer = page.drawText(answer, { x: 200, y: yPosition, maxWidth: 400 });
-//         yPosition -= wrappedAnswer.height + 15;
-//       } else {
-//         yPosition -= 15; // Space for empty answer
+//               // Additional space between this Q&A and the next
+//         const gapBetweenBlocks = 25;
+//         currentY -= gapBetweenBlocks;
+//       }
+  
+    
+//       // Move to the next page if necessary
+//       if (currentY <= 100) {
+//         // Add a new page and reset currentY
+//         pageNumber += 1;
+//         currentY = pageHeight - 50;
+//         pages[pageNumber] = pdfDoc.addPage();
+    
+//         currentY -= 20;
 //       }
 //     }
+    
+
 
 //     const pdfBytes = await pdfDoc.save();
 //     return pdfBytes;
-//   }
-
-// I want to add if condition if the number of lines is bigger than 3 or 4 add extra spacing 
-// async function generateMediationSessionRecord(data) {
-//   const pdfDoc = await PDFDocument.create();
-//   let pages = pdfDoc.getPages;
-//   let pageNumber = 0;
-//   const pageHeight = 841.89;
-//   pages[pageNumber] = pdfDoc.addPage();
-//   // console.log(pages[pageNumber])
-  
-//   const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
-//   const font = await pdfDoc.embedFont('Helvetica');
-  
-//   const getLinesNumber = (string) => {
-//     if (string === undefined || string === null) {
-//       return 0;
-//     }
-//     return string.length / 35;
-//   }
-
-//   const questionsAndAnswers = [
-//     { question: 'Submitted At', answer: data.submittedDate},
-//     { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
-//     { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
-//     { question: 'Name of the mediator', answer: data.clientData.mediatorName },
-//     { question: 'Date of the session', answer: data.clientData.sessionDate },
-//     { question: 'Type of case.', answer: data.clientData.caseType},
-//     { question: 'Please specify location', answer: data.clientData.specifyLocation },
-//     { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
-//     { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
-//     { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
-//     { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
-//     { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
-//     { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
-//     { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
-//     { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
-//     { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
-//     { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
-//     { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
-//     { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
-//     { question: 'Do Lewis Lawson and Gemma Dickson agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?', answer: 'Yes' },
-//     { question: 'Type of mediation', answer: 'Face to Face'},
-//     { question: 'Do Lewis Lawson and Gemma Dickson agree to the Agreement to Mediate?', answer: 'Yes' },
-//     { question: 'Please list the agreed agenda points', answer: 'Child Arrangements' },
-//     { question: 'First agenda point discussed.', answer: 'Child Arrangements' },
-//     { question: 'Issues identified', answer: 'Lewis and Gemma have come to mediation to work together with regards to arrangements for Louie and Rikki amicably and civilly together.' },
-//     { question: 'Type of case.', answer: 'Child Issues'},
-//     { question: 'Please specify location', answer: 'Online' },
-//   ];
-  
-  
-//   const startX = 50;
-//   let currentY = pageHeight - 50;
-//   const questionWidth = 500; // Adjust the width as needed
-
-
-//   for (const { question, answer } of questionsAndAnswers) {
-
-//     const numberOfLines = getLinesNumber(question)
-
-//     const wrappedQuestion = pages[pageNumber].drawText(`${question}`, {
-//       x: startX,
-//       y: currentY,
-//       font: BoldFont ,
-//       maxWidth: questionWidth,
-//       lineHeight: 25, // Adjust as needed for spacing
-//     });
-//     // Check if wrappedQuestion is defined before accessing its height property
-//     // const questionHeight = wrappedQuestion ? (wrappedQuestion.height || 0) : 0;
-
-//     currentY -=  (17 * numberOfLines) + 32;
-//     // console.log("Question Height", questionHeight)
-
-//     // if (answer) {
-//     //   const wrappedAnswer = pages[pageNumber].drawText(`${answer}`, {
-//     //     x: startX,
-//     //     y: currentY,
-//     //     font: font,
-//     //     maxWidth: questionWidth,
-//     //     lineHeight: 25,
-//     //   });
-
-//     //   const numOfAnswerLines = getLinesNumber(answer)
-
-//     //   // Check if wrappedAnswer is defined before accessing its height property
-//     //   currentY -= (17 * numOfAnswerLines) + 30;
-//     // } 
-
-
-//     if (answer) {
-//       const numOfAnswerLines = getLinesNumber(answer);
-
-//       pages[pageNumber].drawText(`${answer}`, {
-//         x: startX,
-//         y: currentY,
-//         font: font,
-//         maxWidth: questionWidth,
-//         lineHeight: 25,
-//       });
-
-//       currentY -= (17 * numOfAnswerLines) + 30;
-//     } 
-
-
-//     // Move to the next page if necessary
-//     if (currentY <= 100) {
-
-//       // Add a new page and reset currentY
-//       pageNumber += 1;
-//       currentY = pageHeight - 50;
-//       pages[pageNumber] = pdfDoc.addPage();
-
-//       currentY -= 20;
-//     }
-//   }
-
-
-//   const pdfBytes = await pdfDoc.save();
-//   return pdfBytes;
 // }
 
-
-async function generateMediationSessionRecord(data) {
-  const pdfDoc = await PDFDocument.create();
-  let pages = pdfDoc.getPages;
-  let pageNumber = 0;
-  const pageHeight = 841.89;
-  pages[pageNumber] = pdfDoc.addPage();
-  // console.log(pages[pageNumber])
-  
-  const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
-  const font = await pdfDoc.embedFont('Helvetica');
-  
-  // const getLinesNumber = (string) => {
-  //   if (string === undefined || string === null) {
-  //     return 0;
-  //   }
-  //   return string.length / 35;
-  // }
-
-  const questionsAndAnswers = [
-    { question: 'Submitted At', answer: data.submittedDate},
-    { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
-    { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
-    { question: 'Name of the mediator', answer: data.clientData.mediatorName },
-    { question: 'Date of the session', answer: data.clientData.sessionDate },
-    { question: 'Type of case.', answer: data.clientData.caseType},
-    { question: 'Please specify location', answer: data.clientData.specifyLocation },
-    { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
-    { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
-    { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
-    { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
-    { question: data.keyFacts.children[0]?.['Child One'].firstChildFirstName, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
-    { question: `'Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?'`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
-    { question: `'Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?'`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
-    { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
-    { question: `'What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?'`, answer: '01/04/2015'},
-    { question: 'Do both parents have Parental Responsibility for Rikki Lawson?', answer: 'Yes' },
-    { question: 'Who has parental resposibility for Rikki Lawson?', answer: 'Lewis and Gemma' },
-    { question: 'Do Lewis Lawson and Gemma Dickson have a third child?', answer: 'No' },
-    { question: 'Do Lewis Lawson and Gemma Dickson agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?', answer: 'Yes' },
-    { question: 'Type of mediation', answer: 'Face to Face'},
-    { question: 'Do Lewis Lawson and Gemma Dickson agree to the Agreement to Mediate?', answer: 'Yes' },
-    { question: 'Please list the agreed agenda points', answer: 'Child Arrangements' },
-    { question: 'First agenda point discussed.', answer: 'Child Arrangements' },
-    { question: 'Issues identified', answer: 'Lewis and Gemma have come to mediation to work together with regards to arrangements for Louie and Rikki amicably and civilly together.' },
-    { question: 'Type of case.', answer: 'Child Issues'},
-    { question: 'Please specify location', answer: 'Online' },
-  ];
-  
-      
-      const startX = 50;
-      let currentY = pageHeight - 50;
-      const questionWidth = 500; // Adjust the width as needed
-
-
-      for (const { question, answer } of questionsAndAnswers) {
-
-      
-
-        const validQuestion = question || 'N/A'; 
-        const validAnswer = answer  ||  'N/A'; 
-      
-        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
-      
-
-      // Additional space between Question and Answer
-        const gapBetweenQA = 15;
-        currentY -= gapBetweenQA;
-
-      if (answer) {
-        currentY = drawTextBlock(pages[pageNumber], validAnswer , startX, currentY, font, questionWidth, 25);
-      }
-
-      // Additional space between this Q&A and the next
-      const gapBetweenBlocks = 20;
-      currentY -= gapBetweenBlocks;
-
-   
-
-    // Move to the next page if necessary
-    if (currentY <= 100) {
-
-      // Add a new page and reset currentY
-      pageNumber += 1;
-      currentY = pageHeight - 50;
-      pages[pageNumber] = pdfDoc.addPage();
-
-      currentY -= 20;
-    }
-  }
-
-
-  const pdfBytes = await pdfDoc.save();
-  return pdfBytes;
-}
-// const generateAndSavePDF = async (MIAM2C1data) => {
-//   try {
-//     const filePath = path.join(__dirname, '../uploads/pdfs/MIAM-2-temp.pdf');
-//     const pdfTemplateBytes = fs.readFileSync(filePath);
-//     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
-
-//     const pages = pdfDoc.getPages();
-//     const Page1 = pages[0];
-//     const Page2 = pages[1];
-
-
-//     const font = await pdfDoc.embedFont('Helvetica');
-//     Page1.setFont(font);
-//     Page1.setFontSize(12);
-//     Page2.setFont(font);
-//     Page2.setFontSize(12);
-
-
-//     const mediationDetails = MIAM2C1data.mediationDetails;
-//     const caseDetails = MIAM2C1data.caseDetails;
-//     const comments = MIAM2C1data.comments;
-//     const MediationTypes = MIAM2C1data.MediationTypes;
-//     const FinalComments = MIAM2C1data.FinalComments;
-
-//     // // Add client1 data to the PDF document"first page" 
-//     Page1.drawText(mediationDetails.MediatorName || "", { x: 375, y: 570 });
-//     Page1.drawText(mediationDetails.DateOfMIAM || "", { x: 375, y: 540 });
-//     Page1.drawText(mediationDetails.Location || "", { x: 375, y: 510 });
-
-//     Page1.drawText(caseDetails.privateOrLegalAid || "", { x: 375, y: 415 });
-//     Page1.drawText(caseDetails.paymentMade || "", { x: 375, y: 385 });
-//     Page1.drawText(caseDetails.advancePayment || "", { x: 375, y: 355 });
-
-
-//     Page1.drawText(comments.MediatorComments || "", { x: 375, y: 235 });
-//     Page1.drawText(comments.isClientRequireSignposting || "", { x: 375, y: 205 });
-//     Page1.drawText(comments.isDomesticAbuseOrViolence || "", { x: 375, y: 175 });
-//     Page1.drawText(comments.isPoliceInvolve || "", { x: 375, y: 145 });
-//     Page1.drawText(comments.isSocialServiceInvolve || "", { x: 375, y: 115 });
-//     Page1.drawText(comments.isSafeguardingIssues || "", { x: 415, y: 85 });
-
-
-//     //the second page 
-//     Page2.drawText(MediationTypes.isClientWillingToGoWithMediation || "", { x: 375, y: 670 });
-//     Page2.drawText(MediationTypes.mediationFormPreference || "", { x: 375, y: 640 });
-//     Page2.drawText(MediationTypes.confirmLegalDispute || "", { x: 375, y: 610 });
-//     Page2.drawText(MediationTypes.isChildInclusiveAppropriate || "", { x: 375, y: 580 });
-//     Page2.drawText(MediationTypes.informationGivenToClient || "", { x: 375, y: 505 });
-//     Page2.drawText(MediationTypes.clientPreference || "", { x: 375, y: 445 });
-
-//     Page2.drawText(FinalComments.isSuitable || "", { x: 375, y: 300 });
-//     Page2.drawText(FinalComments.uploadCourtForm || "", { x: 375, y: 270 });
-//     Page2.drawText(FinalComments.CommentsToDMS || "", { x: 375, y: 240 });
-
-
-
-
-//     // Save the PDF document to a buffer
-//     const pdfBytes = await pdfDoc.save();
-
-//     // Save the PDF to the "uploads" folder
-//     const pdfSavePath = path.join(__dirname, '../uploads/generated2.pdf');
-//     fs.writeFileSync(pdfSavePath, pdfBytes);
-
-
-
-//     return 'PDF generated and saved successfully';
-//   } catch (error) {
-//     console.error('Error generating and saving PDF:', error);
-//     throw error;
-//   }
-// };
 
 
 function getLinesNumber(text) {
