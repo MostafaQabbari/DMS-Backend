@@ -364,11 +364,11 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
       
           // Set personal details
            form.getTextField('FillText1').setText(reference); // Get from the database
-          form.getTextField('FillText2').setText(personalDetails.surname);
-          form.getTextField('FillText4').setText(personalDetails.firstName);
-          form.getTextField('FillText3').setText(personalDetails.differentSurnameAtBirth);
+          form.getTextField('FillText2').setText(personalDetails?.surname);
+          form.getTextField('FillText4').setText(personalDetails?.firstName);
+          form.getTextField('FillText3').setText(personalDetails?.differentSurnameAtBirth);
       
-          const dateOfBirth = personalDetails.dateOfBirth;
+          const dateOfBirth = personalDetails?.dateOfBirth;
           const [year, month, day] = dateOfBirth.split('-');
           form.getTextField('Comb3').setText(day);
           form.getTextField('Comb31').setText(month);
@@ -499,16 +499,16 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText40').setText(result5StringOther);
             //PartB point 7 client
                 const  notIncludedInFinancialAssets = fieldData.notIncludedInFinancialAssets;
-                form.getTextField('FillText110').setText(notIncludedInFinancialAssets.savingsAmount);
+                form.getTextField('FillText110').setText(notIncludedInFinancialAssets?.savingsAmount);
                 form.getTextField('FillText111').setText(notIncludedInFinancialAssets.investmentsAmount);
                 form.getTextField('FillText112').setText(notIncludedInFinancialAssets.valuableItemsWorth);
                 form.getTextField('FillText113').setText(notIncludedInFinancialAssets.otherCapitalValue);
-                const totalCapitalNumber = parseFloat(notIncludedInFinancialAssets.savingsAmount) + parseFloat(notIncludedInFinancialAssets.investmentsAmount) + parseFloat(notIncludedInFinancialAssets.valuableItemsWorth) + parseFloat(notIncludedInFinancialAssets.otherCapitalValue);
+                const totalCapitalNumber = parseFloat(notIncludedInFinancialAssets?.savingsAmount) + parseFloat(notIncludedInFinancialAssets.investmentsAmount) + parseFloat(notIncludedInFinancialAssets.valuableItemsWorth) + parseFloat(notIncludedInFinancialAssets.otherCapitalValue);
                 const totalCapitalString = totalCapitalNumber.toString();
                 form.getTextField('FillText118').setText(totalCapitalString);
             //PartB point 7 partner
                 const  partnerFinancialAssets = fieldData.partnerFinancialAssets;
-                form.getTextField('FillText114').setText(partnerFinancialAssets.savingsAmount);
+                form.getTextField('FillText114').setText(partnerFinancialAssets?.savingsAmount);
                 form.getTextField('FillText115').setText(partnerFinancialAssets.investmentsAmount);
                 form.getTextField('FillText116').setText(partnerFinancialAssets.valuableItemsWorth);
                 form.getTextField('FillText117').setText(partnerFinancialAssets.otherCapitalValue);
@@ -639,9 +639,9 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
       
           // Set personal details
           form.getTextField('FillText1').setText(reference); // Get from the database
-          form.getTextField('FillText2').setText(personalDetails.surname);
-          form.getTextField('FillText4').setText(personalDetails.firstName);
-          form.getTextField('FillText3').setText(personalDetails.differentSurnameAtBirth);
+          form.getTextField('FillText2').setText(personalDetails?.surname);
+          form.getTextField('FillText4').setText(personalDetails?.firstName);
+          form.getTextField('FillText3').setText(personalDetails?.differentSurnameAtBirth);
       
           const dateOfBirth = personalDetails.dateOfBirth;
           const [year, month, day] = dateOfBirth.split('-');
@@ -649,14 +649,14 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           form.getTextField('Comb31').setText(month);
           form.getTextField('Comb2').setText(year);
       
-          form.getTextField('FillText9').setText(personalDetails.address.street);
+          form.getTextField('FillText9').setText(personalDetails?.address?.street);
           form.getTextField('FillText19').setText("6"); // Add the rest of the address data
-          form.getTextField('FillText20').setText(personalDetails.address.postcode);
+          form.getTextField('FillText20').setText(personalDetails?.address?.postcode);
       
           form.getTextField('FillText8').setText("In employment");
       
           // Set National Insurance number into separate fields
-          const niNumber = fieldData.personalDetails.nationalInsuranceNumber;
+          const niNumber = fieldData.personalDetails?.nationalInsuranceNumber;
           const niNumberWithoutSpaces = niNumber.replace(/\s+/g, ''); // Removes all spaces
           ['Comb1', 'Comb11', 'Comb4', 'Comb5', 'Comb6', 'Comb7', 'Comb8', 'Comb9', 'Comb10']
             .forEach((fieldName, index) => form.getTextField(fieldName).setText(niNumberWithoutSpaces[index]));
@@ -676,9 +676,9 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           const properties1 = fieldData.properties[0];
           const properties2 = fieldData.properties[1];
           const assets = fieldData.assets;
-          const isOwnproperty = fieldData.case.nameInDeedsProperty;
+          const isOwnproperty = fieldData.case?.nameInDeedsProperty;
           const checkboxField3 = form.getField('Case is about ownership or possession of assets');
-          const caseAbout = fieldData.case.caseAbout;
+          const caseAbout = fieldData.case?.caseAbout;
           const share = properties1?.propertyShare
             const value1 = properties1?.propertyWorth;
             const value2 = properties1?.outstandingMortgageProperty;
@@ -730,13 +730,13 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText103').setText(theDifferenceStringOther);
                 form.getTextField('FillText97').setText(result5StringOther);
             //PartA point 7
-                form.getTextField('FillText24').setText(assets.backAccountSavingAmount);
-                form.getTextField('FillText25').setText(assets.investmentsAmount);
-                form.getTextField('FillText55').setText(assets.valuableItemsAmount);
-                const otherCapitalnumber =  parseFloat(assets.pensionsValue) + parseFloat(assets.otherPartyPensionValue);
+                form.getTextField('FillText24').setText(assets?.backAccountSavingAmount);
+                form.getTextField('FillText25').setText(assets?.investmentsAmount);
+                form.getTextField('FillText55').setText(assets?.valuableItemsAmount);
+                const otherCapitalnumber =  parseFloat(assets?.pensionsValue) + parseFloat(assets?.otherPartyPensionValue);
                 const otherCapitalString = otherCapitalnumber.toString();
                 form.getTextField('FillText67').setText(otherCapitalString);
-                const totalCapitalNumber = parseFloat(assets.backAccountSavingAmount) + parseFloat(assets.investmentsAmount) + parseFloat(assets.valuableItemsAmount) + otherCapitalnumber ;
+                const totalCapitalNumber = parseFloat(assets?.backAccountSavingAmount) + parseFloat(assets?.investmentsAmount) + parseFloat(assets?.valuableItemsAmount) + otherCapitalnumber ;
                 const totalCapitalString = totalCapitalNumber.toString();
                 form.getTextField('FillText101').setText(totalCapitalString);
 
@@ -774,36 +774,36 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText40').setText(result5StringOther);
             //PartB point 7 client
                 const  financialDetails = fieldData.financialDetails;
-                form.getTextField('FillText110').setText(financialDetails.savingsAmount);
-                form.getTextField('FillText111').setText(financialDetails.investmentsAmount);
-                form.getTextField('FillText112').setText(financialDetails.valuableItemsWorth);
-                form.getTextField('FillText113').setText(financialDetails.otherCapitalValue);
-                const totalCapitalNumber = parseFloat(financialDetails.savingsAmount) + parseFloat(financialDetails.investmentsAmount) + parseFloat(financialDetails.valuableItemsWorth) + parseFloat(financialDetails.otherCapitalValue);
+                form.getTextField('FillText110').setText(financialDetails?.savingsAmount);
+                form.getTextField('FillText111').setText(financialDetails?.investmentsAmount);
+                form.getTextField('FillText112').setText(financialDetails?.valuableItemsWorth);
+                form.getTextField('FillText113').setText(financialDetails?.otherCapitalValue);
+                const totalCapitalNumber = parseFloat(financialDetails?.savingsAmount) + parseFloat(financialDetails.investmentsAmount) + parseFloat(financialDetails.valuableItemsWorth) + parseFloat(financialDetails.otherCapitalValue);
                 const totalCapitalString = totalCapitalNumber.toString();
                 form.getTextField('FillText118').setText(totalCapitalString);
             //PartB point 7 partner
                 const  partnerFinancialAssets = fieldData.partnerFinancialAssets;
-                form.getTextField('FillText114').setText(partnerFinancialAssets.savingsAmount);
-                form.getTextField('FillText115').setText(partnerFinancialAssets.investmentsAmount);
-                form.getTextField('FillText116').setText(partnerFinancialAssets.valuableItemsWorth);
-                form.getTextField('FillText117').setText(partnerFinancialAssets.otherCapitalValue);
+                form.getTextField('FillText114').setText(partnerFinancialAssets?.savingsAmount);
+                form.getTextField('FillText115').setText(partnerFinancialAssets?.investmentsAmount);
+                form.getTextField('FillText116').setText(partnerFinancialAssets?.valuableItemsWorth);
+                form.getTextField('FillText117').setText(partnerFinancialAssets?.otherCapitalValue);
 
             }
             //PartC
             const otherDetails = fieldData.otherDetails;
-            form.getTextField('FillText5').setText(otherDetails.lastMonthMortgagePayment);
-            form.getTextField('FillText7').setText(otherDetails.lastMonthRentPay);
-            const childernUnder15Number =  parseFloat(otherDetails.childrenUnder15)*338.9;
+            form.getTextField('FillText5').setText(otherDetails?.lastMonthMortgagePayment);
+            form.getTextField('FillText7').setText(otherDetails?.lastMonthRentPay);
+            const childernUnder15Number =  parseFloat(otherDetails?.childrenUnder15)*338.9;
             const childernUnder15String = childernUnder15Number.toString();
-            const childernAbove16Number =  parseFloat(otherDetails.childrenOver15)*338.9;
+            const childernAbove16Number =  parseFloat(otherDetails?.childrenOver15)*338.9;
             const childernAbove16String = childernAbove16Number.toString();
             form.getTextField('FillText12').setText(childernUnder15String);
             form.getTextField('FillText13').setText(childernAbove16String);
 
             form.getTextField('FillText16').setText("45");
-            form.getTextField('FillText18').setText(otherDetails.lastMonthMaintenancePayment);
-            form.getTextField('FillText27').setText(otherDetails.lastMonthChildCarePayment);
-            form.getTextField('FillText28').setText(otherDetails.criminalLegalAidPerMonthPayment);
+            form.getTextField('FillText18').setText(otherDetails?.lastMonthMaintenancePayment);
+            form.getTextField('FillText27').setText(otherDetails?.lastMonthChildCarePayment);
+            form.getTextField('FillText28').setText(otherDetails?.criminalLegalAidPerMonthPayment);
 
             
 
@@ -813,16 +813,16 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 
       
             const textField = form.getTextField('FillText35');
-            if (fieldData.case.accommodationType == 'Privately rented') {
+            if (fieldData?.case?.accommodationType == 'Privately rented') {
                 const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING IN RENTED ACCOMMODATION IN A HOUSING ASSOCIATION. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            } else if (fieldData.case.accommodationType == 'My own property'){
+            } else if (fieldData?.case?.accommodationType == 'My own property'){
                 const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING IN OWNED ACCOMMODATION \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            }else if (fieldData.case.accommodationType == 'I live with friend or family and I pay rent'){
+            }else if (fieldData?.case?.accommodationType == 'I live with friend or family and I pay rent'){
                 const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
-            }else if (fieldData.case.accommodationType == "I live with friend or family and I pay rent"){
+            }else if (fieldData?.case?.accommodationType == "I live with friend or family and I pay rent"){
                 const newText = `THE APPLICANT IS IN RECEIPT OF LOW INCOME/SELF-EMPLOYED.\nTHE APPLICANT IS LIVING WITH A FRIEND OR FAMILY AND IS NOT PAYING RENT. \nTHE APPLICANT IS ENTITLED TO LEGAL AID.`;
                 textField.setText(newText);
             }
@@ -864,7 +864,7 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getField('CheckBox15').check();
             }
         
-            if (fieldData.previousRelationshipDetails.isMarriedTo === 'Yes') {
+            if (fieldData.previousRelationshipDetails?.isMarriedTo === 'Yes') {
                 form.getField('Is person married to/have they ever been married to other party in didispute').check();
             }
         
