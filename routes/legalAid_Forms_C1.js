@@ -382,8 +382,9 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
       
           // Set National Insurance number into separate fields
           const niNumber = fieldData.personalDetails.nationalInsuranceNumber;
+          const niNumberWithoutSpaces = niNumber.replace(/\s+/g, ''); // Removes all spaces
           ['Comb1', 'Comb11', 'Comb4', 'Comb5', 'Comb6', 'Comb7', 'Comb8', 'Comb9', 'Comb10']
-            .forEach((fieldName, index) => form.getTextField(fieldName).setText(niNumber[index]));
+            .forEach((fieldName, index) => form.getTextField(fieldName).setText(niNumberWithoutSpaces[index]));
       
           // Set checkbox for age below 18
           const result = isAgeBelow18(dateOfBirth);
@@ -397,24 +398,24 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           checkboxField2[shouldCheckCohabitingOrMarried ? 'check' : 'uncheck']();
       
           // Set properties and assets
-          const properties1 = fieldData.properties[0];
-          const properties2 = fieldData.properties[1];
+          const properties1 = fieldData?.properties[0];
+          const properties2 = fieldData?.properties[1];
           const assets = fieldData.assets;
           const isOwnproperty = fieldData.accommodation.ownProperty;
           const checkboxField3 = form.getField('Case is about ownership or possession of assets');
           const caseAbout = fieldData.case.caseAbout;
-          const share = properties1.propertyShare
-            const value1 = properties1.propertyWorth;
-            const value2 = properties1.outstandingMortgageProperty;
+          const share = properties1?.propertyShare
+            const value1 = properties1?.propertyWorth;
+            const value2 = properties1?.outstandingMortgageProperty;
             const theDifference = value1 - value2;
             const shareDecimalValue = parseFloat(share) / 100;
             const result5 = theDifference * shareDecimalValue ;
             const theDifferenceString = theDifference.toString();
             const result5String = result5.toString();
 
-            const shareOther = properties2.propertyShare
-            const value1Other = properties2.propertyWorth;
-            const value2Other = properties2.outstandingMortgageProperty;
+            const shareOther = properties2?.propertyShare
+            const value1Other = properties2?.propertyWorth;
+            const value2Other = properties2?.outstandingMortgageProperty;
             const theDifferenceOther = value1Other - value2Other;
             const shareDecimalValueOther = parseFloat(shareOther) / 100;
             const result5Other = theDifferenceOther * shareDecimalValueOther ;
@@ -425,11 +426,11 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             if(caseAbout == "Financial Arrangements" || caseAbout == "Both" ){
                 checkboxField3.check();
             //Main home
-                form.getTextField('FillText105').setText(properties1.propertyWorth);
-                form.getTextField('FillText106').setText(properties1.outstandingMortgageProperty);
+                form.getTextField('FillText105').setText(properties1?.propertyWorth);
+                form.getTextField('FillText106').setText(properties1?.outstandingMortgageProperty);
                 // form.get('SMOD Main home held in joint names with opponent').setText(properties.isPropertyInJointNamesWithYourEx-partner);
                 const checkboxField4 = await form.getField('SMOD Main home held in joint names with opponent');
-                const isJointNames = properties1.isPropertyInJointNamesWithYourExpartner;
+                const isJointNames = properties1?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNames == "Yes" ){
                     checkboxField4.check();
@@ -440,10 +441,10 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText102').setText(theDifferenceString);
                 form.getTextField('FillText80').setText(result5String);
             //Other property
-                form.getTextField('FillText107').setText(properties2.propertyWorth);
-                form.getTextField('FillText108').setText(properties2.outstandingMortgageProperty);
+                form.getTextField('FillText107').setText(properties2?.propertyWorth);
+                form.getTextField('FillText108').setText(properties2?.outstandingMortgageProperty);
                 const checkboxField5 = await form.getField('SMOD other property held in joint names with opponent');
-                const isJointNamesOtherProperties = properties2.isPropertyInJointNamesWithYourExpartner;
+                const isJointNamesOtherProperties = properties2?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNamesOtherProperties == "Yes" ){
                     checkboxField5.check();
@@ -468,11 +469,11 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 //PartB
                 checkboxField3.uncheck();
                 //Main home
-                form.getTextField('FillText56').setText(properties1.propertyWorth);
-                form.getTextField('FillText57').setText(properties1.outstandingMortgageProperty);
+                form.getTextField('FillText56').setText(properties1?.propertyWorth);
+                form.getTextField('FillText57').setText(properties1?.outstandingMortgageProperty);
                 // form.get('SMOD Main home held in joint names with opponent').setText(properties.isPropertyInJointNamesWithYourEx-partner);
                 const checkboxField4 = await form.getField('Main home held in joint names with opponent');
-                const isJointNames = properties1.isPropertyInJointNamesWithYourExpartner;
+                const isJointNames = properties1?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNames == "Yes" ){
                     checkboxField4.check();
@@ -483,10 +484,10 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText26').setText(theDifferenceString);
                 form.getTextField('FillText36').setText(result5String);
             //Other property
-                form.getTextField('FillText58').setText(properties2.propertyWorth);
-                form.getTextField('FillText59').setText(properties2.outstandingMortgageProperty);
+                form.getTextField('FillText58').setText(properties2?.propertyWorth);
+                form.getTextField('FillText59').setText(properties2?.outstandingMortgageProperty);
                 const checkboxField5 = await form.getField('Other property held in joint names with opponent');
-                const isJointNamesOtherProperties = properties2.isPropertyInJointNamesWithYourExpartner;
+                const isJointNamesOtherProperties = properties2?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNamesOtherProperties == "Yes" ){
                     checkboxField5.check();
@@ -677,18 +678,18 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           const isOwnproperty = fieldData.case.nameInDeedsProperty;
           const checkboxField3 = form.getField('Case is about ownership or possession of assets');
           const caseAbout = fieldData.case.caseAbout;
-          const share = properties1.propertyShare
-            const value1 = properties1.propertyWorth;
-            const value2 = properties1.outstandingMortgageProperty;
+          const share = properties1?.propertyShare
+            const value1 = properties1?.propertyWorth;
+            const value2 = properties1?.outstandingMortgageProperty;
             const theDifference = value1 - value2;
             const shareDecimalValue = parseFloat(share) / 100;
             const result5 = theDifference * shareDecimalValue ;
             const theDifferenceString = theDifference.toString();
             const result5String = result5.toString();
 
-            const shareOther = properties2.propertyShare
-            const value1Other = properties2.propertyWorth;
-            const value2Other = properties2.outstandingMortgageProperty;
+            const shareOther = properties2?.propertyShare
+            const value1Other = properties2?.propertyWorth;
+            const value2Other = properties2?.outstandingMortgageProperty;
             const theDifferenceOther = value1Other - value2Other;
             const shareDecimalValueOther = parseFloat(shareOther) / 100;
             const result5Other = theDifferenceOther * shareDecimalValueOther ;
@@ -699,11 +700,11 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             if(caseAbout == "Financial Arrangements" || caseAbout == "Both" ){
                 checkboxField3.check();
             //Main home
-                form.getTextField('FillText105').setText(properties1.propertyWorth);
-                form.getTextField('FillText106').setText(properties1.outstandingMortgageProperty);
+                form.getTextField('FillText105').setText(properties1?.propertyWorth);
+                form.getTextField('FillText106').setText(properties1?.outstandingMortgageProperty);
                 // form.get('SMOD Main home held in joint names with opponent').setText(properties.isPropertyInJointNamesWithYourEx-partner);
                 const checkboxField4 = await form.getField('SMOD Main home held in joint names with opponent');
-                const isJointNames = properties1.isPropertyInJointNamesWithYourExpartner;
+                const isJointNames = properties1?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNames == "Yes" ){
                     checkboxField4.check();
@@ -714,10 +715,10 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText102').setText(theDifferenceString);
                 form.getTextField('FillText80').setText(result5String);
             //Other property
-                form.getTextField('FillText107').setText(properties2.propertyWorth);
-                form.getTextField('FillText108').setText(properties2.outstandingMortgageProperty);
+                form.getTextField('FillText107').setText(properties2?.propertyWorth);
+                form.getTextField('FillText108').setText(properties2?.outstandingMortgageProperty);
                 const checkboxField5 = await form.getField('SMOD other property held in joint names with opponent');
-                const isJointNamesOtherProperties = properties2.isPropertyInJointNamesWithYourExpartner;
+                const isJointNamesOtherProperties = properties2?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNamesOtherProperties == "Yes" ){
                     checkboxField5.check();
@@ -742,11 +743,11 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 //PartB
                 checkboxField3.uncheck();
                 //Main home
-                form.getTextField('FillText56').setText(properties1.propertyWorth);
-                form.getTextField('FillText57').setText(properties1.outstandingMortgageProperty);
+                form.getTextField('FillText56').setText(properties1?.propertyWorth);
+                form.getTextField('FillText57').setText(properties1?.outstandingMortgageProperty);
                 // form.get('SMOD Main home held in joint names with opponent').setText(properties.isPropertyInJointNamesWithYourEx-partner);
                 const checkboxField4 = await form.getField('Main home held in joint names with opponent');
-                const isJointNames = properties1.isPropertyInJointNamesWithYourExpartner;
+                const isJointNames = properties1?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNames == "Yes" ){
                     checkboxField4.check();
