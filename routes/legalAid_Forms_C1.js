@@ -657,8 +657,9 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
       
           // Set National Insurance number into separate fields
           const niNumber = fieldData.personalDetails.nationalInsuranceNumber;
+          const niNumberWithoutSpaces = niNumber.replace(/\s+/g, ''); // Removes all spaces
           ['Comb1', 'Comb11', 'Comb4', 'Comb5', 'Comb6', 'Comb7', 'Comb8', 'Comb9', 'Comb10']
-            .forEach((fieldName, index) => form.getTextField(fieldName).setText(niNumber[index]));
+            .forEach((fieldName, index) => form.getTextField(fieldName).setText(niNumberWithoutSpaces[index]));
       
           // Set checkbox for age below 18
           const result = isAgeBelow18(dateOfBirth);
@@ -758,10 +759,10 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
                 form.getTextField('FillText26').setText(theDifferenceString);
                 form.getTextField('FillText36').setText(result5String);
             //Other property
-                form.getTextField('FillText58').setText(properties2.propertyWorth);
-                form.getTextField('FillText59').setText(properties2.outstandingMortgageProperty);
+                form.getTextField('FillText58').setText(properties2?.propertyWorth);
+                form.getTextField('FillText59').setText(properties2?.outstandingMortgageProperty);
                 const checkboxField5 = await form.getField('Other property held in joint names with opponent');
-                const isJointNamesOtherProperties = properties2.isPropertyInJointNamesWithYourExpartner;
+                const isJointNamesOtherProperties = properties2?.isPropertyInJointNamesWithYourExpartner;
                 
                 if(isJointNamesOtherProperties == "Yes" ){
                     checkboxField5.check();
