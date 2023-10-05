@@ -859,7 +859,7 @@ async function createMediationRecordUpload(data, caseID ,subDate) {
 
       { question: 'What is the full name of the forth child?', answer: data.keyFacts.children[3]?.['Child Four'].fourthChildFullName},
       { question: `What is ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}’s date of birth?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildDateOfBirth },
-      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[0]?.['Child Four'].fourthChildBothParentalResponsibility },
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildBothParentalResponsibility },
       { question: `Who has parental resposibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildParentalResponsibility },
 
      
