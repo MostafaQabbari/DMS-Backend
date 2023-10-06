@@ -4,6 +4,9 @@ const Case = require('../models/case');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow")
+const { PDFDocument } = require("pdf-lib");
+const { google } = require("googleapis");
+const stream = require("stream");
 
 
 const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
@@ -319,6 +322,9 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     let C2invitation = req.body;
     phoneCallAppointment_C2_C2reply = req.body.phoneCallAppointment
 
+
+    await createC2ReplyUpload( C2invitation , currentCase );
+
     let statusRemider = {
       reminderID: `${currentCase._id}-statusRemider`,
       reminderTitle: `${currentCase.Reference}-Invitation to C2 sent`,
@@ -448,13 +454,194 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 })
 
 
+async function createC2ReplyUpload(data, caseID ) {
+  try {
+
+    const pdfDoc = await PDFDocument.create();
+    let pages = pdfDoc.getPages;
+    let pageNumber = 0;
+    const pageHeight = 841.89;
+    pages[pageNumber] = pdfDoc.addPage();
+    // console.log(pages[pageNumber])
+    
+    const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
+    const font = await pdfDoc.embedFont('Helvetica');
+    
+
+  
+    const questionsAndAnswers = [
+      { question: 'Are you willing to come to mediation?', answer: data.InvitationAnswer?.willingToComeToMediation},
+      { question: 'First name', answer: data.InvitationAnswer?.firstName },
+      { question: 'surname/family name', answer: data.InvitationAnswer?.surname },
+      { question: 'Email address', answer: data.InvitationAnswer?.email },
+      { question: 'the other person in the conflict first name', answer: data.InvitationAnswer?.otherPersonFirstName },
+      { question: 'the other person in the conflict surname/family name', answer: data.InvitationAnswer?.otherPersonSurname},
+      { question: 'Are you a private client or you think you might be entitled to legal aid?', answer: data.InvitationAccepted?.privateOrLegal },
+      { question: 'Are you willing to make an application for legal aid for family mediation?', answer: data.InvitationAccepted?.willingToMakeLegalAidApplication },
+      { question: `Are you in receipt of any of these specific benefits? (Universal Credit, Income Support, Employment and Support Allowance Income-Related, Jobseeker's allowance)`, answer: data.InvitationAccepted?.isReceiptOfAnyOfTheseSpecificBenefits },
+      { question: 'Do you think you might be entitled to legal aid because you are on a low income/no income/homeless?', answer: data.InvitationAccepted?.isEntitledToLegalAid },
+      { question: 'Would you still like to make an application for legal aid?', answer: data.InvitationAccepted?.isStillLikeToMakeAnApplicationForLegalAid },
+      { question: `Telephone number`, answer: data.InvitationAccepted?.phone },
+      { question: `the time you would like us to call you back`, answer: data.phoneCallAppointment },
+    
+    ];
+    
+        
+        const startX = 50;
+        let currentY = pageHeight - 50;
+        const questionWidth = 500; // Adjust the width as needed
+  
+  
+
+    
+    for (const { question, answer } of questionsAndAnswers) {
+      const validQuestion = question || '';
+      const validAnswer = answer || '';
+    
+      // Check if the answer is not an empty string before drawing
+      if (validAnswer.trim() !== '') {
+        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+    
+        // Additional space between Question and Answer
+        const gapBetweenQA = 15;
+        currentY -= gapBetweenQA;
+    
+        currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
+
+        // Additional space between this Q&A and the next
+        const gapBetweenBlocks = 25;
+        currentY -= gapBetweenBlocks;
+      }
+    
+
+    
+      // Move to the next page if necessary
+      if (currentY <= 100) {
+        // Add a new page and reset currentY
+        pageNumber += 1;
+        currentY = pageHeight - 50;
+        pages[pageNumber] = pdfDoc.addPage();
+    
+        currentY -= 20;
+      }
+    }
+    
+
+
+    const pdfBytes = await pdfDoc.save();
+
+    const currentCase = await Case.findById(caseID);
+
+    const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+
+    const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+
+    const folderId = currentCase.folderID;
+
+    // console.log(folderId);
+    // console.log(sharingGmail);
+
+
+    const auth = await google.auth.getClient({
+
+      keyFile: config.credentialFile1,
+
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+    });
+
+
+
+    const drive = google.drive({ version: "v3", auth });
+
+    // Create a readable stream from the PDF bytes
+    const readableStream = new stream.Readable({
+      read() {
+        this.push(pdfBytes);
+        this.push(null);
+      },
+    });
+
+    // Upload the PDF to the created folder
+    const fileMetadata = {
+      name: `"C2Reply.pdf"`,
+      parents: [folderId],
+    };
+
+    const media = {
+      mimeType: "application/pdf",
+      body: readableStream,
+    };
+    await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+
+
+    // Call the function with the folder ID and personal account email
+    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+   
+    console.log("PDF created and uploaded successfully");
+  } catch (error) {
+    console.error("Error creating PDF and uploading to Google Drive:", error);
+  }
+}
 
 
 
 
+async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+  try {
+    const authClient = await google.auth.getClient({
+      keyFile: config.credentialFile1,
+      scopes: ['https://www.googleapis.com/auth/drive'],
+    });
+
+    const drive = google.drive({ version: 'v3', auth: authClient });
+
+    const permission = {
+      type: 'user',
+      role: 'writer',
+      emailAddress: personalAccountEmail,
+    };
+
+    await drive.permissions.create({
+      fileId: folderId,
+      requestBody: permission,
+    });
+
+    console.log('Folder shared successfully!');
+  } catch (error) {
+    console.error('Error sharing folder:', error.message);
+  }
+}
 
 
+function getLinesNumber(text) {
+  // Check if 'text' is defined and not null before accessing its 'length' property
+  if (text && typeof text === 'string') {
+    return text.length / 35;
+  } else {
+    // Handle the case where 'text' is undefined or not a string
+    return 0; // Or some default value or error handling logic
+  }
+}
 
+const drawTextBlock = (page, text, startX, startY, font, maxWidth, lineHeight) => {
+  if (typeof text === 'undefined' || text === null) {
+    return startY; // If text is not provided, don't draw and return the original Y-coordinate.
+  }
+  page.drawText(text, {
+    x: startX,
+    y: startY,
+    font,
+    maxWidth,
+    lineHeight,
+  });
+  const numberOfLines = getLinesNumber(text);
+  return startY - (lineHeight * numberOfLines);
+};
 
 
 
