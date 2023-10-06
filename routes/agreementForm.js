@@ -426,16 +426,16 @@ async function createAgreementFormUpload(data, caseID ) {
   
     
       const questionsAndAnswers = [
-        { question: 'client Declaration Agreed', answer: data.clientDeclarationAgreed},
-        { question: 'online Mediation Agreed', answer: data.onlineMediationAgreed },
-        { question: 'private Or Legal', answer: data.privateOrLegal },
-        { question: 'legalAid Agreed', answer: data.legalAidAgreed },
-        { question: 'payment Agreed', answer: data.paymentAgreed },
-        { question: 'complaints Agreed', answer: data.complaintsAgreed},
-        { question: 'First name', answer: data.personalDetails?.firstName },
-        { question: 'Surname', answer: data.personalDetails?.surname },
-        { question: `contactNumber`, answer: data.personalDetails?.contactNumber },
-        { question: 'Email Address', answer: data.emailAddress },
+        { question: 'client Declaration Agreed', answer: data?.clientDeclarationAgreed},
+        { question: 'online Mediation Agreed', answer: data?.onlineMediationAgreed },
+        { question: 'private Or Legal', answer: data?.privateOrLegal },
+        { question: 'legalAid Agreed', answer: data?.legalAidAgreed },
+        { question: 'payment Agreed', answer: data?.paymentAgreed },
+        { question: 'complaints Agreed', answer: data?.complaintsAgreed},
+        { question: 'First name', answer: data?.personalDetails?.firstName },
+        { question: 'Surname', answer: data?.personalDetails?.surname },
+        { question: `contactNumber`, answer: data?.personalDetails?.contactNumber },
+        { question: 'Email Address', answer: data?.emailAddress },
 
       ];
       
