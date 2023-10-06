@@ -360,7 +360,6 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
           const form = pdfDoc.getForm();
       
           const personalDetails = fieldData.personalDetails;
-          console.log({fieldData});
       
           // Set personal details
            form.getTextField('FillText1').setText(reference); // Get from the database
