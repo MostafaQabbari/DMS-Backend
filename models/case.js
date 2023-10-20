@@ -3,6 +3,30 @@ const Schema = mongoose.Schema;
 
 
 const caseSchema = new Schema({
+  caseReady:{type:Boolean  , default: false}, // this trigger will be before getting data in case list
+  legalAidTableData:{
+    C1:{type:String },
+    C2:{type:String},
+  },
+    // here i will save data for each legal aid client
+  /*
+  ! required object
+      {
+        clientType:"C1|C2",
+        firstName:"",
+        sureName:"",
+        typeOfApplication:"Legal Aid ( Passporting) | Legal Aid ( Low Income / No Income) ",
+        status:"Application received / Approved / Further evidence required / Refused / Closes",
+        DoB:"",
+        postCode:"",
+        phoneNo:"",
+        email:"",
+        address:"",
+        howFoundUs:"",
+        surNameOftheOtherPerson:""
+      }
+
+  */
 
   Reference: { type: String },   //Refrence: C1 Surname & C2 Surnme => which be in conflict 
 

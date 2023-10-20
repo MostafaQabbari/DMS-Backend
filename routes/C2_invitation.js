@@ -314,6 +314,7 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
 
 router.patch("/C2_invitation/:id", async (req, res) => {
   let companyData = {}, clientData = {}, messageBodyinfo = {};
+  let LAtabelObj;
 
   try {
 
@@ -396,8 +397,23 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "No" &&
         req.body.InvitationAccepted.isEntitledToLegalAid == "Yes"
       ) {
+        LAtabelObj={
+          clientType:"C2",
+          firstName:C2invitation.InvitationAnswer.firstName,
+          sureName:C2invitation.InvitationAnswer.surname,
+          typeOfApplication:"Low Income / No Income",
+          status:"Application received",
+          DoB:"",
+          postCode:"",
+          phoneNo:C2invitation.InvitationAccepted.phone,
+          email:C2invitation.InvitationAnswer.email,
+          address:"",
+          howFoundUs:"",
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname
+        }
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2: "Legal Aid - low Income / No Income"
+          caseTypeC2: "Legal Aid - low Income / No Income" ,
+          $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "low Income / No Income"
         // messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C2/${updatedCase._id}`;
@@ -408,9 +424,24 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         req.body.InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
         req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "Yes"
       ) {
+        LAtabelObj={
+          clientType:"C2",
+          firstName:C2invitation.InvitationAnswer.firstName,
+          sureName:C2invitation.InvitationAnswer.surname,
+          typeOfApplication:"Passporting",
+          status:"Application received",
+          DoB:"",
+          postCode:"",
+          phoneNo:C2invitation.InvitationAccepted.phone,
+          email:C2invitation.InvitationAnswer.email,
+          address:"",
+          howFoundUs:"",
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname
+        }
 
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2: "Legal Aid - Passporting"
+          caseTypeC2: "Legal Aid - Passporting",
+          $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "Passporting"
         // messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C2/${updatedCase._id}`;
