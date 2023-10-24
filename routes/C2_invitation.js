@@ -324,7 +324,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     phoneCallAppointment_C2_C2reply = req.body.phoneCallAppointment
 
 
-    await createC2ReplyUpload( C2invitation , currentCase );
+  //! backtoremovecomment=>  await createC2ReplyUpload( C2invitation , currentCase );
 
     let statusRemider = {
       reminderID: `${currentCase._id}-statusRemider`,
@@ -377,12 +377,8 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
       if (req.body.InvitationAnswer.willingToComeToMediation == "No") {
         notifyCompanytoCall_C2Refused(companyData, clientData);
-
-
-
       }
       else if (req.body.InvitationAccepted.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No") {
-
         await Case.findByIdAndUpdate(req.params.id, {
           caseTypeC2: "Private"
         })
@@ -390,13 +386,13 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
         sendMailMIAM1(companyData, clientData, messageBodyinfo);
       }
-
       else if (
         req.body.InvitationAccepted.privateOrLegal == "Legal Aid" &&
         req.body.InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
         req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "No" &&
         req.body.InvitationAccepted.isEntitledToLegalAid == "Yes"
       ) {
+        console.log("📢📢📢📢📢📢")
         LAtabelObj={
           clientType:"C2",
           firstName:C2invitation.InvitationAnswer.firstName,
@@ -411,9 +407,13 @@ router.patch("/C2_invitation/:id", async (req, res) => {
           howFoundUs:"",
           surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname
         }
+        console.log(LAtabelObj)
         await Case.findByIdAndUpdate(req.params.id, {
           caseTypeC2: "Legal Aid - low Income / No Income" ,
-          $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
+          legalAidTableData: {
+            C2: JSON.stringify(LAtabelObj)
+          },
+          //$set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "low Income / No Income"
         // messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C2/${updatedCase._id}`;
@@ -441,7 +441,10 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
         await Case.findByIdAndUpdate(req.params.id, {
           caseTypeC2: "Legal Aid - Passporting",
-          $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
+          legalAidTableData: {
+            C2: JSON.stringify(LAtabelObj)
+          },
+         // $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "Passporting"
         // messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C2/${updatedCase._id}`;

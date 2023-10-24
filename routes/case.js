@@ -436,9 +436,11 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       if (caseType == "private") {
         case_type = 'Private';
         caseReady = true;
+        LAtabelObj = {};
+
       }
       else if (caseType == "LegalAid" && legalAidType == "passporting") {
-        case_type = 'Legal Aid ( Passporting) '
+        case_type = 'Legal Aid ( Passporting)'
         caseReady = false;
         LAtabelObj = {
           clientType: "C1",
@@ -456,7 +458,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         }
       }
       else if (caseType == "LegalAid" && legalAidType == "lowIncome") {
-        case_type = 'Legal Aid ( Low Income / No Income) ';
+        case_type = 'Legal Aid ( Low Income / No Income)';
         caseReady = false;
         LAtabelObj = {
           clientType: "C1",
@@ -517,7 +519,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
           console.log("date", dateOfMAIM)
 
         }
-
+        console.log('LAtabelObj: ', LAtabelObj);
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location, caseType, legalAidType },
@@ -533,11 +535,13 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
               mail: email,
               phoneNumber: phoneNumber
             },
+            legalAidTableData: {
+              C1: JSON.stringify(LAtabelObj)
+            },
             $set: {
 
               'MIAMDates.MIAM_C1_Date': MIAM_C1_Date,
-              'legalAidTableData.C1': JSON.stringify(LAtabelObj)
-
+          
             },
 
 
@@ -545,7 +549,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
             folderID: folderId
           });
 
-        console.log("newCase", newCase[0].startDate)
+        console.log("newCase", newCase[0].legalAidTableData)
 
         let statusRemider = {
           reminderID: `${newCase[0]._id}-statusRemider`,
@@ -929,9 +933,10 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
         //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
         //    console.log(caseMediator)
         //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
-
+        console.log(cases.cases[i].legalAidTableData.C1)
         if (cases.cases[i].legalAidTableData.C1) {
-          parcedC1Data = JSON.parse(cases.cases[i].legalAidTableData.C1)
+          parcedC1Data = JSON.parse(cases.cases[i].legalAidTableData.C1);
+
           let C1Data =
           {
             _id: cases.cases[i]._id,
@@ -948,7 +953,11 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             howFoundUs: parcedC1Data.howFoundUs,
             surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson
           }
-          clientsDataList.push(C1Data)
+          if(C1Data.firstName)
+          {
+
+            clientsDataList.push(C1Data)
+          }
         }
         if (cases.cases[i].legalAidTableData.C2) {
           parcedC2Data = JSON.parse(cases.cases[i].legalAidTableData.C2);
@@ -968,7 +977,7 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             howFoundUs: parcedC2Data.howFoundUs,
             surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson
           }
-          clientsDataList.push(C2Data)
+        if(C2Data.firstName){  clientsDataList.push(C2Data)}
 
         }
 
@@ -1001,7 +1010,11 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             howFoundUs: parcedC1Data.howFoundUs,
             surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson
           }
-          clientsDataList.push(C1Data)
+          if(C1Data.firstName)
+          {
+
+            clientsDataList.push(C1Data)
+          }
         }
         if (cases.cases[i].legalAidTableData.C2) {
           parcedC2Data = JSON.parse(cases.cases[i].legalAidTableData.C2);
@@ -1021,7 +1034,7 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             howFoundUs: parcedC2Data.howFoundUs,
             surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson
           }
-          clientsDataList.push(C2Data)
+          if(C2Data.firstName){  clientsDataList.push(C2Data)}
 
         }
 

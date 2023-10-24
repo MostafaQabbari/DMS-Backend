@@ -147,11 +147,14 @@ router.patch("/passporting_c1/:id", async (req, res) => {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 passporting_C1: StringfyData ,
-                $set: {
-
-                    'legalAidTableData.C1': JSON.stringify(LAtabelObj)
-      
+                legalAidTableData: {
+                    C1: JSON.stringify(LAtabelObj)
                   },
+                // $set: {
+
+                //     'legalAidTableData.C1': JSON.stringify(LAtabelObj)
+      
+                //   },
             })
 
             let companyData = {}, clientData = {}, messageBodyinfo = {}
@@ -230,11 +233,14 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 lowIncome_C1: StringfyData,
-                $set: {
-
-                    'legalAidTableData.C1': JSON.stringify(LAtabelObj)
-      
+                legalAidTableData: {
+                    C1: JSON.stringify(LAtabelObj)
                   },
+                // $set: {
+
+                //     'legalAidTableData.C1': JSON.stringify(LAtabelObj)
+      
+                //   },
             })
 
             let companyData = {}, clientData = {}, messageBodyinfo = {}
@@ -310,11 +316,14 @@ router.patch("/passporting_c2/:id", async (req, res) => {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 passporting_C2: StringfyData,
-                $set: {
-
-                    'legalAidTableData.C2': JSON.stringify(LAtabelObj)
-      
+                legalAidTableData: {
+                    C2: JSON.stringify(LAtabelObj)
                   },
+                // $set: {
+
+                //     'legalAidTableData.C2': JSON.stringify(LAtabelObj)
+      
+                //   },
             })
 
             let companyData = {}, clientData = {}, messageBodyinfo = {}
@@ -390,11 +399,14 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
 
             await Case.findByIdAndUpdate(req.params.id, {
                 lowIncome_C2: StringfyData,
-                $set: {
-
-                    'legalAidTableData.C2': JSON.stringify(LAtabelObj)
-      
+                legalAidTableData: {
+                    C2: JSON.stringify(LAtabelObj)
                   },
+                // $set: {
+
+                //     'legalAidTableData.C2': JSON.stringify(LAtabelObj)
+      
+                //   },
             })
 
             let companyData = {}, clientData = {}, messageBodyinfo = {}

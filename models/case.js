@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 
 const caseSchema = new Schema({
   caseReady:{type:Boolean  , default: false}, // this trigger will be before getting data in case list
-  legalAidTableData:{
-    C1:{type:String },
-    C2:{type:String},
+  legalAidTableData : {
+    C1:{type:String ,default:""},
+    C2:{type:String ,default:""},
   },
     // here i will save data for each legal aid client
   /*
