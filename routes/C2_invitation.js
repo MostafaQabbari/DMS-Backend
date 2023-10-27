@@ -398,14 +398,15 @@ router.patch("/C2_invitation/:id", async (req, res) => {
           firstName:C2invitation.InvitationAnswer.firstName,
           sureName:C2invitation.InvitationAnswer.surname,
           typeOfApplication:"Low Income / No Income",
-          status:"Application received",
+          status:"Application Received",
           DoB:"",
           postCode:"",
           phoneNo:C2invitation.InvitationAccepted.phone,
           email:C2invitation.InvitationAnswer.email,
           address:"",
           howFoundUs:"",
-          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname,
+          caseAbout:"",
         }
         console.log(LAtabelObj)
         await Case.findByIdAndUpdate(req.params.id, {
@@ -429,14 +430,15 @@ router.patch("/C2_invitation/:id", async (req, res) => {
           firstName:C2invitation.InvitationAnswer.firstName,
           sureName:C2invitation.InvitationAnswer.surname,
           typeOfApplication:"Passporting",
-          status:"Application received",
+          status:"Application Received",
           DoB:"",
           postCode:"",
           phoneNo:C2invitation.InvitationAccepted.phone,
           email:C2invitation.InvitationAnswer.email,
           address:"",
           howFoundUs:"",
-          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname,
+          caseAbout:"",
         }
 
         await Case.findByIdAndUpdate(req.params.id, {

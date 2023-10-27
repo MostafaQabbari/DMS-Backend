@@ -261,7 +261,7 @@ function handleTwillioData(targetComp) {
         "twillioNumber": "+13252252480"
     }
 */
-// status:"Application received / Approved / Further evidence required / Refused / Closes",
+// status:"Application received / Approved / Further evidence required / Refused / Closed",
 
 router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req, res, next) => {
     /*

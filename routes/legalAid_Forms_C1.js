@@ -128,14 +128,15 @@ router.patch("/passporting_c1/:id", async (req, res) => {
             firstName:passporting_C1.personalDetails.firstName,
             sureName:passporting_C1.personalDetails.surname,
             typeOfApplication:"Passporting",
-            status:"Application received",
+            status:"Application Received",
             DoB:passporting_C1.personalDetails.dateOfBirth,
             postCode:passporting_C1.personalDetails.address.postcode,
             phoneNo:passporting_C1.personalDetails.telephoneNumber,
             email:passporting_C1.personalDetails.emailAddress,
             address:`${passporting_C1.personalDetails.address.street}, ${passporting_C1.personalDetails.address.city}, ${passporting_C1.personalDetails.address.country} `,
             howFoundUs:passporting_C1.personalDetails.findDMS,
-            surNameOftheOtherPerson:passporting_C1.previousRelationshipDetails.otherPersonSurname
+            surNameOftheOtherPerson:passporting_C1.previousRelationshipDetails.otherPersonSurname,
+            caseAbout:passporting_C1.case.caseAbout,
           }
 
 
@@ -208,14 +209,15 @@ router.patch("/lowIncome_c1/:id", async (req, res) => {
             firstName:lowIncome_C1.personalDetails.firstName,
             sureName:lowIncome_C1.personalDetails.surname,
             typeOfApplication:"Low Income / No Income",
-            status:"Application received",
+            status:"Application Received",
             DoB:lowIncome_C1.personalDetails.dateOfBirth,
             postCode:lowIncome_C1.personalDetails.address.postcode,
             phoneNo:lowIncome_C1.personalDetails.telephoneNumber,
             email:lowIncome_C1.personalDetails.emailAddress,
             address:`${lowIncome_C1.personalDetails.address.street}, ${lowIncome_C1.personalDetails.address.city}, ${lowIncome_C1.personalDetails.address.country} `,
             howFoundUs:lowIncome_C1.personalDetails.findDMS,
-            surNameOftheOtherPerson:lowIncome_C1.previousRelationshipDetails.otherPersonSurname
+            surNameOftheOtherPerson:lowIncome_C1.previousRelationshipDetails.otherPersonSurname,
+            caseAbout:lowIncome_C1.case.caseAbout,
           }
 
         // try {
@@ -291,14 +293,15 @@ router.patch("/passporting_c2/:id", async (req, res) => {
             firstName:passporting_C2.personalDetails.firstName,
             sureName:passporting_C2.personalDetails.surname,
             typeOfApplication:"Passporting",
-            status:"Application received",
+            status:"Application Received",
             DoB:passporting_C2.personalDetails.dateOfBirth,
             postCode:passporting_C2.personalDetails.address.postcode,
             phoneNo:passporting_C2.personalDetails.telephoneNumber,
             email:passporting_C2.personalDetails.emailAddress,
             address:`${passporting_C2.personalDetails.address.street}, ${passporting_C2.personalDetails.address.city}, ${passporting_C2.personalDetails.address.country} `,
             howFoundUs:passporting_C2.personalDetails.findDMS,
-            surNameOftheOtherPerson:passporting_C2.previousRelationshipDetails.otherPersonSurname
+            surNameOftheOtherPerson:passporting_C2.previousRelationshipDetails.otherPersonSurname,
+            caseAbout:passporting_C2.case.caseAbout,
           }
 
 
@@ -371,14 +374,15 @@ router.patch("/lowIncome_c2/:id", async (req, res) => {
             firstName:lowIncome_C2.personalDetails.firstName,
             sureName:lowIncome_C2.personalDetails.surname,
             typeOfApplication:"Low Income / No Income",
-            status:"Application received",
+            status:"Application Received",
             DoB:lowIncome_C2.personalDetails.dateOfBirth,
             postCode:lowIncome_C2.personalDetails.address.postcode,
             phoneNo:lowIncome_C2.personalDetails.telephoneNumber,
             email:lowIncome_C2.personalDetails.emailAddress,
             address:`${lowIncome_C2.personalDetails.address.street}, ${lowIncome_C2.personalDetails.address.city}, ${lowIncome_C2.personalDetails.address.country} `,
             howFoundUs:lowIncome_C2.personalDetails.findDMS,
-            surNameOftheOtherPerson:lowIncome_C2.previousRelationshipDetails.otherPersonSurname
+            surNameOftheOtherPerson:lowIncome_C2.previousRelationshipDetails.otherPersonSurname,
+            caseAbout:lowIncome_C2.case.caseAbout,
           }
 
 

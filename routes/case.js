@@ -462,14 +462,15 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
           firstName: firstName,
           sureName: surName,
           typeOfApplication: "Passporting",
-          status: "Application received",
+          status: "Application Received",
           DoB: "",
           postCode: "",
           phoneNo: phoneNumber,
           email: email,
           address: location,
           howFoundUs: "",
-          surNameOftheOtherPerson: ""
+          surNameOftheOtherPerson: "",
+          caseAbout:"",
         }
       }
       else if (caseType == "LegalAid" && legalAidType == "lowIncome") {
@@ -480,14 +481,15 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
           firstName: firstName,
           sureName: surName,
           typeOfApplication: " Low Income / No Income",
-          status: "Application received",
+          status: "Application Received",
           DoB: "",
           postCode: "",
           phoneNo: phoneNumber,
           email: email,
           address: location,
           howFoundUs: "",
-          surNameOftheOtherPerson: ""
+          surNameOftheOtherPerson: "",
+          caseAbout:"",
         }
       }
 
@@ -966,7 +968,9 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             email: parcedC1Data.email,
             address: parcedC1Data.address,
             howFoundUs: parcedC1Data.howFoundUs,
-            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson
+            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson,
+            caseAbout:parcedC1Data.caseAbout,
+
           }
           if (C1Data.firstName) {
 
@@ -990,7 +994,8 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             email: parcedC2Data.email,
             address: parcedC2Data.address,
             howFoundUs: parcedC2Data.howFoundUs,
-            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson
+            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson,
+            caseAbout:parcedC2Data.caseAbout,
           }
           if (C2Data.firstName) { clientsDataList.push(C2Data) }
 
@@ -1023,7 +1028,8 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             email: parcedC1Data.email,
             address: parcedC1Data.address,
             howFoundUs: parcedC1Data.howFoundUs,
-            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson
+            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson,
+            caseAbout:parcedC1Data.caseAbout,
           }
           if (C1Data.firstName) {
 
@@ -1046,7 +1052,8 @@ router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
             email: parcedC2Data.email,
             address: parcedC2Data.address,
             howFoundUs: parcedC2Data.howFoundUs,
-            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson
+            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson,
+            caseAbout:parcedC2Data.caseAbout,
           }
           if (C2Data.firstName) { clientsDataList.push(C2Data) }
 
