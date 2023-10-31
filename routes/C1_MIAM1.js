@@ -123,6 +123,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     let currentCase = await Case.findById(req.params.id);
     let majorDataC2FromM1 = req.body.otherParty ;
+    let caseReady= true;
    //! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
@@ -190,7 +191,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
       const updatedCaseDetails= await Case.findByIdAndUpdate(req.params.id, {
         client1data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
+        }, Reference,caseReady, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
       })
       //console.log("📢📢",updatedCaseDetails.majorDataC2FromM1)
       const updatedCase = await Case.findById(req.params.id);

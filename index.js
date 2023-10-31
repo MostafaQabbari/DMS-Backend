@@ -35,6 +35,7 @@ const confirmationMail=require('./routes/confirmationMail');
 
 const replaceMediator = require('./routes/replaceMediator');
 const updateMediatorData= require("./routes/updateMediatorData")
+const legalAidTable_Actions = require("./routes/legalAidTable_Actions")
 
 
 
@@ -92,6 +93,7 @@ app.use(confirmationMail)
 
 app.use(replaceMediator)
 app.use(updateMediatorData)
+app.use(legalAidTable_Actions)
 
 
 

@@ -87,7 +87,8 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     },
 
   })
-  console.log("📢📢", mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed)
+ // console.log("📢📢", mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed)
+  console.log("📢📢")
   let htmlBody = `<body style="text-align:left ; direction:ltr">
     <h1> Mediation Session Record  </h1>
     <h2> Submitted At </h2>
@@ -695,7 +696,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
     }
 
 
-
+    
 
 
     if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
@@ -727,6 +728,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
     else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
         req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
     ) {
+      const updatedCase = await Case.findById(req.params.id);
 
         let statusRemider = {
             reminderID: `${updatedCase._id}-statusRemider`,
@@ -747,6 +749,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
     else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
         req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
     ) {
+      const updatedCase = await Case.findById(req.params.id);
 
         let statusRemider = {
             reminderID: `${updatedCase._id}-statusRemider`,
@@ -767,7 +770,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
         req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
         req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
     ) {
-
+      const updatedCase = await Case.findById(req.params.id);
         let statusRemider = {
             reminderID: `${updatedCase._id}-statusRemider`,
             reminderTitle: `${updatedCase.Reference}-Successful`,
@@ -783,8 +786,8 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
     }
 
-
     let updateCase = await Case.findById(req.params.id);
+    console.log("📢📢🤦‍♂️🤦‍♂️")
     let MedSession_Statistics = statisticFunctions.MedSession_Statistics(mediationRecord, updateCase);
     const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
     const targetCompID = targetComp.connectionData.companyID._id;
