@@ -241,7 +241,7 @@ const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyD
     }
     ).catch((err) => {
         console.log(err.message)
-        res.status(400).json({ message: err.message })
+        res.status(200).json({ message: `Actions done but couldnot send SMS due to ${err.message}`  })
     });
 
 }
