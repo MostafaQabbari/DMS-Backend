@@ -139,7 +139,7 @@ router.post('/sendCheckoutMail/:id', authMiddleware, async (req, res, next) => {
                     clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email
-                    let messageBodyinfo = '<h2>Thank you for using our services , please check your last updates</h2>'
+                    let messageBodyinfo = '<h2>An email with info about your family mediation case was sent to you. You may need to check your SPAM folder. Thank you.</h2>'
 
 
                     sendCheckoutMail(companyData, clientData, messageBodyinfo)
@@ -167,7 +167,7 @@ router.post('/sendCheckoutMail/:id', authMiddleware, async (req, res, next) => {
                     clientData.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                     companyData.companyName = currentComp.companyName
                     companyData.email = currentComp.email
-                    let messageBodyinfo = '<h2>Thank you for using our services , please check your last updates</h2>'
+                    let messageBodyinfo = '<h2>An email with info about your family mediation case was sent to you. You may need to check your SPAM folder. Thank you.</h2>'
 
 
                     sendCheckoutMail(companyData, clientData, messageBodyinfo)
@@ -220,7 +220,7 @@ router.post('/sendCheckoutMail/:id', authMiddleware, async (req, res, next) => {
                     companyData.companyName = currentComp_.companyName
                     companyData.email = currentComp_.email
 
-                    let messageBodyinfo = '<h2>Thank you for using our services , please check your last updates</h2>'
+                    let messageBodyinfo = '<h2>An email with info about your family mediation case was sent to you. You may need to check your SPAM folder. Thank you.</h2>'
 
 
                     sendCheckoutMail(companyData, clientData, messageBodyinfo)
@@ -245,7 +245,7 @@ router.post('/sendCheckoutMail/:id', authMiddleware, async (req, res, next) => {
                     companyData.companyName = currentComp_.companyName
                     companyData.email = currentComp_.email
 
-                    let messageBodyinfo = '<h2>Thank you for using our services , please check your last updates</h2>'
+                    let messageBodyinfo = '<h2>An email with info about your family mediation case was sent to you. You may need to check your SPAM folder. Thank you.</h2>'
 
 
                     sendCheckoutMail(companyData, clientData, messageBodyinfo)
