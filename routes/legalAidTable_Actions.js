@@ -8,6 +8,17 @@ const nodemailer = require("nodemailer")
 const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
 const CryptoJS = require("crypto-js");
+const multer = require('multer');
+const fs = require("fs");
+
+const uploadFile = multer({
+    storage: multer.diskStorage({
+        destination: "./uploads",
+        filename: (req, file, cb) => {
+            cb(null, `${file.originalname}`)
+        }
+    })
+});
 
 const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo) {
     /*
@@ -66,7 +77,7 @@ const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo
     // });
 
 }
-const sendFurtherEvidenceEmail = function (companyData, clientData) {
+const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody) {
     /*
     
        companyData ={companyName , email}
@@ -113,7 +124,7 @@ const sendFurtherEvidenceEmail = function (companyData, clientData) {
       <h4 style="font-weight: bolder;"> 2) Pay privately for your mediation. You can book your appointment via our <a href="https://calendly.com/familymediation"  style="font-weight: bolder;">website </a> . </h4>
       <h4> If you are responding to an invitation to mediation and you don't go ahead, it will be considered a refusal.
        However, you may be able to explain any mitigating circumstances to the District Judge or Magistrates should the case go to court. </h4>
-      
+      ${FurtherEvidenceBody}
  
       <h4>We wish you and your family all the best. </h4>
       <h3>Direct Mediation Services.</h3>
@@ -122,15 +133,22 @@ const sendFurtherEvidenceEmail = function (companyData, clientData) {
        </div>`,
 
 
+        // attachments: [
+        //     {
+        //         filename: 'FurtherEvidenceIMG.png',
+        //         path: './FurtherEvidenceIMG.png',
+        //     },
+        // ],
+
         attachments: [
             {
                 filename: 'FurtherEvidenceIMG.png',
-                path: './FurtherEvidenceIMG.png',
-            },
-        ],
-
-
-    });
+                content: FurtherEvidenceIMG
+            }
+        ]
+    }).then((data) => {
+            fs.unlinkSync(FurtherEvidenceIMG.path);
+        });
 
 
     // transporter.sendMail(info, (error, info) => {
@@ -144,7 +162,7 @@ const sendFurtherEvidenceEmail = function (companyData, clientData) {
 
 }
 
-const  sendRefusedEmail= function (companyData, clientData , reasonsList) {
+const sendRefusedEmail = function (companyData, clientData, reasonsList) {
     /*
     
        companyData ={companyName , email}
@@ -173,7 +191,7 @@ const  sendRefusedEmail= function (companyData, clientData , reasonsList) {
 
     let reason = '';
     for (const date of reasonsList) {
-     reason += `<li>${date}</li>`;
+        reason += `<li>${date}</li>`;
     }
 
     transporter.sendMail({
@@ -241,7 +259,7 @@ const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyD
     }
     ).catch((err) => {
         console.log(err.message)
-        res.status(200).json({ message: `Actions done but couldnot send SMS due to ${err.message}`  })
+        res.status(200).json({ message: `Actions done but couldnot send SMS due to ${err.message}` })
     });
 
 }
@@ -263,16 +281,18 @@ function handleTwillioData(targetComp) {
 */
 // status:"Application received / Approved / Further evidence required / Refused / Closed",
 
-router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req, res, next) => {
+router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile.single('FurtherEvidenceIMG'), async (req, res, next) => {
     /*
        post('/changeLegalAidStatus/:clientType/:id'
        clientType => C1 | C2
-       body => {"legalAidStatus":"Approved" | "Further evidence required" | "Refused"  => + reasonsList:["" , ""]  | "Closed" }
+       body => {"legalAidStatus":"Approved" | "Further evidence required" :{"FurtherEvidenceIMG" : req.file => .png & FurtherEvidenceBody:""} | "Refused"  => + reasonsList:["" , ""]  | "Closed" }
     */
     let CaseFound;
     try {
+        const FurtherEvidenceIMG = req.file;
+        const FurtherEvidenceBody = req.body.FurtherEvidenceBody;
         const legalAidStatus = req.body.legalAidStatus;
-        const reasonsList  = req.body.reasonsList
+        const reasonsList = req.body.reasonsList
         const TargetClient = req.params.clientType; // C1 | C2
         let companyData = {}, clientData = {}, messageBodyinfo = {}
         if (legalAidStatus == 'Approved') {
@@ -299,7 +319,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
 
                         //  console.log(legalAidTableDataC1)
                         await Case.findByIdAndUpdate(req.params.id, {
-                            caseReady:true,
+                            caseReady: true,
                             legalAidTableData: {
                                 C1: JSON.stringify(legalAidTableDataC1)
                             },
@@ -331,7 +351,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
 
                         //  console.log(legalAidTableDataC2)
                         await Case.findByIdAndUpdate(req.params.id, {
-                            caseReady:true,
+                            caseReady: true,
                             legalAidTableData: {
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
@@ -388,7 +408,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
 
                         //  console.log(legalAidTableDataC1)
                         await Case.findByIdAndUpdate(req.params.id, {
-                            caseReady:true,
+                            caseReady: true,
                             legalAidTableData: {
                                 C1: JSON.stringify(legalAidTableDataC1)
                             },
@@ -426,7 +446,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
 
                         //  console.log(legalAidTableDataC2)
                         await Case.findByIdAndUpdate(req.params.id, {
-                            caseReady:true,
+                            caseReady: true,
                             legalAidTableData: {
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
@@ -473,7 +493,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                     const currentComp = await Company.findById(req.user._id)
                     if (TargetClient == "C1") {
                         clientData.email = CaseFound.MajorDataC1.mail;
-                        // clientData.email = 'abdo.samir.7719@gmail.com'
+                        clientData.email = 'abdo.samir.7719@gmail.com'
                         clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                         companyData.companyName = currentComp.companyName
                         companyData.email = currentComp.email
@@ -489,9 +509,9 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                             },
                         })
 
+                        console.log("before calling the function", FurtherEvidenceIMG)
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
 
-
-                        sendFurtherEvidenceEmail(companyData, clientData );
                         let twillioInfo = handleTwillioData(currentComp);
                         let clientNumber = CaseFound.MajorDataC1.phoneNumber
                         let messageBodyData = `Dear ${clientData.clientName},
@@ -519,7 +539,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
                         })
-                        sendFurtherEvidenceEmail(companyData, clientData)
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody)
 
 
                         let twillioInfo = handleTwillioData(currentComp);
@@ -565,7 +585,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                         companyData.companyName = currentComp_.companyName
                         companyData.email = currentComp_.email
                         // messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${CaseFound._id}`;
-                        sendFurtherEvidenceEmail(companyData, clientData);
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
                         let legalAidTableDataC1 = JSON.parse(CaseFound.legalAidTableData.C1);
                         legalAidTableDataC1.status = 'Further evidence required';
 
@@ -607,7 +627,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                             },
                         })
 
-                        sendFurtherEvidenceEmail(companyData, clientData);
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
 
                         let twillioInfo = handleTwillioData(currentComp_);
                         let clientNumber = CaseFound.MajorDataC2.phoneNumber
@@ -665,7 +685,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
 
 
 
-                        sendRefusedEmail(companyData, clientData ,reasonsList);
+                        sendRefusedEmail(companyData, clientData, reasonsList);
                         let twillioInfo = handleTwillioData(currentComp);
                         let clientNumber = CaseFound.MajorDataC1.phoneNumber
                         let messageBodyData = `Dear ${clientData.clientName},
@@ -693,7 +713,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
                         })
-                        sendRefusedEmail(companyData, clientData ,reasonsList);
+                        sendRefusedEmail(companyData, clientData, reasonsList);
 
 
                         let twillioInfo = handleTwillioData(currentComp);
@@ -739,7 +759,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                         companyData.companyName = currentComp_.companyName
                         companyData.email = currentComp_.email
                         // messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${CaseFound._id}`;
-                        sendRefusedEmail(companyData, clientData ,reasonsList);
+                        sendRefusedEmail(companyData, clientData, reasonsList);
                         let legalAidTableDataC1 = JSON.parse(CaseFound.legalAidTableData.C1);
                         legalAidTableDataC1.status = 'Refused';
 
@@ -781,7 +801,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                             },
                         })
 
-                        sendRefusedEmail(companyData, clientData ,reasonsList);
+                        sendRefusedEmail(companyData, clientData, reasonsList);
 
                         let twillioInfo = handleTwillioData(currentComp_);
                         let clientNumber = CaseFound.MajorDataC2.phoneNumber
@@ -867,17 +887,17 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
                         })
-                    //     sendRefusedEmail(companyData, clientData ,reasonsList);
+                        //     sendRefusedEmail(companyData, clientData ,reasonsList);
 
 
-                    //     let twillioInfo = handleTwillioData(currentComp);
-                    //     let clientNumber = CaseFound.MajorDataC2.phoneNumber
-                    //     let messageBodyData = `Dear ${clientData.clientName},
-                    //     An email with info about your family mediation case was sent to you. You may need to check your SPAM folder.
-                    //   Thank you.
-                    //     ${companyData.companyName}
-                    //     `
-                    //     sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+                        //     let twillioInfo = handleTwillioData(currentComp);
+                        //     let clientNumber = CaseFound.MajorDataC2.phoneNumber
+                        //     let messageBodyData = `Dear ${clientData.clientName},
+                        //     An email with info about your family mediation case was sent to you. You may need to check your SPAM folder.
+                        //   Thank you.
+                        //     ${companyData.companyName}
+                        //     `
+                        //     sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
 
                         res.status(200).json({ res: "Client Status Changes to Closed " })
 
@@ -915,7 +935,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware, async (req,
                         // messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${CaseFound._id}`;
                         let legalAidTableDataC1 = JSON.parse(CaseFound.legalAidTableData.C1);
                         legalAidTableDataC1.status = 'Closed';
-                        
+
                         //  console.log(legalAidTableDataC1)
                         await Case.findByIdAndUpdate(req.params.id, {
                             legalAidTableData: {
