@@ -493,7 +493,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
                     const currentComp = await Company.findById(req.user._id)
                     if (TargetClient == "C1") {
                         clientData.email = CaseFound.MajorDataC1.mail;
-                        clientData.email = 'abdo.samir.7719@gmail.com'
+                      //  clientData.email = 'abdo.samir.7719@gmail.com'
                         clientData.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                         companyData.companyName = currentComp.companyName
                         companyData.email = currentComp.email
