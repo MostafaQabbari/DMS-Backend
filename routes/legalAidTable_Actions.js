@@ -1005,7 +1005,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
 
 
         else {
-            res.status(400).json({ res: "there is an arror with getting case access for the user" })
+            res.status(400).json({ res: "there is an arror legalAidStatus syntax ... " })
         }
 
 
