@@ -253,13 +253,13 @@ const MIAM2_Statistics_C2 = function (miam2c2, currentCase, miam1c2, miam1c1) {
 
 const MedSession_Statistics = function (medsession, currentCase) {
 
- // console.log("xxxxxxxxxxx")
+// console.log(currentCase ,"currentCase")
+ //console.log(currentCase.client1data ,"MIAM1_C1")
+// console.log(currentCase.client2data , "MIAM1_C2")
   let statisticsObj = {};
   let startDateFormated = dateFormat(currentCase.startDate)
   const MIAM1_C1 = JSON.parse(currentCase.client1data)
   const MIAM1_C2 = JSON.parse(currentCase.client2data)
-//  console.log(MIAM1_C1)
-//  console.log(MIAM1_C2)
 
   let c1UCN = clientUCN(MIAM1_C1.personalContactAndCaseInfo.dateOfBirth, currentCase.MajorDataC1.fName, currentCase.MajorDataC1.sName)
   let c2UCN = clientUCN(MIAM1_C2.personalContactAndCaseInfo.dateOfBirth, currentCase.MajorDataC2.fName, currentCase.MajorDataC2.sName)

@@ -6,6 +6,43 @@ const mediator = require('../models/mediator');
 const Company = require("../models/company");
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
+const CryptoJS = require("crypto-js");
+
+const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyData, res) {
+
+    /*
+      twillioInfo={twillioSID , twillioToken , twillioNumber}
+      clientNumber = {clientNumber}
+      messageBodyData = bodyText
+    */
+    const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+    const phoneNumber = twillioInfo.twillioNumber;
+
+
+    x.messages.create({
+        body: messageBodyData,
+        from: phoneNumber,
+        to: clientNumber
+    }).then(message => {
+        console.log({ message: "form message sent succesfully", messageID: message.sid });
+    }
+    ).catch((err) => {
+        console.log(err.message)
+        res.status(200).json({ message: `Actions done but could not send SMS to ${clientNumber} due to ${err.message}` })
+    });
+
+}
+function handleTwillioData(targetComp) {
+
+    const targetCompTwilioData = targetComp.twillioData;
+    const data = CryptoJS.AES.decrypt(targetCompTwilioData, 'ourTwillioEncyptionKey');
+    const decryptedTwillioData = JSON.parse(data.toString(CryptoJS.enc.Utf8))
+    // return = > twillioInfo object by => targetCompany
+    return decryptedTwillioData[0]
+
+}
+
+
 
 const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails) {
     /*
@@ -47,7 +84,7 @@ const confirmationMIAM = function (meetingDetails, clientDetials, companyDetails
     })
 
 
-     transporter.sendMail({
+    transporter.sendMail({
         from: config.companyEmail,
         to: clientDetials.email,
         subject: `Confirmation Mail`,
@@ -117,35 +154,35 @@ const confirmationMIAMforBooking = function (meetingDetails, clientDetials, comp
      companyDetails.mediatorEmail
     
     */
-  
-  
-  
+
+
+
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      port: 587,
-      starttls: {
-        enable: true
-      },
-      starttls: {
-        enable: true
-      },
-  
-      secureConnection: false,
-  
-      auth: {
-        user: config.companyEmail,
-        pass: config.appPassWord,
-      },
-  
+        service: 'gmail',
+        port: 587,
+        starttls: {
+            enable: true
+        },
+        starttls: {
+            enable: true
+        },
+
+        secureConnection: false,
+
+        auth: {
+            user: config.companyEmail,
+            pass: config.appPassWord,
+        },
+
     })
-  
+
     let mailList = `${clientDetials.email}, ${companyDetails.mediatorEmail}`;
-    console.log("mailList" ,mailList)
+    console.log("mailList", mailList)
     transporter.sendMail({
-      from: config.companyEmail,
-      to: `${mailList}`,
-      subject: `MIAM Confirmation Mail`,
-      html: ` <div style=" text-align: left;">
+        from: config.companyEmail,
+        to: `${mailList}`,
+        subject: `MIAM Confirmation Mail`,
+        html: ` <div style=" text-align: left;">
          <h1>Dear  <span style="color:#9900ff"> ${clientDetials.clientName} </span> </h1>
   
          <p>Thank you for booking your MIAM , Your appointment is <span style="color:#9900ff">${meetingDetails.date}</span>  at<span style="color:#9900ff">${meetingDetails.startTime}</span>  via  
@@ -164,22 +201,22 @@ const confirmationMIAMforBooking = function (meetingDetails, clientDetials, comp
         <h4>${companyDetails.companyName}</h4>
         <h4>${companyDetails.email}</h4>
          </div>`
-  
-  
+
+
     });
-  
-  
+
+
     // transporter.sendMail(info, (error, info) => {
     //     if (error) {
     //         console.log('Error occurred while sending email:', error.message);
-  
+
     //     } else {
     //         console.log('Email sent successfully:', info.messageId);
     //     }
     // });
-  
-  
-  }
+
+
+}
 
 function extractDateTime(timestamp) {
     const dateObj = new Date(timestamp);
@@ -228,11 +265,10 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
         meetingDetails.startTime = formatedDateTimeObject.startTime
         meetingDetails.type = reqBody.type
         meetingDetails.location = reqBody.location
-        if(reqBody.zoomLink)
-        {
+        if (reqBody.zoomLink) {
             meetingDetails.zoomLink = `To join your mediation session please follow this link: ${reqBody.location}`
         }
-        else   meetingDetails.zoomLink  =" "
+        else meetingDetails.zoomLink = " "
 
         if (req.userRole == "company") {
 
@@ -248,17 +284,17 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
 
                 const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 meetingDetails.mediatorName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
-                 companyDetails.mediatorEmail = medData.connectionData.mediatorID.email
-              //  companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
+                companyDetails.mediatorEmail = medData.connectionData.mediatorID.email
+                //  companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
                 meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
-               clientDetials.email = CaseFound.MajorDataC1.mail
+                clientDetials.email = CaseFound.MajorDataC1.mail
                 //clientDetials.email = "abdosamir023023@gmail.com"
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
-               
 
-                confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails) 
+
+                confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails)
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
             }
@@ -305,11 +341,11 @@ router.post("/MIAM1_Confirmation_C2/:id", authMiddleware, async (req, res) => {
                 const medData = await Case.findById(req.params.id).populate('connectionData.mediatorID');
                 meetingDetails.mediatorName = `${medData.connectionData.mediatorID.firstName} ${medData.connectionData.mediatorID.lastName}`;
                 companyDetails.mediatorEmail = medData.connectionData.mediatorID.email
-               // companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
+                // companyDetails.mediatorEmail ="abdo.samir.7719@gmail.com"
                 meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                 clientDetials.email = CaseFound.MajorDataC2.mail
-           //    clientDetials.email ='abdosamir023023@gmail.com'
+                //    clientDetials.email ='abdosamir023023@gmail.com'
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
                 confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails)
@@ -342,11 +378,10 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
         meetingDetails.startTime = formatedDateTimeObject.startTime
         meetingDetails.type = reqBody.type
         meetingDetails.location = reqBody.location
-        if(reqBody.zoomLink)
-        {
+        if (reqBody.zoomLink) {
             meetingDetails.zoomLink = `To join your mediation session please follow this link: ${reqBody.location}`
         }
-        else   meetingDetails.zoomLink  =" "
+        else meetingDetails.zoomLink = " "
 
         if (req.userRole == "company") {
 
@@ -367,15 +402,38 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
                 //! for c2
                 meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C2/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
+                let c1Name = clientDetials.clientName
                 clientDetials.email = CaseFound.MajorDataC2.mail
-                clientDetials.email = 'abdosamir023023@gmail.com'
+                //  clientDetials.email = 'abdosamir023023@gmail.com'
                 confirmationMIAM(meetingDetails, clientDetials, companyDetails)
                 //! for c1
                 meetingDetails.agreementLink = `${config.baseUrlC2AgreementForm}/${config.AGREEMENT_FORM}/C1/${req.params.id}`
                 clientDetials.clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
+                let c2Name = clientDetials.clientName
                 clientDetials.email = CaseFound.MajorDataC1.mail
-               clientDetials.email = 'hassantarekha@gmail.com'
+                // clientDetials.email = 'hassantarekha@gmail.com'
                 confirmationMIAM(meetingDetails, clientDetials, companyDetails)
+ /**************************************** */
+                let currentComp = await Company.findById(req.user._id)
+                let twillioInfo = handleTwillioData(currentComp);
+                let clientNumber = CaseFound.MajorDataC1.phoneNumber
+               // clientNumber = "+447476544877"
+                let messageBodyData = `Dear ${c1Name},
+                        An email about your Mediation session  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
+                 clientNumber = CaseFound.MajorDataC2.phoneNumber
+              //   clientNumber = "+447476544877"
+                 messageBodyData = `Dear ${c2Name},
+                        An email about your Mediation session  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
             }
