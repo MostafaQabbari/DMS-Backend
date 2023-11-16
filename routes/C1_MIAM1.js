@@ -269,6 +269,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // Rest of your code to draw text on pages...
    // // Add client1 data to the PDF document"first page" 
+   console.log(personalContactAndCaseInfo.dateOfBirth);
    Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
    Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
    Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
@@ -472,7 +473,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // Upload the PDF to the created folder
     const fileMetadata = {
-      name: `"MIAM-1.pdf"`,
+      name: `"MIAM-1 Client-1.pdf"`,
       parents: [folderId],
     };
 
