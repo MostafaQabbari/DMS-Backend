@@ -324,7 +324,7 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     phoneCallAppointment_C2_C2reply = req.body.phoneCallAppointment
 
 
-  //! backtoremovecomment=>  await createC2ReplyUpload( C2invitation , currentCase );
+   await createC2ReplyUpload( C2invitation , currentCase );
 
     let statusRemider = {
       reminderID: `${currentCase._id}-statusRemider`,
