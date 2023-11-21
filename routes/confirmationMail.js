@@ -293,6 +293,14 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
 
+                //mywork
+                const  startDate  = reqBody.date;
+                const reminderTitle = `MIAM with ${clientDetials.clientName} `;
+                const companyId = req.user._id;
+                await Company.findByIdAndUpdate(companyId, {
+                    $push: { Reminders: { reminderTitle, startDate } }
+                })
+
 
                 confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails)
 
@@ -328,6 +336,14 @@ router.post("/MIAM1_Confirmation_C2/:id", authMiddleware, async (req, res) => {
 
         if (req.userRole == "company") {
 
+            //mywork
+            const { reminderTitle, startDate } = req.body;
+            const companyId = req.user._id;
+            await Company.findByIdAndUpdate(companyId, {
+                $push: { Reminders: { reminderTitle, startDate } }
+            })
+
+
             let cases = await Company.findById(req.user._id).populate('cases');
 
             for (let i = 0; i < cases.cases.length; i++) {
@@ -348,6 +364,15 @@ router.post("/MIAM1_Confirmation_C2/:id", authMiddleware, async (req, res) => {
                 //    clientDetials.email ='abdosamir023023@gmail.com'
                 companyDetails.companyName = req.user.companyName
                 companyDetails.email = req.user.email
+
+                //mywork
+                const  startDate  = reqBody.date;
+                const reminderTitle = `MIAM with ${clientDetials.clientName} `;
+                const companyId = req.user._id;
+                await Company.findByIdAndUpdate(companyId, {
+                    $push: { Reminders: { reminderTitle, startDate } }
+                })
+
                 confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails)
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
@@ -384,6 +409,13 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
         else meetingDetails.zoomLink = " "
 
         if (req.userRole == "company") {
+
+            //mywork
+            const { reminderTitle, startDate } = req.body;
+            const companyId = req.user._id;
+            await Company.findByIdAndUpdate(companyId, {
+                $push: { Reminders: { reminderTitle, startDate } }
+            })
 
             let cases = await Company.findById(req.user._id).populate('cases');
 
@@ -433,6 +465,15 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
                         ${companyDetails.companyName}
                         `
                 sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
+                 //mywork
+                const  startDate  = reqBody.date;
+                const reminderTitle = `MEDIATION-SESSION with ${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName} & ${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName} `;
+                const companyId = req.user._id;
+                await Company.findByIdAndUpdate(companyId, {
+                    $push: { Reminders: { reminderTitle, startDate } }
+                })
+                
 
 
                 res.status(200).json({ 'meesage': "Confirmation Mail has been sent" })
