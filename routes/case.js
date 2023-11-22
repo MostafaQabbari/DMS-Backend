@@ -447,6 +447,8 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       let LAtabelObj;
 
 
+
+
       let case_type;
       if (caseType == "private") {
         case_type = 'Private';
@@ -585,10 +587,18 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         newCaseID = newCase[0]._id
 
 
+
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
+        // add reminder
+        const reminderTitle = `MIAM with ${clientData.clientName} `;
+        await Company.findByIdAndUpdate(companyId, {
+            $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
+        })
+
+        
         clientData.clientNumber = phoneNumber;
         clientData.email = email;
         // console.log(clientData.email )

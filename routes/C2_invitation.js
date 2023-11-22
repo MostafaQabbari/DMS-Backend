@@ -1,12 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
 const Case = require('../models/case');
+const Company = require('../models/company');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow")
-const { PDFDocument } = require("pdf-lib");
+const { PDFDocument , rgb  } = require("pdf-lib");
 const { google } = require("googleapis");
 const stream = require("stream");
+const path = require("path");
 
 
 const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
@@ -308,7 +311,236 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
 }
 
 
+// router.get('/generate-pdf-Invitation-Letter/:id', async (req, res) => {
+//   try {
+//     const caseId = req.params.id;
 
+//     // Fetch case data from MongoDB
+//     const caseData = await Case.findById(caseId).populate('connectionData.companyID');
+
+//     if (!caseData) {
+//       return res.status(404).json({ error: 'Case not found' });
+//     }
+
+//     // Extract companyID and fetch company data
+//     const companyId = caseData.connectionData.companyID;
+//     const companyData = await Company.findById(companyId);
+//     const sharingGmail = companyData.sharingGmail;
+//     const folderID = caseData.folderID;
+
+
+//     if (!companyData) {
+//       return res.status(404).json({ error: 'Company not found' });
+//     }
+
+//     // Read the PDF template
+
+//     const filePath = path.join(__dirname, '../uploads/pdfs/Invitation-Letter-DMS-temp.pdf');
+//     const pdfTemplateBytes = fs.readFileSync(filePath);
+//     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+//     // const defaultFont = await pdfDoc.embedFont(PDFDocument.Font.Helvetica, { size: 12 });
+//     // const defaultFont = await pdfDoc.embedFont({ size: 12 });
+//     const font = await pdfDoc.embedFont('Helvetica');
+//     // const font = await pdfDoc.embedFont('Helvetica', { size: 3 });
+//     //11.97
+//     const page1 = pdfDoc.getPage(0);
+//     const page2 = pdfDoc.getPage(1);
+//     page1.setFont(font);
+//     page1.setFontSize(12);
+//     page2.setFont(font);
+//     page2.setFontSize(12);
+
+    
+//     const nameC1 = `${caseData.MajorDataC1.fName} ${caseData.MajorDataC1.sName} `;
+//     const nameC2 = `${caseData.MajorDataC2.fName} ${caseData.MajorDataC2.sName}`;
+//     const CreatedDate = getCurrentDate();
+//     const addressKnown =caseData.majorDataC2FromM1.otherPartyAddressKnown ;
+   
+//     // Add data to PDF at specific locations (x, y coordinates)
+//     page1.drawText(nameC2, { x: 65, y: 720 });
+
+//     try {
+//       if (addressKnown === 'Yes' || addressKnown === 'yes') {
+//         // Draw text on the page if all variables are defined
+//         page1.drawText(caseData.majorDataC2FromM1.otherPartyStreet, { x: 65, y: 700 });
+//         page1.drawText(caseData.majorDataC2FromM1.otherPartyCity, { x: 65, y: 686 });
+//         page1.drawText(companyData.majorDataC2FromM1.otherPartyPostalCode, { x: 65, y: 670 });
+//       } else {
+//         // Send a response indicating that address data is missing
+//         res.status(400).json({ error: 'Address data is missing' });
+//       }
+//     } catch (error) {
+//       // Handle the error and send an appropriate response
+//       console.error('Error while processing address data:', error);
+//       res.status(500).json({ error: 'Internal Server Error' });
+//     }
+
+//     page1.drawText(CreatedDate, { x: 490, y: 655 });
+//     page1.drawText(nameC2, { x: 90, y: 628 }); 
+//     page1.drawText(nameC1, { x: 410, y: 587 });
+//     page1.drawText(nameC1, { x:  60, y: 532 });
+//     page1.drawText(nameC1, { x: 350, y: 490 }); 
+//     //
+//     page1.drawText(caseData.MajorDataC1.fName, { x: 503, y: 435 });
+//     page1.drawText(`-${caseData.MajorDataC1.sName}`, { x:  60, y: 420 });
+//     page1.drawText(nameC1, { x: 295, y: 352 });
+//     page1.drawText(nameC1, { x: 115, y: 144 }); 
+
+//     page2.drawText('link rshgreytrestsertesrtsert', { x: 215, y: 434 }); 
+
+//     // Save the modified PDF
+//     const modifiedPdfBuffer = await pdfDoc.save();
+
+//     // Save the PDF to the "uploads" folder
+//     const pdfSavePath = path.join(__dirname, '../uploads/logos/InvitationLetter.pdf');
+//     fs.writeFileSync(pdfSavePath, modifiedPdfBuffer);
+    
+
+//     // // Send the modified PDF as a response
+//     // res.setHeader('Content-Type', 'application/pdf');
+//     // res.send(modifiedPdfBuffer);
+//     res.status(200).json('true');
+//   } catch (err) {
+//     console.error(err);
+
+//     if (err.kind === 'ObjectId') {
+//       // Handle invalid ObjectId (MongoDB) error
+//       return res.status(400).json({ error: 'Invalid ID format' });
+//     }
+
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+router.get('/generate-pdf-Invitation-Letter/:id', async (req, res) => {
+  try {
+    const caseId = req.params.id;
+
+    // Fetch case data from MongoDB
+    const caseData = await Case.findById(caseId).populate('connectionData.companyID');
+
+    if (!caseData) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+
+    // Extract companyID and fetch company data
+    const companyId = caseData.connectionData.companyID;
+    const companyData = await Company.findById(companyId);
+    const sharingGmail = companyData.sharingGmail;
+    const folderID = caseData.folderID;
+
+    if (!companyData) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+
+    // Read the PDF template
+    const filePath = path.join(__dirname, '../uploads/pdfs/Invitation-Letter-DMS-temp.pdf');
+    const pdfTemplateBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    const font = await pdfDoc.embedFont('Helvetica');
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    page1.setFont(font);
+    page1.setFontSize(12);
+    page2.setFont(font);
+    page2.setFontSize(12);
+
+    const nameC1 = `${caseData.MajorDataC1.fName} ${caseData.MajorDataC1.sName} `;
+    const nameC2 = `${caseData.MajorDataC2.fName} ${caseData.MajorDataC2.sName}`;
+    const CreatedDate = getCurrentDate();
+    const addressKnown = caseData.majorDataC2FromM1.otherPartyAddressKnown;
+
+    // Add data to PDF at specific locations (x, y coordinates)
+    page1.drawText(nameC2, { x: 65, y: 720 });
+    
+    try {
+      if (addressKnown === 'Yes' || addressKnown === 'yes') {
+        // Draw text on the page if all variables are defined
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyStreet, { x: 65, y: 700 });
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyCity, { x: 65, y: 686 });
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyPostalCode, { x: 65, y: 670 });
+      } else {
+        // Send a response indicating that address data is missing
+        return res.status(400).json({ error: 'Address data is missing' });
+      }
+    } catch (error) {
+      // Handle the error and send an appropriate response
+      console.error('Error while processing address data:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    page1.drawText(CreatedDate, { x: 490, y: 655 });
+    page1.drawText(nameC2, { x: 90, y: 628 }); 
+    page1.drawText(nameC1, { x: 410, y: 587 });
+    page1.drawText(nameC1, { x:  60, y: 532 });
+    page1.drawText(nameC1, { x: 350, y: 490 }); 
+    //
+    page1.drawText(caseData.MajorDataC1.fName, { x: 503, y: 435 });
+    page1.drawText(`-${caseData.MajorDataC1.sName}`, { x:  60, y: 420 });
+    page1.drawText(nameC1, { x: 295, y: 352 });
+    page1.drawText(nameC1, { x: 115, y: 144 }); 
+
+    page2.drawText(`https://c2-reply-form.vercel.app/C2_reply/:id`, { x: 215, y: 434 }); 
+
+    // Save the modified PDF
+    const modifiedPdfBuffer = await pdfDoc.save();
+
+    // // Save the PDF to the "uploads" folder
+    // const pdfSavePath = path.join(__dirname, '../uploads/logos/InvitationLetter.pdf');
+    // fs.writeFileSync(pdfSavePath, modifiedPdfBuffer);
+
+    const auth = await google.auth.getClient({
+      
+      keyFile: config.credentialFile1,
+
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+    });
+
+  
+
+    const drive = google.drive({ version: "v3", auth });
+
+
+    // Create a readable stream from the PDF bytes
+    const readableStream = new stream.Readable({
+      read() {
+        this.push(modifiedPdfBuffer);
+        this.push(null);
+      },
+    });
+
+    // Upload the PDF to the created folder
+    const fileMetadata = {
+      name: "Invitation-Letter",
+      parents: [folderID],
+    };
+
+    const media = {
+      mimeType: "application/pdf",
+      body: readableStream,
+    };
+    await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+   await shareWithPersonalAccount(folderID, sharingGmail);
+
+    // Send the modified PDF as a response
+    res.status(200).json('true');
+  } catch (err) {
+    console.error(err);
+
+    if (err.kind === 'ObjectId') {
+      // Handle invalid ObjectId (MongoDB) error
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
+    // Send an appropriate response for other errors
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 
@@ -626,7 +858,6 @@ async function createC2ReplyUpload(data, caseID ) {
 
 
 
-
 async function shareWithPersonalAccount(folderId, personalAccountEmail) {
   try {
     const authClient = await google.auth.getClient({
@@ -679,6 +910,14 @@ const drawTextBlock = (page, text, startX, startY, font, maxWidth, lineHeight) =
   return startY - (lineHeight * numberOfLines);
 };
 
+
+
+
+function getCurrentDate() {
+  const now = new Date();
+  const options = { month: 'short', day: 'numeric', year: 'numeric' };
+  return now.toLocaleDateString('en-US', options);
+}
 
 
 
