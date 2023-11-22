@@ -474,7 +474,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // Upload the PDF to the created folder
     const fileMetadata = {
-      name: `"MIAM-1 Client-1.pdf"`,
+      name: `"MIAM-1 Client-1"`,
       parents: [folderId],
     };
 
@@ -487,14 +487,14 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
       media: media,
       fields: "id",
     });
-    console.log(folderId);
-    console.log(sharingGmail);
+    // console.log(folderId);
+    // console.log(sharingGmail);
     // //put the FolderID into the database
     // await Case.findByIdAndUpdate(caseID, { folderID: folderId });
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {
