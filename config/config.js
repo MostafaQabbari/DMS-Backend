@@ -60,7 +60,7 @@ RecordSessionForm/:id
 
   credentialFile1:  '/etc/secrets/direct-mediation-services-web-f8ebfd3e36fc.json' /* ||   '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' */,
 
- 
+  googleCredentialFile: '../DMS-Backend/credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json' ,
 
   
 

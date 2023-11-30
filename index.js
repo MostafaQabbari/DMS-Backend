@@ -17,6 +17,7 @@ const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
 const C2MIAM1= require("./routes/C2_MIAM1");
 const C2MIAM2 = require("./routes/C2_MIAM2");
+const googleAuth = require("./routes/googleAuth");
 const recieveSMS = require("./routes/receiveSMS")
 const legalAid_forms_C1 = require("./routes/legalAid_Forms_C1")
 
@@ -96,6 +97,8 @@ app.use(replaceMediator)
 app.use(updateMediatorData)
 app.use(legalAidTable_Actions)
 app.use(sendCheckoutMail)
+
+app.use(googleAuth)
 
 
 

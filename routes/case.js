@@ -10,6 +10,9 @@ const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
 
+const { OAuth2Client } = require('google-auth-library');
+
+
 
 function extractDateTime(timestamp) {
   const dateObj = new Date(timestamp);
@@ -413,6 +416,44 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 }
 
 
+const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
+const clientId = clientSecret.web.client_id;
+const clientSecretKey = clientSecret.web.client_secret;
+const redirectUri = 'http://localhost:3007/oauth2callback';
+const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
+
+
+const createEvent = async (userId, eventTitle, eventDate, attendees) => {
+    try {
+      // In a real-world scenario, you would retrieve the refresh token from your database
+      // instead of hardcoding it here
+      const company = await Company.findById(userId);
+      const refreshToken = company.googleRefreshToken;
+      oAuth2Client.setCredentials({ refresh_token: refreshToken });
+  
+      const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+      // Filter out undefined or missing emails
+      const validAttendees = attendees.filter(email => email);
+
+      const eventDetails = {
+        summary: eventTitle,
+        start: { dateTime: eventDate, timeZone: 'UTC' },
+        end: { dateTime: eventDate, timeZone: 'UTC' },
+        attendees: validAttendees.map(email => ({ email })),
+      };
+  
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        resource: eventDetails,
+      });
+  
+      return { eventId: response.data.id, message: 'Event created successfully!' };
+    } catch (error) {
+      console.error('Error creating event:', error.message);
+      throw new Error('Internal Server Error');
+    }
+  };
+
 
 router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, next) => {
 
@@ -592,11 +633,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
-        // add reminder
-        const reminderTitle = `MIAM with ${clientData.clientName} `;
-        await Company.findByIdAndUpdate(companyId, {
-            $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
-        })
+
 
         
         clientData.clientNumber = phoneNumber;
@@ -606,6 +643,15 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         companyData.companyName = req.user.companyName;
         companyData.email = req.user.email;
         let twillioInfo = req.twillioInfo;
+
+        // add reminder
+        const reminderTitle = `MIAM with ${clientData.clientName} `;
+        const attendees = [mediator.email , CaseFound.MajorDataC1.mail];
+
+        await createEvent(companyId , reminderTitle , startDate , attendees);
+        await Company.findByIdAndUpdate(companyId, {
+            $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
+        })
 
 
         if (req.body.caseType == 'private') {

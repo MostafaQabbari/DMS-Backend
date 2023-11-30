@@ -8,6 +8,10 @@ const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const CryptoJS = require("crypto-js");
 
+const { OAuth2Client } = require('google-auth-library');
+const { google } = require('googleapis');
+
+
 const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyData, res) {
 
     /*
@@ -41,6 +45,44 @@ function handleTwillioData(targetComp) {
     return decryptedTwillioData[0]
 
 }
+
+const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
+const clientId = clientSecret.web.client_id;
+const clientSecretKey = clientSecret.web.client_secret;
+const redirectUri = 'http://localhost:3007/oauth2callback';
+const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
+
+
+const createEvent = async (userId, eventTitle, eventDate, attendees) => {
+    try {
+      // In a real-world scenario, you would retrieve the refresh token from your database
+      // instead of hardcoding it here
+      const company = await Company.findById(userId);
+      const refreshToken = company.googleRefreshToken;
+      oAuth2Client.setCredentials({ refresh_token: refreshToken });
+  
+      const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+      // Filter out undefined or missing emails
+      const validAttendees = attendees.filter(email => email);
+
+      const eventDetails = {
+        summary: eventTitle,
+        start: { dateTime: eventDate, timeZone: 'UTC' },
+        end: { dateTime: eventDate, timeZone: 'UTC' },
+        attendees: validAttendees.map(email => ({ email })),
+      };
+  
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        resource: eventDetails,
+      });
+  
+      return { eventId: response.data.id, message: 'Event created successfully!' };
+    } catch (error) {
+      console.error('Error creating event:', error.message);
+      throw new Error('Internal Server Error');
+    }
+  };
 
 
 
@@ -294,9 +336,14 @@ router.post("/MIAM1_Confirmation_C1/:id", authMiddleware, async (req, res) => {
                 companyDetails.email = req.user.email
 
                 //mywork
+
+                
                 const  startDate  = reqBody.date;
                 const reminderTitle = `MIAM with ${clientDetials.clientName} `;
                 const companyId = req.user._id;
+                const attendees = [medData.connectionData.mediatorID.email , CaseFound.MajorDataC1.mail];
+
+                await createEvent(companyId , reminderTitle , startDate , attendees);
                 await Company.findByIdAndUpdate(companyId, {
                     $push: { Reminders: { reminderTitle, startDate } }
                 })
@@ -369,6 +416,8 @@ router.post("/MIAM1_Confirmation_C2/:id", authMiddleware, async (req, res) => {
                 const  startDate  = reqBody.date;
                 const reminderTitle = `MIAM with ${clientDetials.clientName} `;
                 const companyId = req.user._id;
+                const attendees = [medData.connectionData.mediatorID.email, CaseFound.MajorDataC2.mail];
+                await createEvent(companyId , reminderTitle , startDate , attendees);
                 await Company.findByIdAndUpdate(companyId, {
                     $push: { Reminders: { reminderTitle, startDate } }
                 })
@@ -470,6 +519,8 @@ router.post("/CONFIRM_MEDIATION_SESSION/:id", authMiddleware, async (req, res) =
                 const  startDate  = reqBody.date;
                 const reminderTitle = `MEDIATION-SESSION with ${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName} & ${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName} `;
                 const companyId = req.user._id;
+                const attendees = [medData.connectionData.mediatorID.email , CaseFound.MajorDataC1.mail, CaseFound.MajorDataC2.mail];
+                await createEvent(companyId , reminderTitle , startDate , attendees);
                 await Company.findByIdAndUpdate(companyId, {
                     $push: { Reminders: { reminderTitle, startDate } }
                 })
