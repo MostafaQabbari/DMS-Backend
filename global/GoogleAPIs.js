@@ -4,7 +4,7 @@ const Case = require('../models/case');
 const config = require("../config/config");
 
 //, client2Email
- async function createEvent(caseId, mediatorEmail, client1Email) {
+ async function createEvent(eventTitle, caseId, mediatorEmail, client1Email) {
   try {
     // // Retrieve the necessary data from the database
     // const currentCase = await Case.findById(caseId);
@@ -55,6 +55,7 @@ const config = require("../config/config");
     // Prepare the event data
     const event = {
       summary: 'Meeting2 geekyair',
+      // summary: eventTitle,
       start: {
         dateTime: "2023-12-12T06:00:00Z",
         timeZone: 'Africa/Cairo', // Replace with the appropriate time zone (spain or UK)
