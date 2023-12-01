@@ -20,70 +20,189 @@ const uploadFile = multer({
     })
 });
 
+// const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo) {
+//     /*
+    
+//        companyData ={companyName , email}
+//        clientData = {clientName ,email}
+//        messageBodyinfo = {formUrl}
+    
+//       */
+
+//     let transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         port: 587,
+//         starttls: {
+//             enable: true
+//         },
+//         starttls: {
+//             enable: true
+//         },
+
+//         secureConnection: false,
+
+//         auth: {
+//             user: config.companyEmail,
+//             pass: config.appPassWord,
+//         },
+
+//     })
+
+//     transporter.sendMail({
+//         from: config.companyEmail,
+//         to: clientData.email,
+//         subject: "MIAM I Form",
+//         html: ` <div  dir="ltr" style="text-align: left; ">
+//        <h1>Dear ${clientData.clientName}  </h1>
+//       <h2>Thank you for the signed Legal Aid form. Your application for Legal Aid was SUCCESSFUL.
+//       BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>
+//       <h2> AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below: </h2>
+//       <a href='${messageBodyinfo.formUrl}'  style="font-weight: bolder;">${messageBodyinfo.formUrl} </a>
+//       <h2>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.   </h2>
+//       <h3>Direct Mediation Services.</h3>
+//       <h3>${companyData.companyName}</h3>
+//       <h3>${companyData.email}</h3>
+//        </div>`,
+
+//     });
+
+
+//     // transporter.sendMail(info, (error, info) => {
+//     //     if (error) {
+//     //         console.log('Error occurred while sending email:', error.message);
+
+//     //     } else {
+//     //         console.log('Email sent successfully:', info.messageId);
+//     //     }
+//     // });
+
+// }
+
+
+      
 const sendMIAM1LinklegalAid = function (companyData, clientData, messageBodyinfo) {
-    /*
-    
-       companyData ={companyName , email}
-       clientData = {clientName ,email}
-       messageBodyinfo = {formUrl}
-    
-      */
-
     let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        starttls: {
-            enable: true
-        },
-        starttls: {
-            enable: true
-        },
+      service: 'gmail',
+      port: 587,
+      starttls: {
+        enable: true,
+      },
+      secureConnection: false,
+      auth: {
+        user: config.companyEmail,
+        pass: config.appPassWord,
+      },
+    });
+  
+    const htmlBody = `
+      <div dir="ltr" style="text-align: left;">
+        <h1>Dear ${clientData.clientName}</h1>
+        <p>Thank you for the signed Legal Aid form. Your application for Legal Aid was SUCCESSFUL.</p>
+        <p>BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation.</p>
+        <p>AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below:</p>
+        <a href='${messageBodyinfo.formUrl}' style="font-weight: bolder;">${messageBodyinfo.formUrl}</a>
+        <p>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.</p>
+        <p>Direct Mediation Services.</p>
+      </div>
+    `;
 
-        secureConnection: false,
-
-        auth: {
-            user: config.companyEmail,
-            pass: config.appPassWord,
-        },
-
-    })
 
     transporter.sendMail({
-        from: config.companyEmail,
-        to: clientData.email,
-        subject: "MIAM I Form",
-        html: ` <div  dir="ltr" style="text-align: left; ">
-       <h1>Dear ${clientData.clientName}  </h1>
-      <h2>Thank you for the signed Legal Aid form. Your application for Legal Aid was SUCCESSFUL.
-      BEFORE booking you for your Mediation Information & Assessment Meeting (MIAM) with one of our family mediators, we need you to complete an online form that records basic information about you and your situation. </h2>
-      <h2> AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below: </h2>
-      <a href='${messageBodyinfo.formUrl}'  style="font-weight: bolder;">${messageBodyinfo.formUrl} </a>
-      <h2>PLEASE REMEMBER THAT WHEN YOU BOOK YOUR APPOINTMENT, IF YOU MISS IT, WE WILL NOT BE ABLE TO BOOK YOU ANOTHER.   </h2>
-      <h3>Direct Mediation Services.</h3>
-      <h3>${companyData.companyName}</h3>
-      <h3>${companyData.email}</h3>
-       </div>`,
-
+      from: config.companyEmail,
+      to: clientData.email,
+      subject: 'Approved',
+      html: htmlBody,
     });
+  };
 
 
-    // transporter.sendMail(info, (error, info) => {
-    //     if (error) {
-    //         console.log('Error occurred while sending email:', error.message);
-
-    //     } else {
-    //         console.log('Email sent successfully:', info.messageId);
-    //     }
-    // });
-
-}
-const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody) {
-    /*
+// const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody) {
+//     /*
     
-       companyData ={companyName , email}
-       clientData = {clientName ,email}
+//        companyData ={companyName , email}
+//        clientData = {clientName ,email}
     
-      */
+//       */
+
+//     let transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         port: 587,
+//         starttls: {
+//             enable: true
+//         },
+//         starttls: {
+//             enable: true
+//         },
+
+//         secureConnection: false,
+
+//         auth: {
+//             user: config.companyEmail,
+//             pass: config.appPassWord,
+//         },
+
+//     })
+
+//     transporter.sendMail({
+//         from: config.companyEmail,
+//         to: clientData.email,
+//         subject: "Further Evidence Email",
+//         html: ` <div  dir="ltr" style="text-align: left; ">
+//        <h1>Dear ${clientData.clientName}  </h1>
+//       <h4>Thank you for applying for Legal Aid using the online system. One of our specially trained team members assessed your case
+//        and has considered the information you provided.  </h4>
+//        <h4>We can see that you are receiving funding for Universal Credit.</h4>
+//       <h4  style="font-weight: bolder;"> AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below: </h4>
+//       <h4 style="font-weight: bolder;color:red">Would you be able to send us an image VIA EMAIL of your last Universal Credit entitlement as per the attached image? 
+//       We need to see your FULL NAME,
+//        ADDRESS date of the last payment, and the amount you received or will receive. </h4>
+//       <h4 style="font-weight: bolder;color:blue">Please feel free to send it VIA EMAIL as soon as possible so we can proceed with your application. </h4>
+//       <h4>You have two choices now: </h4>
+//       <h4  style="font-weight: bolder;"> 1)  Apply again by sending additional evidence attached to an email.  </h4>
+//       <h4>OR </h4>
+//       <h4 style="font-weight: bolder;"> 2) Pay privately for your mediation. You can book your appointment via our <a href="https://calendly.com/familymediation"  style="font-weight: bolder;">website </a> . </h4>
+//       <h4> If you are responding to an invitation to mediation and you don't go ahead, it will be considered a refusal.
+//        However, you may be able to explain any mitigating circumstances to the District Judge or Magistrates should the case go to court. </h4>
+//       ${FurtherEvidenceBody}
+ 
+//       <h4>We wish you and your family all the best. </h4>
+//       <h3>Direct Mediation Services.</h3>
+//       <h3>${companyData.companyName}</h3>
+//       <h3>${companyData.email}</h3>
+//        </div>`,
+
+
+//         // attachments: [
+//         //     {
+//         //         filename: 'FurtherEvidenceIMG.png',
+//         //         path: './FurtherEvidenceIMG.png',
+//         //     },
+//         // ],
+
+//         attachments: [
+//             {
+//                 filename: 'FurtherEvidenceIMG.png',
+//                 content: FurtherEvidenceIMG
+//             }
+//         ]
+//     }).then((data) => {
+//             fs.unlinkSync(FurtherEvidenceIMG.path);
+//         });
+
+
+//     // transporter.sendMail(info, (error, info) => {
+//     //     if (error) {
+//     //         console.log('Error occurred while sending email:', error.message);
+
+//     //     } else {
+//     //         console.log('Email sent successfully:', info.messageId);
+//     //     }
+//     // });
+
+// }
+
+
+const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvidenceIMG, Paragraph1, Paragraph2) {
 
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -91,55 +210,34 @@ const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvide
         starttls: {
             enable: true
         },
-        starttls: {
-            enable: true
-        },
-
         secureConnection: false,
 
         auth: {
             user: config.companyEmail,
             pass: config.appPassWord,
         },
-
-    })
+    });
 
     transporter.sendMail({
         from: config.companyEmail,
         to: clientData.email,
         subject: "Further Evidence Email",
-        html: ` <div  dir="ltr" style="text-align: left; ">
-       <h1>Dear ${clientData.clientName}  </h1>
-      <h4>Thank you for applying for Legal Aid using the online system. One of our specially trained team members assessed your case
-       and has considered the information you provided.  </h4>
-       <h4>We can see that you are receiving funding for Universal Credit.</h4>
-      <h4  style="font-weight: bolder;"> AFTER you have filled and SUBMITTED this form, a member of our team will get back to you to book your appointment. Please click on the link below: </h4>
-      <h4 style="font-weight: bolder;color:red">Would you be able to send us an image VIA EMAIL of your last Universal Credit entitlement as per the attached image? 
-      We need to see your FULL NAME,
-       ADDRESS date of the last payment, and the amount you received or will receive. </h4>
-      <h4 style="font-weight: bolder;color:blue">Please feel free to send it VIA EMAIL as soon as possible so we can proceed with your application. </h4>
-      <h4>You have two choices now: </h4>
-      <h4  style="font-weight: bolder;"> 1)  Apply again by sending additional evidence attached to an email.  </h4>
-      <h4>OR </h4>
-      <h4 style="font-weight: bolder;"> 2) Pay privately for your mediation. You can book your appointment via our <a href="https://calendly.com/familymediation"  style="font-weight: bolder;">website </a> . </h4>
-      <h4> If you are responding to an invitation to mediation and you don't go ahead, it will be considered a refusal.
-       However, you may be able to explain any mitigating circumstances to the District Judge or Magistrates should the case go to court. </h4>
-      ${FurtherEvidenceBody}
- 
-      <h4>We wish you and your family all the best. </h4>
-      <h3>Direct Mediation Services.</h3>
-      <h3>${companyData.companyName}</h3>
-      <h3>${companyData.email}</h3>
-       </div>`,
-
-
-        // attachments: [
-        //     {
-        //         filename: 'FurtherEvidenceIMG.png',
-        //         path: './FurtherEvidenceIMG.png',
-        //     },
-        // ],
-
+        html: `
+        <div dir="ltr" style="text-align: left;">
+            <h1>Dear ${clientData.clientName},</h1>
+            <h4>Thank you for applying for Legal Aid using the online system. One of our specially trained team members assessed your case and has considered the information you provided.</h4>
+            ${Paragraph1 ? `<h4>${Paragraph1}</h4>` : ''}
+            ${Paragraph2 ? `<h4>${Paragraph2}</h4>` : ''}
+            <h4>Please feel free to send it VIA EMAIL as soon as possible so we can proceed with your application.</h4>
+            <h4>You have two choices now:</h4>
+            <h4>1) Apply again by sending additional evidence attached to an email.</h4>
+            <h4>OR</h4>
+            <h4>2) Pay privately for your mediation. You can book your appointment via our <a href="https://calendly.com/familymediation" style="font-weight: bolder;">website</a>.</h4>
+            <h4>If you are responding to an invitation to mediation and you don't go ahead, it will be considered a refusal. However, you may be able to explain any mitigating circumstances to the District Judge or Magistrates should the case go to court.</h4>
+            <h4>We wish you and your family all the best.</h4>
+            <h3>Kind Regards,</h3>
+            <h3>DMS Admin Team</h3>
+        </div>`,
         attachments: [
             {
                 filename: 'FurtherEvidenceIMG.png',
@@ -147,20 +245,13 @@ const sendFurtherEvidenceEmail = function (companyData, clientData, FurtherEvide
             }
         ]
     }).then((data) => {
-            fs.unlinkSync(FurtherEvidenceIMG.path);
-        });
+        fs.unlinkSync(FurtherEvidenceIMG.path);
+    });
+};
 
-
-    // transporter.sendMail(info, (error, info) => {
-    //     if (error) {
-    //         console.log('Error occurred while sending email:', error.message);
-
-    //     } else {
-    //         console.log('Email sent successfully:', info.messageId);
-    //     }
-    // });
-
-}
+// // Example usage:
+// // Replace 'Your Company Data', 'Your Client Data', 'Path to Image', 'Paragraph 1', 'Paragraph 2'
+// sendFurtherEvidenceEmail('Your Company Data', 'Your Client Data', 'Path to Image', 'Paragraph 1', 'Paragraph 2');
 
 const sendRefusedEmail = function (companyData, clientData, reasonsList) {
     /*
@@ -290,7 +381,9 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
     let CaseFound;
     try {
         const FurtherEvidenceIMG = req.file;
-        const FurtherEvidenceBody = req.body.FurtherEvidenceBody;
+        // const FurtherEvidenceBody = req.body.FurtherEvidenceBody;
+        const Paragraph1 = req.body.Paragraph1;
+        const Paragraph2 = req.body.Paragraph2;
         const legalAidStatus = req.body.legalAidStatus;
         const reasonsList = req.body.reasonsList
         const TargetClient = req.params.clientType; // C1 | C2
@@ -510,7 +603,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
                         })
 
                         console.log("before calling the function", FurtherEvidenceIMG)
-                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG , Paragraph1, Paragraph2);
 
                         let twillioInfo = handleTwillioData(currentComp);
                         let clientNumber = CaseFound.MajorDataC1.phoneNumber
@@ -539,7 +632,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
                                 C2: JSON.stringify(legalAidTableDataC2)
                             },
                         })
-                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody)
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG , Paragraph1, Paragraph2)
 
 
                         let twillioInfo = handleTwillioData(currentComp);
@@ -585,7 +678,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
                         companyData.companyName = currentComp_.companyName
                         companyData.email = currentComp_.email
                         // messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${CaseFound._id}`;
-                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
+                        sendFurtherEvidenceEmail(companyData, clientData , Paragraph1, Paragraph2);
                         let legalAidTableDataC1 = JSON.parse(CaseFound.legalAidTableData.C1);
                         legalAidTableDataC1.status = 'Further evidence required';
 
@@ -627,7 +720,7 @@ router.post('/changeLegalAidStatus/:clientType/:id', authMiddleware , uploadFile
                             },
                         })
 
-                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG ,FurtherEvidenceBody);
+                        sendFurtherEvidenceEmail(companyData, clientData, FurtherEvidenceIMG , Paragraph1, Paragraph2);
 
                         let twillioInfo = handleTwillioData(currentComp_);
                         let clientNumber = CaseFound.MajorDataC2.phoneNumber
