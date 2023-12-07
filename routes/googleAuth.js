@@ -41,7 +41,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       scope: SCOPES,
       state: `${state}:${userId}`,
   });
-  res.redirect(authUrl);
+  res.json(authUrl);
 });
 
 // router.get('/googleAuth', (req, res) => {
@@ -79,8 +79,8 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       }
 
       // console.log('Refresh Token:', refreshToken);
-      
-      res.send('Authorization successful! You can close this window.');
+      res.redirect("https://direct-mediation-services-black.vercel.app");
+      // res.send('Authorization successful! You can close this window.');
     } catch (error) {
       console.error('Error while exchanging code for tokens:', error.message);
       res.status(500).send('Internal Server Error');
