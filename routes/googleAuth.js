@@ -11,7 +11,7 @@ const clientSecret = require('../credentials-folder/client_secret_537502054165-m
 const authMiddleware = require('../middleware/authMiddleware');
 const clientId = clientSecret.web.client_id;
 const clientSecretKey = clientSecret.web.client_secret;
-const redirectUri = 'http://localhost:3007/oauth2callback';
+const redirectUri = 'https://dms5.onrender.com/oauth2callback';
 
 const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
 const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
@@ -41,7 +41,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       scope: SCOPES,
       state: `${state}:${userId}`,
   });
-  res.json(authUrl);
+  res.redirect(authUrl);
 });
 
 // router.get('/googleAuth', (req, res) => {
@@ -79,7 +79,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       }
 
       // console.log('Refresh Token:', refreshToken);
-      res.redirect("https://direct-mediation-services-black.vercel.app");
+      res.redirect(`https://direct-mediation-services-black.vercel.app?ID=${userId}`);
       // res.send('Authorization successful! You can close this window.');
     } catch (error) {
       console.error('Error while exchanging code for tokens:', error.message);
