@@ -41,7 +41,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       scope: SCOPES,
       state: `${state}:${userId}`,
   });
-  res.json(authUrl);
+  res.redirect(authUrl);
 });
 
 // router.get('/googleAuth', (req, res) => {
@@ -79,7 +79,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
       }
 
       // console.log('Refresh Token:', refreshToken);
-  
+      
       res.send('Authorization successful! You can close this window.');
     } catch (error) {
       console.error('Error while exchanging code for tokens:', error.message);
