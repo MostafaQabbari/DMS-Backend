@@ -48,6 +48,7 @@ function handleTwillioData(targetComp) {
 
 
 const clientSecret = require(config.googleCredentialFile2);
+await console.log(clientSecret);
 const clientId = clientSecret.web.client_id;
 const clientSecretKey = clientSecret.web.client_secret;
 const redirectUri = 'https://dms5.onrender.com/oauth2callback';
