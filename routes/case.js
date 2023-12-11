@@ -417,11 +417,12 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 
 
 const clientSecret = config.googleCredentialFile2;
+console.log(clientSecret);
 
 // const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
 const clientId = clientSecret.web.client_id;
 const clientSecretKey = clientSecret.web.client_secret;
-const redirectUri = 'http://localhost:3007/oauth2callback';
+const redirectUri = 'https://dms5.onrender.com/oauth2callback';
 const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
 
 
