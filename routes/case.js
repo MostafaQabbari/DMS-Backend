@@ -455,8 +455,9 @@ const createEvent = async (userId, eventTitle, eventDate, attendees) => {
   };
 
 
-router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, next) => {
+router.post('/creatCase', authMiddleware , decryptTwillioData, async (req, res, next) => {
 
+  // console.log(req.body);
   let companyData = {};
   let clientData = {};
   let messageBodyinfo = {};
@@ -482,6 +483,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       let { firstName, surName, phoneNumber, email, dateOfMAIM, location, zoomLink, mediatorMail, caseType, legalAidType } = req.body;
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
+      // console.log(Themediator);
       const companyId = req.user._id;
       const mediatorOfTheCase = `${Themediator.firstName} ${Themediator.lastName}`;
       let caseReady;
@@ -559,6 +561,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         name: Reference,
         mimeType: "application/vnd.google-apps.folder",
       };
+      
       const folder = await drive.files.create({
         resource: folderMetadata,
         fields: "id",
@@ -572,14 +575,14 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         if (dateOfMAIM) {
 
           dateOfMAIM = extractDateTime(dateOfMAIM).date
-          console.log("date", dateOfMAIM)
+          // console.log("date", dateOfMAIM)
 
         } else {
           dateOfMAIM = "00-00-0000"
-          console.log("date", dateOfMAIM)
+          // console.log("date", dateOfMAIM)
 
         }
-        console.log('LAtabelObj: ', LAtabelObj);
+        // console.log('LAtabelObj: ', LAtabelObj);
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location, caseType, legalAidType },
@@ -609,7 +612,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
             folderID: folderId
           });
 
-        console.log("newCase", newCase[0].legalAidTableData)
+        // console.log("newCase", newCase[0].legalAidTableData)
 
         let statusRemider = {
           reminderID: `${newCase[0]._id}-statusRemider`,
@@ -644,15 +647,6 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         companyData.email = req.user.email;
         let twillioInfo = req.twillioInfo;
 
-        // add reminder
-        const reminderTitle = `MIAM with ${clientData.clientName} `;
-        const attendees = [mediator.email , CaseFound.MajorDataC1.mail];
-
-        await createEvent(companyId , reminderTitle , startDate , attendees);
-        await Company.findByIdAndUpdate(companyId, {
-            $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
-        })
-
 
         if (req.body.caseType == 'private') {
           let meetingDetails = {}, clientDetials = {}, companyDetails = {};
@@ -671,6 +665,19 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
           messageBodyinfo.formType = "MIAM 1"
           messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
           sendMailMIAM1(companyData, clientData, messageBodyinfo);
+
+          // add reminder
+          const reminderTitle = `MIAM with ${clientData.clientName} `;
+          const attendees = [Themediator.email , email];
+
+          console.log(companyId , reminderTitle, attendees ,MIAM_C1_Date );
+
+          await createEvent(companyId , reminderTitle , MIAM_C1_Date , attendees);
+          await Company.findByIdAndUpdate(companyId, {
+              $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
+          })
+
+
           res.status(200).json({ caseID: newCaseID })
 
         }
@@ -679,7 +686,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
           messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
           sendMailLowIncome(companyData, clientData, messageBodyinfo);
           sendSMS_LowIncome(twillioInfo, companyData, clientData, messageBodyinfo, res)
-          // res.status(200).json({ caseID: newCaseID })
+          res.status(200).json(/*{ caseID: newCaseID }*/"email and sms has been sent to the client");
         }
         else if (req.body.legalAidType == 'passporting' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = 'Passporting'
@@ -688,7 +695,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
 
           sendSMS_Passporting(twillioInfo, companyData, clientData, messageBodyinfo, res)
 
-          //res.status(200).json({ caseID: newCaseID })
+          res.status(200).json(/*{ caseID: newCaseID }*/"email and sms has been sent to the client");
         }
         else {
           res.status(400).json({ "message": "please confirm case type" })
@@ -707,6 +714,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       res.status(400).json({ 'message': "error in the role of token" })
     }
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 

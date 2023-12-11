@@ -40,6 +40,10 @@ const legalAidTable_Actions = require("./routes/legalAidTable_Actions")
 const sendCheckoutMail = require('./routes/sendCheckoutMail')
 
 
+const AppError = require('./appError');
+const globalErrorHandler = require('./middleware/globalError');
+
+
 
 const cors = require('cors');
 require('dotenv')
@@ -100,6 +104,7 @@ app.use(sendCheckoutMail)
 
 app.use(googleAuth)
 
+// app.use(globalErrorHandler)
 
 
 app.use((err, req, res, next) => {
