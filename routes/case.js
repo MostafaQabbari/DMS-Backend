@@ -9,6 +9,7 @@ const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
+const fs = require('fs');
 
 const { OAuth2Client } = require('google-auth-library');
 
@@ -417,12 +418,45 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 
 
 
-const clientSecret = require(config.googleCredentialFile2);
-console.log(clientSecret)
-const clientId = clientSecret.web.client_id;
-const clientSecretKey = clientSecret.web.client_secret;
-const redirectUri = 'https://dms5.onrender.com/oauth2callback';
-const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
+// const clientSecret = require(config.googleCredentialFile2);
+// console.log(clientSecret)
+// const clientId = clientSecret.web.client_id;
+// const clientSecretKey = clientSecret.web.client_secret;
+// const redirectUri = 'https://dms5.onrender.com/oauth2callback';
+  let oAuth2Client = null;
+
+// const auth = google.auth.getClient({
+//   keyFile: config.googleCredentialFile2,
+//   scopes: ['https://www.googleapis.com/auth/calendar.events'],
+// });
+
+
+    // Read the JSON file asynchronously
+    fs.readFile(config.googleCredentialFile2, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error reading the JSON file:', err);
+        return;
+      }
+
+      try {
+        // Parse the JSON data into a JavaScript object
+        const credentials = JSON.parse(data);
+
+        // Extract client ID, client secret, and redirect URI from the credentials object
+        const { client_id: clientId, client_secret: clientSecret, redirect_uris: redirectUris } = credentials.installed;
+
+        // Assuming there's only one redirect URI in the array, you can extract it
+        const redirectUri = redirectUris[0];
+
+        // Create OAuth2Client instance
+        oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
+
+        // Now you can use the oAuth2Client object
+        console.log(oAuth2Client);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
+    });
 
 
 const createEvent = async (userId, eventTitle, eventDate, attendees) => {

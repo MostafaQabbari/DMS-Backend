@@ -1,21 +1,48 @@
 const express = require('express');
 const router = express.Router();
-
+const authMiddleware = require('../middleware/authMiddleware');
 const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
 const crypto = require('crypto');
 const Company = require("../models/company");
 const config = require("../config/config");
+const fs = require('fs');
+// const clientSecret = config.googleCredentialFile2;
+// const clientSecret = require(config.googleCredentialFile2);
 
-const clientSecret = config.googleCredentialFile2;
-// const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
-const authMiddleware = require('../middleware/authMiddleware');
-const clientId = clientSecret.web.client_id;
-const clientSecretKey = clientSecret.web.client_secret;
-const redirectUri = 'https://dms5.onrender.com/oauth2callback';
+// const clientId = clientSecret.web.client_id;
+// const clientSecretKey = clientSecret.web.client_secret;
+// const redirectUri = 'https://dms5.onrender.com/oauth2callback';
 
-const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
-const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
+    let oAuth2Client = null;
+
+    fs.readFile(config.googleCredentialFile2, 'utf8', (err, data) => {
+        if (err) {
+        console.error('Error reading the JSON file:', err);
+        return;
+        }
+
+        try {
+        // Parse the JSON data into a JavaScript object
+        const credentials = JSON.parse(data);
+
+        // Extract client ID, client secret, and redirect URI from the credentials object
+        const { client_id: clientId, client_secret: clientSecret, redirect_uris: redirectUris } = credentials.installed;
+
+        // Assuming there's only one redirect URI in the array, you can extract it
+        const redirectUri = redirectUris[0];
+
+        // Create OAuth2Client instance
+        oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
+
+        // Now you can use the oAuth2Client object
+        console.log(oAuth2Client);
+        } catch (error) {
+        console.error('Error parsing JSON:', error);
+        }
+    });
+
+    const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
 
 
