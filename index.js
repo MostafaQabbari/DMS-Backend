@@ -43,7 +43,12 @@ const sendCheckoutMail = require('./routes/sendCheckoutMail')
 const AppError = require('./appError');
 const globalErrorHandler = require('./middleware/globalError');
 
-
+const corsOptions = {
+  origin: ['https://dms5.onrender.com', 'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
 const cors = require('cors');
 require('dotenv')
@@ -62,7 +67,7 @@ mongoose.connect("mongodb+srv://mkabary8:O8uafwuq79PBkJoJ@cluster1.xnqqhnm.mongo
   });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, 'uploads')))
 
 app.use("/auth", authRoutes);
