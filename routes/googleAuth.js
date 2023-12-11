@@ -5,9 +5,10 @@ const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
 const crypto = require('crypto');
 const Company = require("../models/company");
+const config = require("../config/config");
 
-const clientSecret = config.googleCredentialFile2;
-// const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
+// const clientSecret = config.googleCredentialFile2;
+const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
 const authMiddleware = require('../middleware/authMiddleware');
 const clientId = clientSecret.web.client_id;
 const clientSecretKey = clientSecret.web.client_secret;
@@ -87,34 +88,34 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
     }
   });
   
-  router.post('/create-event',authMiddleware ,async (req, res) => {
-    try {
-      // In a real-world scenario, you would retrieve the refresh token from your database
-      // instead of hardcoding it here
-      const company = await Company.findById(req.user._id);
-      const refreshtoken = company.googleRefreshToken;
-      oAuth2Client.setCredentials({ refresh_token: refreshtoken });
+//   router.post('/create-event',authMiddleware ,async (req, res) => {
+//     try {
+//       // In a real-world scenario, you would retrieve the refresh token from your database
+//       // instead of hardcoding it here
+//       const company = await Company.findById(req.user._id);
+//       const refreshtoken = company.googleRefreshToken;
+//       oAuth2Client.setCredentials({ refresh_token: refreshtoken });
   
-      const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+//       const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
   
-      const eventDetails = {
-        summary: req.body.eventTitle,
-        start: { dateTime: req.body.eventDate, timeZone: 'UTC' },
-        end: { dateTime: req.body.eventDate, timeZone: 'UTC' },
-        attendees: req.body.attendees.map(email => ({ email })),
-      };
+//       const eventDetails = {
+//         summary: req.body.eventTitle,
+//         start: { dateTime: req.body.eventDate, timeZone: 'UTC' },
+//         end: { dateTime: req.body.eventDate, timeZone: 'UTC' },
+//         attendees: req.body.attendees.map(email => ({ email })),
+//       };
   
-      const response = await calendar.events.insert({
-        calendarId: 'primary',
-        resource: eventDetails,
-      });
+//       const response = await calendar.events.insert({
+//         calendarId: 'primary',
+//         resource: eventDetails,
+//       });
   
-      res.status(200).json({ eventId: response.data.id, message: 'Event created successfully!' });
-    } catch (error) {
-      console.error('Error creating event:', error.message);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+//       res.status(200).json({ eventId: response.data.id, message: 'Event created successfully!' });
+//     } catch (error) {
+//       console.error('Error creating event:', error.message);
+//       res.status(500).json({ error: 'Internal Server Error' });
+//     }
+//   });
 
 
   module.exports = router;

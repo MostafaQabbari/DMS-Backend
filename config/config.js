@@ -58,7 +58,7 @@ RecordSessionForm/:id
 
   projectID1: " direct-mediation-services-web", 
   //for google drive service account credentials
-  credentialFile1:  '/etc/secrets/direct-mediation-services-web-f8ebfd3e36fc.json' /* ||   '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' */,
+  credentialFile1:/*  '/etc/secrets/direct-mediation-services-web-f8ebfd3e36fc.json' /* || */  '../DMS-Backend/credentials-folder/direct-mediation-services-web-f8ebfd3e36fc.json' ,
 
   
   //for local development google calender 
