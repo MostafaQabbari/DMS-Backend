@@ -7,8 +7,8 @@ const crypto = require('crypto');
 const Company = require("../models/company");
 const config = require("../config/config");
 
-// const clientSecret = config.googleCredentialFile2;
-const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
+const clientSecret = config.googleCredentialFile2;
+// const clientSecret = require('../credentials-folder/client_secret_537502054165-metsp21euqsbddceh0tafk829h13n4gf.apps.googleusercontent.com.json');
 const authMiddleware = require('../middleware/authMiddleware');
 const clientId = clientSecret.web.client_id;
 const clientSecretKey = clientSecret.web.client_secret;
