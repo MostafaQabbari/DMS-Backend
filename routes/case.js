@@ -423,7 +423,7 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 // const clientId = clientSecret.web.client_id;
 // const clientSecretKey = clientSecret.web.client_secret;
 // const redirectUri = 'https://dms5.onrender.com/oauth2callback';
-  let oAuth2Client = null;
+  // let oAuth2Client = null;
 
 // const auth = google.auth.getClient({
 //   keyFile: config.googleCredentialFile2,
@@ -431,32 +431,38 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 // });
 
 
-    // Read the JSON file asynchronously
-    fs.readFile(config.googleCredentialFile2, 'utf8', (err, data) => {
-      if (err) {
-        console.error('Error reading the JSON file:', err);
-        return;
-      }
+    // // Read the JSON file asynchronously
+    // fs.readFile(config.googleCredentialFile, 'utf8', (err, data) => {
+    //   if (err) {
+    //     console.error('Error reading the JSON file:', err);
+    //     return;
+    //   }
 
-      try {
-        // Parse the JSON data into a JavaScript object
-        const credentials = JSON.parse(data);
+    //   try {
+    //     // Parse the JSON data into a JavaScript object
+    //     const credentials = JSON.parse(data);
+    //     console.log(credentials);
+    //     // Extract client ID, client secret, and redirect URI from the credentials object
+    //     const { client_id: clientId, client_secret: clientSecret, redirect_uris: redirectUris } = credentials.installed;
 
-        // Extract client ID, client secret, and redirect URI from the credentials object
-        const { client_id: clientId, client_secret: clientSecret, redirect_uris: redirectUris } = credentials.installed;
+    //     // Assuming there's only one redirect URI in the array, you can extract it
+    //     const redirectUri = redirectUris[0];
 
-        // Assuming there's only one redirect URI in the array, you can extract it
-        const redirectUri = redirectUris[0];
+    //     // Create OAuth2Client instance
+    //     oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
 
-        // Create OAuth2Client instance
-        oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
+    //     // Now you can use the oAuth2Client object
+    //     console.log(oAuth2Client);
+    //   } catch (error) {
+    //     console.error('Error parsing JSON:', error);
+    //   }
+    // });
 
-        // Now you can use the oAuth2Client object
-        console.log(oAuth2Client);
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-      }
-    });
+    const clientId = process.env.web.client_id;
+    const clientSecretKey = process.env.web.client_secret;
+    const redirectUri = process.env.web.redirect_uris;
+    const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
+    console.log(clientId , clientSecretKey , redirectUri);
 
 
 const createEvent = async (userId, eventTitle, eventDate, attendees) => {
