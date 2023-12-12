@@ -10,6 +10,8 @@ const CryptoJS = require("crypto-js");
 const fs = require('fs');
 const { OAuth2Client } = require('google-auth-library');
 const { google } = require('googleapis');
+require('dotenv').config();
+
 
 
 const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyData, res) {
@@ -49,11 +51,11 @@ function handleTwillioData(targetComp) {
 
     // const clientSecret = require(config.googleCredentialFile2);
     // console.log(clientSecret);
-    const clientId = process.env.web.client_id;
-    const clientSecretKey = process.env.web.client_secret;
-    const redirectUri = process.env.web.redirect_uris;
+    const clientId = process.env.client_id;
+    const clientSecretKey = process.env.client_secret;
+    const redirectUri = process.env.redirect_uris;
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
-    console.log(clientId , clientSecretKey , redirectUri);
+    
 // let oAuth2Client = null;
 
 

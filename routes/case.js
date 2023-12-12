@@ -10,6 +10,8 @@ const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
 const fs = require('fs');
+require('dotenv').config();
+
 
 const { OAuth2Client } = require('google-auth-library');
 
@@ -458,11 +460,11 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
     //   }
     // });
 
-    const clientId = process.env.web.client_id;
-    const clientSecretKey = process.env.web.client_secret;
-    const redirectUri = process.env.web.redirect_uris;
+    const clientId = process.env.client_id;
+    const clientSecretKey = process.env.client_secret;
+    const redirectUri = process.env.redirect_uris;
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
-    console.log(clientId , clientSecretKey , redirectUri);
+   
 
 
 const createEvent = async (userId, eventTitle, eventDate, attendees) => {
