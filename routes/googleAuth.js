@@ -47,6 +47,7 @@ require('dotenv').config();
     const clientId = process.env.client_id;
     const clientSecretKey = process.env.client_secret;
     const redirectUri = process.env.redirect_uris;
+    // const redirectUri = "http://localhost:3007/oauth2callback";
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
     const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
@@ -69,11 +70,11 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
   const state = generateRandomString(16);
   stateGeneratedOnServer = state;
   const userId = req.user._id; // Replace with your actual user ID or unique identifier
-
+  console.log(stateGeneratedOnServer);
   const authUrl = oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
-      state: `${state}:${userId}`,
+      state: `${stateGeneratedOnServer}:${userId}`,
   });
   res.redirect(authUrl);
 });
@@ -90,13 +91,14 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
    
     const code = req.query.code;
     const state = req.query.state;
+    console.log(state);
 
     // Extract the user ID and state from the state parameter
     const [receivedState, userId] = state.split(':');
 
     // Validate the state to ensure it's the one you generated
     if (receivedState !== stateGeneratedOnServer) {
-      return res.status(400).send('Invalid state parameter');
+      return res.status(400).send({code});
     }
   
     try {
@@ -112,7 +114,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
         return res.status(401).json({ message: "Invalid UserID" });
       }
 
-      // console.log('Refresh Token:', refreshToken);
+      console.log('Refresh Token:', refreshToken);
       res.redirect(`https://direct-mediation-services-black.vercel.app?ID=${userId}`);
       // res.send('Authorization successful! You can close this window.');
     } catch (error) {
