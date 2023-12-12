@@ -46,8 +46,8 @@ require('dotenv').config();
 
     const clientId = process.env.client_id;
     const clientSecretKey = process.env.client_secret;
-    const redirectUri = process.env.redirect_uris;
-    // const redirectUri = "http://localhost:3007/oauth2callback";
+    // const redirectUri = process.env.redirect_uris;
+    const redirectUri = "http://localhost:3007/oauth2callback";
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
     const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
@@ -62,22 +62,41 @@ const generateRandomString = (length) => {
 };
 
 
+  router.get('/googleAuth', authMiddleware, (req, res) => {
+    try {
+      const state = generateRandomString(16);
+      stateGeneratedOnServer = state;
+      const userId = req.user._id; // Replace with your actual user ID or unique identifier
+      
 
+      const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES,
+        state: `${stateGeneratedOnServer}:${userId}`,
+      });
 
-router.get('/googleAuth', authMiddleware , (req, res) => {
-
-
-  const state = generateRandomString(16);
-  stateGeneratedOnServer = state;
-  const userId = req.user._id; // Replace with your actual user ID or unique identifier
-  console.log(stateGeneratedOnServer);
-  const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES,
-      state: `${stateGeneratedOnServer}:${userId}`,
+      res.json(authUrl);
+    } catch (error) {
+      console.error('Error in /googleAuth endpoint:', error);
+      res.status(500).send('Internal Server Error');
+    }
   });
-  res.redirect(authUrl);
-});
+
+
+// router.get('/googleAuth', authMiddleware , (req, res) => {
+
+
+//   const state = generateRandomString(16);
+//   stateGeneratedOnServer = state;
+//   const userId = req.user._id; // Replace with your actual user ID or unique identifier
+//   console.log(stateGeneratedOnServer);
+//   const authUrl = oAuth2Client.generateAuthUrl({
+//       access_type: 'offline',
+//       scope: SCOPES,
+//       state: `${stateGeneratedOnServer}:${userId}`,
+//   });
+//   res.redirect(authUrl);
+// });
 
 // router.get('/googleAuth', (req, res) => {
 //     const authUrl = oAuth2Client.generateAuthUrl({
@@ -91,7 +110,7 @@ router.get('/googleAuth', authMiddleware , (req, res) => {
    
     const code = req.query.code;
     const state = req.query.state;
-    console.log(state);
+    
 
     // Extract the user ID and state from the state parameter
     const [receivedState, userId] = state.split(':');
