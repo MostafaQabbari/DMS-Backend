@@ -38,7 +38,7 @@ const replaceMediator = require('./routes/replaceMediator');
 const updateMediatorData= require("./routes/updateMediatorData")
 const legalAidTable_Actions = require("./routes/legalAidTable_Actions")
 const sendCheckoutMail = require('./routes/sendCheckoutMail')
-
+require('dotenv').config();
 
 const AppError = require('./appError');
 const globalErrorHandler = require('./middleware/globalError');
@@ -51,7 +51,7 @@ const corsOptions = {
 };
 
 const cors = require('cors');
-require('dotenv')
+
 const PORT = process.env.PORT || 3007
 const app = express();
 

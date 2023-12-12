@@ -7,6 +7,8 @@ const crypto = require('crypto');
 const Company = require("../models/company");
 const config = require("../config/config");
 const fs = require('fs');
+require('dotenv').config();
+
 // const clientSecret = config.googleCredentialFile2;
 // const clientSecret = require(config.googleCredentialFile2);
 
@@ -42,11 +44,10 @@ const fs = require('fs');
     //     }
     // });
 
-    const clientId = process.env.web.client_id;
-    const clientSecretKey = process.env.web.client_secret;
-    const redirectUri = process.env.web.redirect_uris;
+    const clientId = process.env.client_id;
+    const clientSecretKey = process.env.client_secret;
+    const redirectUri = process.env.redirect_uris;
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
-    console.log(clientId , clientSecretKey , redirectUri);
     const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
 
