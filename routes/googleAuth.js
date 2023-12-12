@@ -46,8 +46,8 @@ require('dotenv').config();
 
     const clientId = process.env.client_id;
     const clientSecretKey = process.env.client_secret;
-    // const redirectUri = process.env.redirect_uris;
-    const redirectUri = "http://localhost:3007/oauth2callback";
+    const redirectUri = process.env.redirect_uris;
+    // const redirectUri = "http://localhost:3007/oauth2callback";
     const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
     const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
