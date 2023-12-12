@@ -44,7 +44,7 @@ const AppError = require('./appError');
 const globalErrorHandler = require('./middleware/globalError');
 
 const corsOptions = {
-  origin: ['https://dms5.onrender.com', 'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
+  origin: ['http://localhost:3000','https://dms5.onrender.com', 'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
