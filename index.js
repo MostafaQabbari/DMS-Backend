@@ -42,9 +42,9 @@ require('dotenv').config();
 
 const AppError = require('./appError');
 const globalErrorHandler = require('./middleware/globalError');
-
+"http://35.189.68.15:3007"
 const corsOptions = {
-  origin: ['http://localhost:3000','https://dms5.onrender.com', 'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
+  origin: ['"http://35.189.68.15:3007"','https://dms5.onrender.com','http://localhost:3000' ,'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
