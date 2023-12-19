@@ -1,13 +1,10 @@
 name: Deploy to AWS EC2
 on:
   push:
-    branches: ["main"]
+    branches: ["dgsrgrdg"]
 jobs:
   build:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - run: ls -la
-      - run: git pull origin main
-      - run: npm install
-      - run: pm2 restart index.js
