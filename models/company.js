@@ -14,6 +14,7 @@ const companySchema = new mongoose.Schema({
   refreshToken: {type: String,default: null,},
   resetToken: { type: String, default: null },
   resetTokenExpiry: { type: Date, default: null },
+  googleRefreshToken: {type: String , default: null,},
 
   twillioData:{type:String},
   

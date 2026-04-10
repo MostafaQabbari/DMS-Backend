@@ -9,6 +9,12 @@ const decryptTwillioData = require('../middleware/getDataFromTwilio');
 const config = require("../config/config");
 const dateNow = require("../global/dateNow");
 const { google } = require("googleapis");
+const fs = require('fs');
+require('dotenv').config();
+
+
+const { OAuth2Client } = require('google-auth-library');
+
 
 
 function extractDateTime(timestamp) {
@@ -29,6 +35,20 @@ function extractDateTime(timestamp) {
     startTime: formattedTime
   };
 }
+function formatDateToSlash(inputDate) {
+  if(inputDate===''){
+    return ""
+}
+if(inputDate){
+
+  return inputDate.replace(/-/g, '/');
+}
+  console.log("xxx" , inputDate)
+
+
+
+}
+
 
 const confirmationMIAMforBooking = function (meetingDetails, clientDetials, companyDetails) {
   /*
@@ -70,7 +90,7 @@ const confirmationMIAMforBooking = function (meetingDetails, clientDetials, comp
   })
 
   let mailList = `${clientDetials.email},${companyDetails.mediatorEmail}`;
-  console.log("mailList" ,mailList)
+  console.log("mailList", mailList)
   transporter.sendMail({
     from: config.companyEmail,
     to: `${mailList}`,
@@ -110,6 +130,7 @@ const confirmationMIAMforBooking = function (meetingDetails, clientDetials, comp
 
 
 }
+
 
 
 const sendSMS_MIAM1 = function (twillioInfo, companyData, clientData, messageBodyinfo, res) {
@@ -399,8 +420,88 @@ const sendMailLowIncome = function (companyData, clientData, messageBodyinfo) {
 
 
 
-router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, next) => {
+// const clientSecret = require(config.googleCredentialFile2);
+// console.log(clientSecret)
+// const clientId = clientSecret.web.client_id;
+// const clientSecretKey = clientSecret.web.client_secret;
+// const redirectUri = 'https://dms5.onrender.com/oauth2callback';
+  // let oAuth2Client = null;
 
+// const auth = google.auth.getClient({
+//   keyFile: config.googleCredentialFile2,
+//   scopes: ['https://www.googleapis.com/auth/calendar.events'],
+// });
+
+
+    // // Read the JSON file asynchronously
+    // fs.readFile(config.googleCredentialFile, 'utf8', (err, data) => {
+    //   if (err) {
+    //     console.error('Error reading the JSON file:', err);
+    //     return;
+    //   }
+
+    //   try {
+    //     // Parse the JSON data into a JavaScript object
+    //     const credentials = JSON.parse(data);
+    //     console.log(credentials);
+    //     // Extract client ID, client secret, and redirect URI from the credentials object
+    //     const { client_id: clientId, client_secret: clientSecret, redirect_uris: redirectUris } = credentials.installed;
+
+    //     // Assuming there's only one redirect URI in the array, you can extract it
+    //     const redirectUri = redirectUris[0];
+
+    //     // Create OAuth2Client instance
+    //     oAuth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
+
+    //     // Now you can use the oAuth2Client object
+    //     console.log(oAuth2Client);
+    //   } catch (error) {
+    //     console.error('Error parsing JSON:', error);
+    //   }
+    // });
+
+    const clientId = process.env.client_id;
+    const clientSecretKey = process.env.client_secret;
+    const redirectUri = process.env.redirect_uris;
+    const oAuth2Client = new OAuth2Client(clientId, clientSecretKey, redirectUri);
+   
+
+
+const createEvent = async (userId, eventTitle, eventDate, attendees) => {
+    try {
+      // In a real-world scenario, you would retrieve the refresh token from your database
+      // instead of hardcoding it here
+      const company = await Company.findById(userId);
+      const refreshToken = company.googleRefreshToken;
+      oAuth2Client.setCredentials({ refresh_token: refreshToken });
+  
+      const calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+      // Filter out undefined or missing emails
+      const validAttendees = attendees.filter(email => email);
+
+      const eventDetails = {
+        summary: eventTitle,
+        start: { dateTime: eventDate, timeZone: 'UTC' },
+        end: { dateTime: eventDate, timeZone: 'UTC' },
+        attendees: validAttendees.map(email => ({ email })),
+      };
+  
+      const response = await calendar.events.insert({
+        calendarId: 'primary',
+        resource: eventDetails,
+      });
+  
+      return { eventId: response.data.id, message: 'Event created successfully!' };
+    } catch (error) {
+      console.error('Error creating event:', error.message);
+      throw new Error('Internal Server Error');
+    }
+  };
+
+
+router.post('/creatCase', authMiddleware , decryptTwillioData, async (req, res, next) => {
+
+  // console.log(req.body);
   let companyData = {};
   let clientData = {};
   let messageBodyinfo = {};
@@ -426,18 +527,59 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       let { firstName, surName, phoneNumber, email, dateOfMAIM, location, zoomLink, mediatorMail, caseType, legalAidType } = req.body;
       let MIAM_C1_Date = dateOfMAIM
       const Themediator = await mediator.findOne({ email: mediatorMail });
+      // console.log(Themediator);
       const companyId = req.user._id;
-      const mediatorOfTheCase = `${Themediator.firstName} ${Themediator.lastName}`
+      const mediatorOfTheCase = `${Themediator.firstName} ${Themediator.lastName}`;
+      let caseReady;
+      let LAtabelObj;
+
+
+
 
       let case_type;
       if (caseType == "private") {
-        case_type = 'Private'
+        case_type = 'Private';
+        caseReady = true;
+        LAtabelObj = {};
+
       }
       else if (caseType == "LegalAid" && legalAidType == "passporting") {
-        case_type = 'Legal Aid ( Passporting) '
+        case_type = 'Legal Aid ( Passporting)'
+        caseReady = false;
+        LAtabelObj = {
+          clientType: "C1",
+          firstName: firstName,
+          sureName: surName,
+          typeOfApplication: "Passporting",
+          status: "Application Received",
+          DoB: "",
+          postCode: "",
+          phoneNo: phoneNumber,
+          email: email,
+          address: location,
+          howFoundUs: "",
+          surNameOftheOtherPerson: "",
+          caseAbout:"",
+        }
       }
       else if (caseType == "LegalAid" && legalAidType == "lowIncome") {
-        case_type = 'Legal Aid ( Low Income / No Income) '
+        case_type = 'Legal Aid ( Low Income / No Income)';
+        caseReady = false;
+        LAtabelObj = {
+          clientType: "C1",
+          firstName: firstName,
+          sureName: surName,
+          typeOfApplication: " Low Income / No Income",
+          status: "Application Received",
+          DoB: "",
+          postCode: "",
+          phoneNo: phoneNumber,
+          email: email,
+          address: location,
+          howFoundUs: "",
+          surNameOftheOtherPerson: "",
+          caseAbout:"",
+        }
       }
 
       let Reference = `${surName} `;
@@ -463,6 +605,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         name: Reference,
         mimeType: "application/vnd.google-apps.folder",
       };
+      
       const folder = await drive.files.create({
         resource: folderMetadata,
         fields: "id",
@@ -476,14 +619,14 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         if (dateOfMAIM) {
 
           dateOfMAIM = extractDateTime(dateOfMAIM).date
-          console.log("date", dateOfMAIM)
+          // console.log("date", dateOfMAIM)
 
         } else {
           dateOfMAIM = "00-00-0000"
-          console.log("date", dateOfMAIM)
+          // console.log("date", dateOfMAIM)
 
         }
-
+        // console.log('LAtabelObj: ', LAtabelObj);
         let newCase = await Case.insertMany(
           {
             client1ContactDetails: { firstName, surName, phoneNumber, email, dateOfMAIM, location, caseType, legalAidType },
@@ -491,6 +634,7 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
             status: `New Case`,
             caseTypeC1: case_type,
             Reference,
+            caseReady,
             mediatorOfTheCase,
             MajorDataC1: {
               fName: firstName,
@@ -498,17 +642,21 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
               mail: email,
               phoneNumber: phoneNumber
             },
+            legalAidTableData: {
+              C1: JSON.stringify(LAtabelObj)
+            },
             $set: {
 
               'MIAMDates.MIAM_C1_Date': MIAM_C1_Date,
 
             },
 
+
             connectionData: { companyID: req.user._id, mediatorID: Themediator._id },
             folderID: folderId
           });
 
-        console.log("newCase", newCase[0].startDate)
+        // console.log("newCase", newCase[0].legalAidTableData)
 
         let statusRemider = {
           reminderID: `${newCase[0]._id}-statusRemider`,
@@ -527,10 +675,14 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
         newCaseID = newCase[0]._id
 
 
+
         // Update the company's cases array with the new case ID
         await Company.findByIdAndUpdate(companyId, { $push: { cases: newCase[0]._id } });
         await mediator.findByIdAndUpdate(Themediator._id, { $push: { cases: newCase[0]._id } });
 
+
+
+        
         clientData.clientNumber = phoneNumber;
         clientData.email = email;
         // console.log(clientData.email )
@@ -541,40 +693,53 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
 
 
         if (req.body.caseType == 'private') {
-          let  meetingDetails={} , clientDetials={} , companyDetails={} ; 
+          let meetingDetails = {}, clientDetials = {}, companyDetails = {};
           meetingDetails.date = extractDateTime(req.body.dateOfMAIM).date
-          meetingDetails.startTime  = extractDateTime(req.body.dateOfMAIM).startTime
+          meetingDetails.startTime = extractDateTime(req.body.dateOfMAIM).startTime
           meetingDetails.location = req.body.location
           meetingDetails.mediatorName = mediatorOfTheCase
           meetingDetails.MIAM1Link = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
-          clientDetials.email = req.body.email ; 
-          clientDetials.clientName =  `${req.body.firstName} ${req.body.surName}`
-          companyDetails.companyName =  req.user.companyName
+          clientDetials.email = req.body.email;
+          clientDetials.clientName = `${req.body.firstName} ${req.body.surName}`
+          companyDetails.companyName = req.user.companyName
           companyDetails.email = req.user.email
           companyDetails.mediatorEmail = req.body.mediatorMail
-          confirmationMIAMforBooking  (meetingDetails, clientDetials, companyDetails);
+          confirmationMIAMforBooking(meetingDetails, clientDetials, companyDetails);
 
           messageBodyinfo.formType = "MIAM 1"
           messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C1/${newCase[0]._id}`;
           sendMailMIAM1(companyData, clientData, messageBodyinfo);
+
+          // add reminder
+          const reminderTitle = `MIAM with ${clientData.clientName} `;
+          const attendees = [Themediator.email , email];
+
+          console.log(companyId , reminderTitle, attendees ,MIAM_C1_Date );
+
+          await createEvent(companyId , reminderTitle , MIAM_C1_Date , attendees);
+          await Company.findByIdAndUpdate(companyId, {
+              $push: { Reminders: { reminderTitle, MIAM_C1_Date } }
+          })
+
+
           res.status(200).json({ caseID: newCaseID })
 
         }
         else if (req.body.legalAidType == 'lowIncome' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = "low Income / No Income"
           messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C1/${newCase[0]._id}`;
-          // sendMailLowIncome(companyData, clientData, messageBodyinfo);
+          sendMailLowIncome(companyData, clientData, messageBodyinfo);
           sendSMS_LowIncome(twillioInfo, companyData, clientData, messageBodyinfo, res)
-          // res.status(200).json({ caseID: newCaseID })
+          res.status(200).json(/*{ caseID: newCaseID }*/"email and sms has been sent to the client");
         }
         else if (req.body.legalAidType == 'passporting' && req.body.caseType == 'LegalAid') {
           messageBodyinfo.formType = 'Passporting'
           messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C1/${newCase[0]._id}`;
-          //  sendMailPassporting(companyData, clientData, messageBodyinfo);
+            sendMailPassporting(companyData, clientData, messageBodyinfo);
 
           sendSMS_Passporting(twillioInfo, companyData, clientData, messageBodyinfo, res)
 
-          //res.status(200).json({ caseID: newCaseID })
+          res.status(200).json(/*{ caseID: newCaseID }*/"email and sms has been sent to the client");
         }
         else {
           res.status(400).json({ "message": "please confirm case type" })
@@ -593,18 +758,11 @@ router.post('/creatCase', authMiddleware, decryptTwillioData, async (req, res, n
       res.status(400).json({ 'message': "error in the role of token" })
     }
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 
 });
-
-
-
-
-
-
-
-
 
 
 router.get('/getCasesList', authMiddleware, async (req, res) => {
@@ -622,16 +780,21 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
         //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
         //    console.log(caseMediator)
         //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
-        resposedCaseObj = {
-          _id: cases.cases[i]._id,
-          Reference: cases.cases[i].Reference,
-          status: cases.cases[i].status,
-          startDate: cases.cases[i].startDate,
-          closed: cases.cases[i].closed,
-          mediatorName: cases.cases[i].mediatorOfTheCase
+
+        if (cases.cases[i].caseReady) {
+          resposedCaseObj = {
+            _id: cases.cases[i]._id,
+            Reference: cases.cases[i].Reference,
+            status: cases.cases[i].status,
+            startDate: formatDateToSlash(cases.cases[i].startDate),
+            closed: cases.cases[i].closed,
+            mediatorName: cases.cases[i].mediatorOfTheCase
+          }
+
+          casesList.push(resposedCaseObj)
+
         }
 
-        casesList.push(resposedCaseObj)
 
       }
 
@@ -647,16 +810,19 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
       for (let i = 0; i < cases.cases.length; i++) {
         caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
         mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
-        resposedCaseObj = {
-          _id: cases.cases[i]._id,
-          Reference: cases.cases[i].Reference,
-          status: cases.cases[i].status,
-          startDate: cases.cases[i].startDate,
-          closed: cases.cases[i].closed,
-          mediatorName: cases.cases[i].mediatorOfTheCase
-        }
+        if (cases.cases[i].caseReady) {
 
-        casesList.push(resposedCaseObj)
+          resposedCaseObj = {
+            _id: cases.cases[i]._id,
+            Reference: cases.cases[i].Reference,
+            status: cases.cases[i].status,
+            startDate: formatDateToSlash(cases.cases[i].startDate),
+            closed: cases.cases[i].closed,
+            mediatorName: cases.cases[i].mediatorOfTheCase
+          }
+
+          casesList.push(resposedCaseObj)
+        }
 
       }
 
@@ -673,9 +839,6 @@ router.get('/getCasesList', authMiddleware, async (req, res) => {
 
 
 })
-
-
-
 
 router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
 
@@ -874,6 +1037,144 @@ router.get('/getCasesDetails/:id', authMiddleware, async (req, res) => {
       res.status(400).json("err with user Auth")
     }
 
+  } catch (err) {
+    res.status(400).json(err.message)
+  }
+
+
+})
+
+router.get('/getLegalAidClients', authMiddleware, async (req, res) => {
+
+
+  let parcedC1Data, parcedC2Data, clientsDataList = [];
+
+
+  try {
+    let caseMediator;
+    if (req.userRole == "company") {
+      let cases = await Company.findById(req.user._id).populate('cases');
+      for (let i = 0; i < cases.cases.length; i++) {
+        //    caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+        //    console.log(caseMediator)
+        //   mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
+        console.log(cases.cases[i].legalAidTableData.C1)
+        if (cases.cases[i].legalAidTableData.C1) {
+          parcedC1Data = JSON.parse(cases.cases[i].legalAidTableData.C1);
+
+          let C1Data =
+          {
+            _id: cases.cases[i]._id,
+            clientType: "C1",
+            firstName: parcedC1Data.firstName,
+            sureName: parcedC1Data.sureName,
+            typeOfApplication: parcedC1Data.typeOfApplication,
+            status: parcedC1Data.status,
+            DoB: formatDateToSlash(parcedC1Data.DoB),
+            postCode: parcedC1Data.postCode,
+            phoneNo: parcedC1Data.phoneNo,
+            email: parcedC1Data.email,
+            address: parcedC1Data.address,
+            howFoundUs: parcedC1Data.howFoundUs,
+            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson,
+            caseAbout:parcedC1Data.caseAbout,
+
+          }
+          if (C1Data.firstName) {
+
+            clientsDataList.push(C1Data)
+          }
+        }
+        if (cases.cases[i].legalAidTableData.C2) {
+          parcedC2Data = JSON.parse(cases.cases[i].legalAidTableData.C2);
+          console.log(parcedC2Data, "parcedC2Data")
+          let C2Data =
+          {
+            _id: cases.cases[i]._id,
+            clientType: "C2",
+            firstName: parcedC2Data.firstName,
+            sureName: parcedC2Data.sureName,
+            typeOfApplication: parcedC2Data.typeOfApplication,
+            status: parcedC2Data.status,
+            DoB: formatDateToSlash(parcedC2Data.DoB),
+            postCode: parcedC2Data.postCode,
+            phoneNo: parcedC2Data.phoneNo,
+            email: parcedC2Data.email,
+            address: parcedC2Data.address,
+            howFoundUs: parcedC2Data.howFoundUs,
+            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson,
+            caseAbout:parcedC2Data.caseAbout,
+          }
+          if (C2Data.firstName) { clientsDataList.push(C2Data) }
+
+        }
+
+      }
+
+
+      res.status(200).json(clientsDataList)
+
+    }
+    else if (req.userRole == "mediator") {
+      let cases = await mediator.findById(req.user._id).populate('cases');
+      for (let i = 0; i < cases.cases.length; i++) {
+        caseMediator = await Case.findById(cases.cases[i]._id).populate('connectionData.mediatorID');
+        mediatorName = `${caseMediator.connectionData.mediatorID?.firstName} ${caseMediator.connectionData.mediatorID?.lastName}`;
+        if (cases.cases[i].legalAidTableData.C1) {
+          parcedC1Data = JSON.parse(cases.cases[i].legalAidTableData.C1)
+          let C1Data =
+          {
+            _id: cases.cases[i]._id,
+            clientType: "C1",
+            firstName: parcedC1Data.firstName,
+            sureName: parcedC1Data.sureName,
+            typeOfApplication: parcedC1Data.typeOfApplication,
+            status: parcedC1Data.status,
+            DoB: formatDateToSlash(parcedC1Data.DoB),
+            postCode: parcedC1Data.postCode,
+            phoneNo: parcedC1Data.phoneNo,
+            email: parcedC1Data.email,
+            address: parcedC1Data.address,
+            howFoundUs: parcedC1Data.howFoundUs,
+            surNameOftheOtherPerson: parcedC1Data.surNameOftheOtherPerson,
+            caseAbout:parcedC1Data.caseAbout,
+          }
+          if (C1Data.firstName) {
+
+            clientsDataList.push(C1Data)
+          }
+        }
+        if (cases.cases[i].legalAidTableData.C2) {
+          parcedC2Data = JSON.parse(cases.cases[i].legalAidTableData.C2);
+          let C2Data =
+          {
+            _id: cases.cases[i]._id,
+            clientType: "C2",
+            firstName: parcedC2Data.firstName,
+            sureName: parcedC2Data.sureName,
+            typeOfApplication: parcedC2Data.typeOfApplication,
+            status: parcedC2Data.status,
+            DoB: formatDateToSlash(parcedC2Data.DoB),
+            postCode: parcedC2Data.postCode,
+            phoneNo: parcedC2Data.phoneNo,
+            email: parcedC2Data.email,
+            address: parcedC2Data.address,
+            howFoundUs: parcedC2Data.howFoundUs,
+            surNameOftheOtherPerson: parcedC2Data.surNameOftheOtherPerson,
+            caseAbout:parcedC2Data.caseAbout,
+          }
+          if (C2Data.firstName) { clientsDataList.push(C2Data) }
+
+        }
+
+      }
+
+      res.status(200).json(clientsDataList)
+
+    }
+    else {
+      res.status(400).json("error with auth role ")
+    }
   } catch (err) {
     res.status(400).json(err.message)
   }

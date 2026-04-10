@@ -13,7 +13,50 @@ const fs = require('fs');
 const path = require('path');
 const stream = require("stream");
 const { google } = require("googleapis");
-const { PDFDocument , rgb } = require("pdf-lib");
+const { PDFDocument, rgb } = require("pdf-lib");
+const CryptoJS = require("crypto-js");
+
+/*
+\let twillioInfo = handleTwillioData(currentCompData.connectionData.companyID);
+    let CaseFound = await Case.findById(req.params.id)
+    let clientNumber = CaseFound.MajorDataC1.phoneNumber
+    // clientNumber = "+447476544877"
+    let messageBodyData = `Dear ${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName},
+                        An email about your Mediation session  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${compData.name}
+                        `
+    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+*/
+
+const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyData, res) {
+
+  const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+  const phoneNumber = twillioInfo.twillioNumber;
+
+
+  x.messages.create({
+    body: messageBodyData,
+    from: phoneNumber,
+    to: clientNumber
+  }).then(message => {
+    console.log({ message: "form message sent succesfully", messageID: message.sid });
+  }
+  ).catch((err) => {
+    console.log(err.message)
+    res.status(200).json({ message: `Actions done but could not send SMS to ${clientNumber} due to ${err.message}` })
+  });
+
+}
+function handleTwillioData(targetComp) {
+
+  const targetCompTwilioData = targetComp.twillioData;
+  const data = CryptoJS.AES.decrypt(targetCompTwilioData, 'ourTwillioEncyptionKey');
+  const decryptedTwillioData = JSON.parse(data.toString(CryptoJS.enc.Utf8))
+  // return = > twillioInfo object by => targetCompany
+  return decryptedTwillioData[0]
+
+}
 
 
 
@@ -50,11 +93,11 @@ caseData.caseID
   */
 
 
-     transporter.sendMail({
-        from: config.companyEmail,
-        to: mediatorData.email,
-        subject: `Mediation Session Record Form for  ${caseData.caseReference} `,
-        html: `<body>
+  transporter.sendMail({
+    from: config.companyEmail,
+    to: mediatorData.email,
+    subject: `Mediation Session Record Form for  ${caseData.caseReference} `,
+    html: `<body>
         <div style=" text-align: left; ">
         <h1>Hello ${mediatorData.name}  </h1>
         <h3>Here is the session record form link for ${caseData.caseReference} case </h3>
@@ -88,7 +131,8 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     },
 
   })
-  console.log("📢📢", mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed)
+  // console.log("📢📢", mediationRecord.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed)
+  console.log("📢📢")
   let htmlBody = `<body style="text-align:left ; direction:ltr">
     <h1> Mediation Session Record  </h1>
     <h2> Submitted At </h2>
@@ -648,7 +692,7 @@ const sendMediationSession = function (reciever, compData, mediationRecord) {
     </div>
     </body>`
 
-   transporter.sendMail({
+  transporter.sendMail({
     from: config.companyEmail,
     to: reciever,
     subject: `You have a new submission of Mediation Session Record`,
@@ -667,33 +711,13 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
   try {
 
 
-  let mediationRecord = req.body;
-  let mediatorOfTheCase = req.body.clientData.mediatorName
-  const StringfyData = JSON.stringify(mediationRecord);
+    let mediationRecord = req.body;
+    let mediatorOfTheCase = req.body.clientData.mediatorName
+    const StringfyData = JSON.stringify(mediationRecord);
 
-  
-
-  // // Call the function
-  // await generateMediationSessionRecord(mediationRecord)
-  // .then(pdfBytes => {
-  // fs.writeFileSync('mediation_session_record.pdf', pdfBytes);
-  // })
-  // .catch(error => {
-  // console.error('Error:', error);
-  // });
-
-  // // Call the function
-  // generateMediationSessionRecord(mediationRecord)
-  //   .then(pdfBytes => {
-  //     fs.writeFileSync('mediation_session_record2.pdf', pdfBytes);
-
-  //   })
-  //   .catch(error => {
-  //     console.error('Error:', error);
-  //   });
     mediationRecord.submittedDate = getNowFormattedDate();
 
-    await createMediationRecordUpload(mediationRecord  , req.params.id , mediationRecord.submittedDate);
+    await createMediationRecordUpload(mediationRecord, req.params.id, mediationRecord.submittedDate);
 
     const currentCompData = await Case.findById(req.params.id).populate('connectionData.companyID');
     let compData = {}
@@ -704,15 +728,37 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
             reciever = mediationRecord.NextSteps.clientOneEmail;
     */
 
-  //  console.log("🤦‍♂️Med", mediationRecord.NextSteps.mediatorEmail)
+    //  console.log("🤦‍♂️Med", mediationRecord.NextSteps.mediatorEmail)
     sendMediationSession(mediationRecord.NextSteps.mediatorEmail, compData, mediationRecord)
 
-   // console.log("😒C1", mediationRecord.NextSteps.clientOneEmail)
+    // console.log("😒C1", mediationRecord.NextSteps.clientOneEmail)
     sendMediationSession(mediationRecord.NextSteps.clientOneEmail, compData, mediationRecord)
 
+    let twillioInfo = handleTwillioData(currentCompData.connectionData.companyID);
+    let CaseFound = await Case.findById(req.params.id)
+    let clientNumber = CaseFound.MajorDataC1.phoneNumber
+    // clientNumber = "+447476544877"
+    let messageBodyData = `Dear ${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName},
+                        An email about your Mediation session  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${compData.name}
+                        `
+    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
+
     if (mediationRecord.NextSteps.isTwoClientWantCopy == 'Yes') {
-   //     console.log("🤦‍♂️C2", mediationRecord.NextSteps.clientTwoEmail)
-        sendMediationSession(mediationRecord.NextSteps.clientTwoEmail, compData, mediationRecord)
+      //     console.log("🤦‍♂️C2", mediationRecord.NextSteps.clientTwoEmail)
+      let twillioInfo = handleTwillioData(currentCompData.connectionData.companyID);
+      let CaseFound = await Case.findById(req.params.id)
+      let clientNumber = CaseFound.MajorDataC2.phoneNumber
+    //   clientNumber = "+447476544877"
+      let messageBodyData = `Dear ${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName},
+                           email about your Mediation session  was sent to you. You may need to check your SPAM folder.
+                          Thank you...
+                          ${compData.name}
+                          `
+      sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+      sendMediationSession(mediationRecord.NextSteps.clientTwoEmail, compData, mediationRecord)
     }
 
 
@@ -721,24 +767,24 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
     if (req.body.NextSteps.isFurtherSessionPlanned == "Yes") {
 
-        await Case.findByIdAndUpdate(req.params.id, {
-            $inc: { mediationSessionsNo: 1 }
-        })
-        const updatedCase = await Case.findById(req.params.id);
-        console.log(updatedCase.mediationSessionsNo)
+      await Case.findByIdAndUpdate(req.params.id, {
+        $inc: { mediationSessionsNo: 1 }
+      })
+      const updatedCase = await Case.findById(req.params.id);
+      console.log(updatedCase.mediationSessionsNo)
 
-        let statusRemider = {
-            reminderID: `${updatedCase._id}-statusRemider`,
-            reminderTitle: `${updatedCase.Reference}-Mediation Session ${updatedCase.mediationSessionsNo}`,
-            startDate: dateNow()
-        }
+      let statusRemider = {
+        reminderID: `${updatedCase._id}-statusRemider`,
+        reminderTitle: `${updatedCase.Reference}-Mediation Session ${updatedCase.mediationSessionsNo}`,
+        startDate: dateNow()
+      }
 
-        await Case.findByIdAndUpdate(req.params.id, {
-            $push: { mediationRecords: StringfyData },
-            $set: {
-                'Reminders.statusRemider': statusRemider
-            }, status: `Mediation Session ${updatedCase.mediationSessionsNo}` ,mediatorOfTheCase
-        })
+      await Case.findByIdAndUpdate(req.params.id, {
+        $push: { mediationRecords: StringfyData },
+        $set: {
+          'Reminders.statusRemider': statusRemider
+        }, status: `Mediation Session ${updatedCase.mediationSessionsNo}`, mediatorOfTheCase
+      })
 
 
 
@@ -746,72 +792,74 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
     }
 
     else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-        req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
+      req.body.NextSteps.mediationFinishReason == "B - Mediation broken down/no longer suitable"
     ) {
+      const updatedCase = await Case.findById(req.params.id);
 
-        let statusRemider = {
-            reminderID: `${updatedCase._id}-statusRemider`,
-            reminderTitle: `${updatedCase.Reference}-Broken`,
-            startDate: dateNow()
-        }
+      let statusRemider = {
+        reminderID: `${updatedCase._id}-statusRemider`,
+        reminderTitle: `${updatedCase.Reference}-Broken`,
+        startDate: dateNow()
+      }
 
-        await Case.findByIdAndUpdate(req.params.id, {
-            $push: { mediationRecords: StringfyData },
-            $set: {
-                'Reminders.statusRemider': statusRemider
-            }, status: `Broken`, closed: true,mediatorOfTheCase
-        })
+      await Case.findByIdAndUpdate(req.params.id, {
+        $push: { mediationRecords: StringfyData },
+        $set: {
+          'Reminders.statusRemider': statusRemider
+        }, status: `Broken`, closed: true, mediatorOfTheCase
+      })
 
     }
 
 
     else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-        req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
+      req.body.NextSteps.mediationFinishReason == "A - All/Some matters agreed"
     ) {
+      const updatedCase = await Case.findById(req.params.id);
 
-        let statusRemider = {
-            reminderID: `${updatedCase._id}-statusRemider`,
-            reminderTitle: `${updatedCase.Reference}-Agreed`,
-            startDate: dateNow()
-        }
+      let statusRemider = {
+        reminderID: `${updatedCase._id}-statusRemider`,
+        reminderTitle: `${updatedCase.Reference}-Agreed`,
+        startDate: dateNow()
+      }
 
-        await Case.findByIdAndUpdate(req.params.id, {
-            $push: { mediationRecords: StringfyData },
-            $set: {
-                'Reminders.statusRemider': statusRemider
-            }, status: `Agreed`, closed: true,mediatorOfTheCase
-        })
+      await Case.findByIdAndUpdate(req.params.id, {
+        $push: { mediationRecords: StringfyData },
+        $set: {
+          'Reminders.statusRemider': statusRemider
+        }, status: `Agreed`, closed: true, mediatorOfTheCase
+      })
 
     }
     else if (req.body.NextSteps.isFurtherSessionPlanned == "No" &&
-        req.body.NextSteps.mediationFinishReason == "C - Successful - Parenting plan to be written" ||
-        req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
-        req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
+      req.body.NextSteps.mediationFinishReason == "C - Successful - Parenting plan to be written" ||
+      req.body.NextSteps.mediationFinishReason == "P - Successful - MOU to be written" ||
+      req.body.NextSteps.mediationFinishReason == "S - Successful - Most matters agreed and/or PP and/or MOU to be written"
     ) {
+      const updatedCase = await Case.findById(req.params.id);
+      let statusRemider = {
+        reminderID: `${updatedCase._id}-statusRemider`,
+        reminderTitle: `${updatedCase.Reference}-Successful`,
+        startDate: dateNow()
+      }
 
-        let statusRemider = {
-            reminderID: `${updatedCase._id}-statusRemider`,
-            reminderTitle: `${updatedCase.Reference}-Successful`,
-            startDate: dateNow()
-        }
-
-        await Case.findByIdAndUpdate(req.params.id, {
-            $push: { mediationRecords: StringfyData },
-            $set: {
-                'Reminders.statusRemider': statusRemider
-            }, status: `Successful`, closed: true,mediatorOfTheCase
-        })
+      await Case.findByIdAndUpdate(req.params.id, {
+        $push: { mediationRecords: StringfyData },
+        $set: {
+          'Reminders.statusRemider': statusRemider
+        }, status: `Successful`, closed: true, mediatorOfTheCase
+      })
 
     }
-
 
     let updateCase = await Case.findById(req.params.id);
+    console.log("📢📢🤦‍♂️🤦‍♂️")
     let MedSession_Statistics = statisticFunctions.MedSession_Statistics(mediationRecord, updateCase);
     const targetComp = await Case.findById(req.params.id).populate('connectionData.companyID');
     const targetCompID = targetComp.connectionData.companyID._id;
     const stringfyStatiscs = JSON.stringify(MedSession_Statistics)
     await Company.findByIdAndUpdate(targetCompID, {
-        $push: { statistics: stringfyStatiscs }
+      $push: { statistics: stringfyStatiscs }
     })
 
     res.status(200).json({ "message": "Mediation session record has been added" })
@@ -820,7 +868,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
 
   } catch (err) {
-      res.status(400).json(err.message)
+    res.status(400).json(err.message)
   }
 
 
@@ -828,7 +876,7 @@ router.patch("/addMediationRecord/:id", async (req, res) => {
 
 
 //this function create pdf and folder and then upload it to that google drive folder 
-async function createMediationRecordUpload(data, caseID ,subDate) {
+async function createMediationRecordUpload(data, caseID, subDate) {
   try {
 
     const pdfDoc = await PDFDocument.create();
@@ -837,140 +885,157 @@ async function createMediationRecordUpload(data, caseID ,subDate) {
     const pageHeight = 841.89;
     pages[pageNumber] = pdfDoc.addPage();
     // console.log(pages[pageNumber])
-    
+
     const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
     const font = await pdfDoc.embedFont('Helvetica');
-    
+
     // const getLinesNumber = (string) => {
     //   if (string === undefined || string === null) {
     //     return 0;
     //   }
     //   return string.length / 35;
     // }
-  
+
     const questionsAndAnswers = [
-      { question: 'Submitted At', answer: subDate},
+      { question: 'Submitted At', answer: subDate },
       { question: 'What is the full name of Client 1?', answer: data.clientData.clientOneFullName },
       { question: 'What is the full name of Client 2?', answer: data.clientData.clientTwoFullName },
       { question: 'Name of the mediator', answer: data.clientData.mediatorName },
       { question: 'Date of the session', answer: data.clientData.sessionDate },
-      { question: 'Type of case.', answer: data.clientData.caseType},
+      { question: 'Type of case.', answer: data.clientData.caseType },
       { question: 'Please specify location', answer: data.clientData.specifyLocation },
       { question: 'Specify the mediation session number', answer: data.clientData.mediationSessionNumber },
       { question: 'Length of session plus length of writing (in minutes)', answer: data.clientData.sessionLength },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have any children?`, answer: 'Yes' },
-      
-      { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName},
+
+      { question: 'What is the full name of the first child?', answer: data.keyFacts.children[0]?.['Child One'].firstChildFirstName },
       { question: `What is ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}’s date of birth?`, answer: data.keyFacts.children[0]?.['Child One'].firstChildDateOfBirth },
       { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFirstName}?`, answer: data.keyFacts.children[0]?.['Child One'].bothHaveParentalResponsibilityForFirstChild },
       { question: `Who has parental resposibility for ${data.keyFacts.children[0]?.['Child One'].firstChildFullName}?`, answer: data.keyFacts.children[0]?.['Child One'].firstChildParentalResponsibility },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a second child?`, answer: data.keyFacts.children[0]?.['Child One'].secondChildCheck },
-     
+
       { question: 'What is the full name of the second child?', answer: data.keyFacts.children[1]?.['Child Two'].secondChildFullName },
-      { question: `What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildDateOfBirth},
+      { question: `What is ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}’s date of birth?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildDateOfBirth },
       { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildBothParentalResponsibility },
       { question: `Who has parental resposibility for ${data.keyFacts.children[1]?.['Child Two'].secondChildFullName}?`, answer: data.keyFacts.children[1]?.['Child Two'].secondChildParentalResponsibility },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a third child ?`, answer: data.keyFacts.children[1]?.['Child Two'].thirdChildCheck },
 
-      { question: 'What is the full name of the third child?', answer: data.keyFacts.children[2]?.['Child Three'].thirdChildFullName},
+      { question: 'What is the full name of the third child?', answer: data.keyFacts.children[2]?.['Child Three'].thirdChildFullName },
       { question: `What is ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}’s date of birth?`, answer: data.keyFacts.children[2]?.['Child Three'].thirdChildDateOfBirth },
       { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}?`, answer: data.keyFacts.children[2]?.['Child Three'].bothHaveParentalResponsibilityForFirstChild },
       { question: `Who has parental resposibility for ${data.keyFacts.children[2]?.['Child Three'].thirdChildFullName}?`, answer: data.keyFacts.children[2]?.['Child Three'].thirdChildParentalResponsibility },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} have a forth child?`, answer: data.keyFacts.children[2]?.['Child Three'].fourthChildCheck },
 
-      { question: 'What is the full name of the forth child?', answer: data.keyFacts.children[3]?.['Child Four'].fourthChildFullName},
+      { question: 'What is the full name of the forth child?', answer: data.keyFacts.children[3]?.['Child Four'].fourthChildFullName },
       { question: `What is ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}’s date of birth?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildDateOfBirth },
-      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[0]?.['Child Four'].fourthChildBothParentalResponsibility },
+      { question: `Do both participants have Parental Responsibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildBothParentalResponsibility },
       { question: `Who has parental resposibility for ${data.keyFacts.children[3]?.['Child Four'].fourthChildFullName}?`, answer: data.keyFacts.children[3]?.['Child Four'].fourthChildParentalResponsibility },
 
-     
-      
-      
+
+
+
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName}  agree to attend mediation to try and put together arrangements to enable their child/children to spend time with them both and to propose a framework to allow them to parent the child/children in the future without conflict?`, answer: data.keyFacts.clientsAgreedToAttendMediationChild },
-      { question: 'Type of mediation', answer: data.recordOfMattersDiscussed.mediationType},
+      { question: 'Type of mediation', answer: data.recordOfMattersDiscussed.mediationType },
       { question: `Do ${data.clientData.clientOneFullName} and ${data.clientData.clientTwoFullName} agree to the Agreement to Mediate?`, answer: 'Yes' },
       { question: 'Please list the agreed agenda points', answer: data.recordOfMattersDiscussed.agendaListPoints },
-     
+
       { question: 'First agenda point discussed.', answer: data.discussions[0]?.['Discussion One']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[0]?.['Discussion One']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[0]?.['Discussion One']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[0]?.['Discussion One']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[0]?.['Discussion One']?.firstAgendaClientsActionPoints },
       { question: 'Is there a second agenda point?', answer: data.discussions[0]?.['Discussion One']?.secondAgendaCheck },
-      
+
       { question: 'Second agenda point discussed.', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[1]?.['Discussion Two']?.firstAgendaClientsActionPoints },
       { question: 'Is there a third agenda point?', answer: data.discussions[1]?.['Discussion Two']?.secondAgendaCheck },
 
       { question: 'Third agenda point discussed.', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[2]?.['Discussion Three']?.firstAgendaClientsActionPoints },
       { question: 'Is there a forth agenda point?', answer: data.discussions[2]?.['Discussion Three']?.secondAgendaCheck },
-    
+
       { question: 'Forth agenda point discussed.', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[3]?.['Discussion Four']?.firstAgendaClientsActionPoints },
       { question: 'Is there a fifth agenda point?', answer: data.discussions[3]?.['Discussion Four']?.secondAgendaCheck },
-    
-    
+
+
       { question: 'Fifth agenda point discussed.', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[4]?.['Discussion Five']?.firstAgendaClientsActionPoints },
       { question: 'Is there a sixth agenda point?', answer: data.discussions[4]?.['Discussion Five']?.secondAgendaCheck },
-    
+
       { question: 'Sixth agenda point discussed.', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[5]?.['Discussion Six']?.firstAgendaClientsActionPoints },
       { question: 'Is there a seventh agenda point?', answer: data.discussions[5]?.['Discussion Six']?.secondAgendaCheck },
 
       { question: 'Seveth agenda point discussed.', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[6]?.['Discussion Seven']?.firstAgendaClientsActionPoints },
       { question: 'Is there a eighth agenda point?', answer: data.discussions[6]?.['Discussion Seven']?.secondAgendaCheck },
 
       { question: 'Eighth agenda point discussed.', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaPointDiscussed },
       { question: 'Issues identified', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaIssuesIdentified },
-      { question: 'Options discussed', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaOptionsDiscussed},
+      { question: 'Options discussed', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaOptionsDiscussed },
       { question: 'Any agreements reached?', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaAnyAgreementsReached },
-      { question: 'Please bullet point any agreements reached ', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaAgreedBulletsPoints},
+      { question: 'Please bullet point any agreements reached ', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaAgreedBulletsPoints },
       { question: 'Action points for the clients', answer: data.discussions[7]?.['Discussion Eight']?.firstAgendaClientsActionPoints },
 
-      
+
       { question: 'Are there any additional documents to upload?', answer: data.documentUpload.additionalDocumentsToUpload },
       { question: 'Has a further mediation session been planned?', answer: data.NextSteps.isFurtherSessionPlanned },
-      { question: 'Issues for discussion in next session?', answer: data.NextSteps.nextSessionIssues},
+      { question: 'Issues for discussion in next session?', answer: data.NextSteps.nextSessionIssues },
       { question: 'What is the reason mediation has been finished?', answer: data.NextSteps.mediationFinishReason },
-      { question: 'Have both clients agreed on a date and time to come back to mediation?', answer: data.NextSteps.bothClientsAgreed},
+      { question: 'Have both clients agreed on a date and time to come back to mediation?', answer: data.NextSteps.bothClientsAgreed },
       { question: 'Do you want to upload the C100 and/or Form A?', answer: data.NextSteps.isC100OrFormA },
       { question: 'What is the date they are returning to mediation?', answer: data.NextSteps.returnToMediationDate },
-      
+
       { question: 'What time is their appointment?', answer: data.NextSteps.appointmentTime },
-      { question: 'Do both clients want the session record emailing to them?', answer: data.NextSteps.isTwoClientWantCopy},
+      { question: 'Do both clients want the session record emailing to them?', answer: data.NextSteps.isTwoClientWantCopy },
       { question: 'Do you as the mediator want a copy of this record sending to you?', answer: data.NextSteps.isMediatorWantCopy },
       { question: `Input email address of ${data.clientData.clientOneFullName}`, answer: data.NextSteps.clientOneEmail },
       { question: 'Input email address of mediator', answer: data.NextSteps.mediatorEmail },
-      
+
     ];
+
+
+    const startX = 50;
+    let currentY = pageHeight - 50;
+    const questionWidth = 500; // Adjust the width as needed
+
+
+
+
+    for (const { question, answer } of questionsAndAnswers) {
+      const validQuestion = question || '';
+      const validAnswer = answer || '';
+
+      // Check if the answer is not an empty string before drawing
+      if (validAnswer.trim() !== '') {
+        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+
     
         
         const startX = 50;
@@ -1025,27 +1090,27 @@ async function createMediationRecordUpload(data, caseID ,subDate) {
         // Additional space between Question and Answer
         const gapBetweenQA = 15;
         currentY -= gapBetweenQA;
-    
+
         currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
 
         // Additional space between this Q&A and the next
         const gapBetweenBlocks = 25;
         currentY -= gapBetweenBlocks;
       }
-    
 
-    
+
+
       // Move to the next page if necessary
       if (currentY <= 100) {
         // Add a new page and reset currentY
         pageNumber += 1;
         currentY = pageHeight - 50;
         pages[pageNumber] = pdfDoc.addPage();
-    
+
         currentY -= 20;
       }
     }
-    
+
 
 
     const pdfBytes = await pdfDoc.save();
@@ -1101,7 +1166,7 @@ async function createMediationRecordUpload(data, caseID ,subDate) {
 
     // Call the function with the folder ID and personal account email
     await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
-    //sharingGmail || "mkabary8@gmail.com"
+
     console.log("PDF created and uploaded successfully");
   } catch (error) {
     console.error("Error creating PDF and uploading to Google Drive:", error);

@@ -123,7 +123,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
 
     let currentCase = await Case.findById(req.params.id);
     let majorDataC2FromM1 = req.body.otherParty ;
-  //  ! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
+   //! GoogleFunctions.createEvent(currentCase.id, "mkabary8@gmail.com", "abdo.samir.7719@gmail.com" );
 
     let client1data = req.body
     let Reference = `${req.body.personalContactAndCaseInfo.surName} & ${req.body.otherParty.otherPartySurname}`;
@@ -190,7 +190,7 @@ router.patch("/addC1MIAM1/:id", async (req, res) => {
       const updatedCaseDetails= await Case.findByIdAndUpdate(req.params.id, {
         client1data: StringfyData, $set: {
           'Reminders.statusRemider': statusRemider
-        }, Reference, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
+        }, Reference,caseReady, client1AddedData: true, MajorDataC1, MajorDataC2,availableTimes_C1, status: "MIAM Part 1-C1" ,majorDataC2FromM1
       })
       //console.log("📢📢",updatedCaseDetails.majorDataC2FromM1)
       const updatedCase = await Case.findById(req.params.id);
@@ -269,6 +269,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // Rest of your code to draw text on pages...
    // // Add client1 data to the PDF document"first page" 
+   console.log(personalContactAndCaseInfo.dateOfBirth);
    Page1.drawText("Yes" , { x: 350, y: 545 });//default is yes
    Page1.drawText(personalContactAndCaseInfo.firstName, { x: 350, y: 515 });
    Page1.drawText(personalContactAndCaseInfo.surName, { x: 350, y: 485 });
@@ -324,60 +325,60 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
   Page3.drawText(previousRelationshipDetails.isMarried, { x: 350, y: 290 });
   Page3.drawText(previousRelationshipDetails.marriageDate || "", { x: 350, y: 225 });
 
-  Page3.drawText(children[0]["Child One"].firstChildFirstName || "" , { x: 350, y: 175});
-  Page3.drawText(children[0]["Child One"].firstChildSurName || "", { x: 350, y: 145 });
-  Page3.drawText(children[0]["Child One"].firstChildGender || "" , { x: 350, y: 115 });
-  Page3.drawText(children[0]["Child One"].firstChildLivingWith || "", { x: 350, y: 85 });
+  Page3.drawText(children[0]?.["Child One"]?.firstChildFirstName || "" , { x: 350, y: 175});
+  Page3.drawText(children[0]?.["Child One"]?.firstChildSurName || "", { x: 350, y: 145 });
+  Page3.drawText(children[0]?.["Child One"]?.firstChildGender || "" , { x: 350, y: 115 });
+  Page3.drawText(children[0]?.["Child One"]?.firstChildLivingWith || "", { x: 350, y: 85 });
   
 
     //the forth page 
-    Page4.drawText(children[0]["Child One"].firstChildDateOfBirth , { x: 350, y: 745 });
-    Page4.drawText(children[0]["Child One"].isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
-    Page4.drawText(children[0]["Child One"].firstChildResponsibility || "", { x: 350, y: 640 });
-    Page4.drawText(children[0]["Child One"].secondChildCheck || "", { x: 350, y: 585 });
-    Page4.drawText(children[1]["Child Two"].secondChildFirstName || "", { x: 350, y: 535 });
-    Page4.drawText(children[1]["Child Two"].secondChildSurName || "" , { x: 350, y: 505 });
-    Page4.drawText(children[1]["Child Two"].secondChildGender || "" , { x: 350, y: 475 });
-    Page4.drawText(children[1]["Child Two"].secondChildLivingWith || "", { x: 350, y: 445 });
-    Page4.drawText(children[1]["Child Two"].secondChildDateOfBirth || "", { x: 350, y: 415});
-    Page4.drawText(children[1]["Child Two"].issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
-    Page4.drawText(children[1]["Child Two"].secondChildResponsibility || "", { x: 350, y: 315 });
-    Page4.drawText(children[1]["Child Two"].thirdChildCheck || "", { x: 350, y: 250 });
-    Page4.drawText(children[2]["Child Three"].thirdChildFirstName || "" , { x: 350, y: 205});
-    Page4.drawText(children[2]["Child Three"].thirdChildSurName || "", { x: 350, y: 175 });
-    Page4.drawText(children[2]["Child Three"].thirdChildGender || "" , { x: 350, y: 145 });
-    Page4.drawText(children[2]["Child Three"].thirdChildLivingWith || "", { x: 350, y: 115 });
-    Page4.drawText(children[2]["Child Three"].thirdChildDateOfBirth || "" , { x: 350, y: 85 });
+    Page4.drawText(children[0]?.["Child One"]?.firstChildDateOfBirth , { x: 350, y: 745 });
+    Page4.drawText(children[0]?.["Child One"]?.isfirstChildHaveSpecialNeeds ||"" , { x: 350, y: 705 });
+    Page4.drawText(children[0]?.["Child One"]?.firstChildResponsibility || "", { x: 350, y: 640 });
+    Page4.drawText(children[0]?.["Child One"]?.secondChildCheck || "", { x: 350, y: 585 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildFirstName || "", { x: 350, y: 535 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildSurName || "" , { x: 350, y: 505 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildGender || "" , { x: 350, y: 475 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildLivingWith || "", { x: 350, y: 445 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildDateOfBirth || "", { x: 350, y: 415});
+    Page4.drawText(children[1]?.["Child Two"]?.issecondChildHaveSpecialNeeds || "", { x: 350, y: 365 });
+    Page4.drawText(children[1]?.["Child Two"]?.secondChildResponsibility || "", { x: 350, y: 315 });
+    Page4.drawText(children[1]?.["Child Two"]?.thirdChildCheck || "", { x: 350, y: 250 });
+    Page4.drawText(children[2]?.["Child Three"]?.thirdChildFirstName || "" , { x: 350, y: 205});
+    Page4.drawText(children[2]?.["Child Three"]?.thirdChildSurName || "", { x: 350, y: 175 });
+    Page4.drawText(children[2]?.["Child Three"]?.thirdChildGender || "" , { x: 350, y: 145 });
+    Page4.drawText(children[2]?.["Child Three"]?.thirdChildLivingWith || "", { x: 350, y: 115 });
+    Page4.drawText(children[2]?.["Child Three"]?.thirdChildDateOfBirth || "" , { x: 350, y: 85 });
    
     //the fifth page 
-    Page5.drawText(children[2]["Child Three"].isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
-    Page5.drawText(children[2]["Child Three"].thirdChildResponsibility ||"" , { x: 350, y: 660 });
-    Page5.drawText(children[2]["Child Three"].fourthChildCheck || "", { x: 350, y: 625 });
-    Page5.drawText(children[3]["Child Four"].fourthChildFirstName || "", { x: 350, y: 565 });
-    Page5.drawText(children[3]["Child Four"].fourthChildSurName || "", { x: 350, y: 535 });
-    Page5.drawText(children[3]["Child Four"].fourthChildGender || "" , { x: 350, y: 505 });
-    Page5.drawText(children[3]["Child Four"].fourthChildLivingWith || "" , { x: 350, y: 475 });
-    Page5.drawText(children[3]["Child Four"].fourthChildDateOfBirth || "", { x: 350, y: 445 });
-    Page5.drawText(children[3]["Child Four"].isfourthChildHaveSpecialNeeds || "", { x: 350, y: 400});
-    Page5.drawText(children[3]["Child Four"].fourthChildResponsibility || "", { x: 350, y: 335 });
-    Page5.drawText(children[3]["Child Four"].fifthChildCheck || "", { x: 350, y: 285 });
-    Page5.drawText(children[4]["Child Five"].fifthChildFirstName || "", { x: 350, y: 235 });
-    Page5.drawText(children[4]["Child Five"].fifthChildSurName || "" , { x: 350, y: 205});
-    Page5.drawText(children[4]["Child Five"].fifthChildGender|| "", { x: 350, y: 175 });
-    Page5.drawText(children[4]["Child Five"].fifthChildLivingWith || "" , { x: 350, y: 145 });
-    Page5.drawText(children[4]["Child Five"].fifthChildDateOfBirth  || "", { x: 350, y: 115 });
+    Page5.drawText(children[2]?.["Child Three"]?.isthirdChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+    Page5.drawText(children[2]?.["Child Three"]?.thirdChildResponsibility ||"" , { x: 350, y: 660 });
+    Page5.drawText(children[2]?.["Child Three"]?.fourthChildCheck || "", { x: 350, y: 625 });
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildFirstName || "", { x: 350, y: 565 });
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildSurName || "", { x: 350, y: 535 });
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildGender || "" , { x: 350, y: 505 });
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildLivingWith || "" , { x: 350, y: 475 });
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildDateOfBirth || "", { x: 350, y: 445 });
+    Page5.drawText(children[3]?.["Child Four"]?.isfourthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+    Page5.drawText(children[3]?.["Child Four"]?.fourthChildResponsibility || "", { x: 350, y: 335 });
+    Page5.drawText(children[3]?.["Child Four"]?.fifthChildCheck || "", { x: 350, y: 285 });
+    Page5.drawText(children[4]?.["Child Five"]?.fifthChildFirstName || "", { x: 350, y: 235 });
+    Page5.drawText(children[4]?.["Child Five"]?.fifthChildSurName || "" , { x: 350, y: 205});
+    Page5.drawText(children[4]?.["Child Five"]?.fifthChildGender|| "", { x: 350, y: 175 });
+    Page5.drawText(children[4]?.["Child Five"]?.fifthChildLivingWith || "" , { x: 350, y: 145 });
+    Page5.drawText(children[4]?.["Child Five"]?.fifthChildDateOfBirth  || "", { x: 350, y: 115 });
     
     //the sixth page 
-    Page6.drawText(children[4]["Child Five"].isfifthChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
-    Page6.drawText(children[4]["Child Five"].fifthChildResponsibility ||"" , { x: 350, y: 660 });
-    Page6.drawText(children[4]["Child Five"].sixthChildCheck || "", { x: 350, y: 625 });
-    Page6.drawText(children[5]["Child Six"].sixthChildFirstName || "", { x: 350, y: 565 });
-    Page6.drawText(children[5]["Child Six"].sixthChildSurName || "", { x: 350, y: 535 });
-    Page6.drawText(children[5]["Child Six"].sixthChildGender || "" , { x: 350, y: 505 });
-    Page6.drawText(children[5]["Child Six"].sixthChildLivingWith || "" , { x: 350, y: 475 });
-    Page6.drawText(children[5]["Child Six"].sixthChildDateOfBirth || "", { x: 350, y: 445 });
-    Page6.drawText(children[5]["Child Six"].issixthChildHaveSpecialNeeds || "", { x: 350, y: 400});
-    Page6.drawText(children[5]["Child Six"].sixthChildResponsibility || "", { x: 350, y: 335 });
+    Page6.drawText(children[4]?.["Child Five"]?.isfifthChildHaveSpecialNeeds || "" , { x: 350, y: 730 });
+    Page6.drawText(children[4]?.["Child Five"]?.fifthChildResponsibility ||"" , { x: 350, y: 660 });
+    Page6.drawText(children[4]?.["Child Five"]?.sixthChildCheck || "", { x: 350, y: 625 });
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildFirstName || "", { x: 350, y: 565 });
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildSurName || "", { x: 350, y: 535 });
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildGender || "" , { x: 350, y: 505 });
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildLivingWith || "" , { x: 350, y: 475 });
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildDateOfBirth || "", { x: 350, y: 445 });
+    Page6.drawText(children[5]?.["Child Six"]?.issixthChildHaveSpecialNeeds || "", { x: 350, y: 400});
+    Page6.drawText(children[5]?.["Child Six"]?.sixthChildResponsibility || "", { x: 350, y: 335 });
     Page6.drawText(courtProceedings.isFacingLegalProceedings || "", { x: 350, y: 285 });
     Page6.drawText(courtProceedings.legalProceedingsInfo || "", { x: 350, y: 235 });
     Page6.drawText(courtProceedings.courtApplicationKnown || "" , { x: 350, y: 205});
@@ -472,7 +473,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
     // Upload the PDF to the created folder
     const fileMetadata = {
-      name: `"MIAM-1.pdf"`,
+      name: `"MIAM-1 Client-1"`,
       parents: [folderId],
     };
 
@@ -492,7 +493,7 @@ async function createMIAM1Upload(client1data, folderName , sharingGmail , caseID
 
 
     // Call the function with the folder ID and personal account email
-    shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
     //sharingGmail || "mkabary8@gmail.com" || "hassantarekha@gmail.com"
     console.log("PDF created and uploaded successfully");
   } catch (error) {

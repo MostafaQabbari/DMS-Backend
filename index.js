@@ -17,6 +17,7 @@ const updateCaseStatus= require("./routes/updateCaseStatus")
 const C2Invitation= require("./routes/C2_invitation")
 const C2MIAM1= require("./routes/C2_MIAM1");
 const C2MIAM2 = require("./routes/C2_MIAM2");
+const googleAuth = require("./routes/googleAuth");
 const recieveSMS = require("./routes/receiveSMS")
 const legalAid_forms_C1 = require("./routes/legalAid_Forms_C1")
 
@@ -35,11 +36,22 @@ const confirmationMail=require('./routes/confirmationMail');
 
 const replaceMediator = require('./routes/replaceMediator');
 const updateMediatorData= require("./routes/updateMediatorData")
+const legalAidTable_Actions = require("./routes/legalAidTable_Actions")
+const sendCheckoutMail = require('./routes/sendCheckoutMail')
+require('dotenv').config();
 
-
+const AppError = require('./appError');
+const globalErrorHandler = require('./middleware/globalError');
+"http://35.189.68.15:3007"
+const corsOptions = {
+  origin: ['"http://35.189.68.15:3007"','https://dms5.onrender.com','http://localhost:3000' ,'https://direct-mediation-services-black.vercel.app'], // Add your Vercel domain here
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
 const cors = require('cors');
-require('dotenv')
+
 const PORT = process.env.PORT || 3007
 const app = express();
 
@@ -55,7 +67,7 @@ mongoose.connect("mongodb+srv://mkabary8:O8uafwuq79PBkJoJ@cluster1.xnqqhnm.mongo
   });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, 'uploads')))
 
 app.use("/auth", authRoutes);
@@ -92,7 +104,12 @@ app.use(confirmationMail)
 
 app.use(replaceMediator)
 app.use(updateMediatorData)
+app.use(legalAidTable_Actions)
+app.use(sendCheckoutMail)
 
+app.use(googleAuth)
+
+// app.use(globalErrorHandler)
 
 
 app.use((err, req, res, next) => {

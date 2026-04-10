@@ -282,14 +282,15 @@ router.post("/mediator-login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await Mediator.findOne({ email });
-    if(user.removed){
-      return res.status(401).json({ message: "This Account Has been removed " });
-    }
+    console.log(user , '📢📢')
+   
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email" });
     }
-
+    if(user.removed){
+      return res.status(401).json({ message: "This Account Has been removed " });
+    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 

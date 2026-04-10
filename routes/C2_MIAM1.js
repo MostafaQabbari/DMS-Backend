@@ -451,7 +451,7 @@ async function createMIAM1Upload(client2data, folderName, sharingGmail, caseID) 
 
     // Upload the PDF to the created folder
     const fileMetadata = { 
-      name: `"MIAM-1'${Date.now()}'.pdf"`,
+      name: `"MIAM-1 Client-2.pdf"`,
       parents: [folderId],
     };
 

@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
 const Case = require('../models/case');
+const Company = require('../models/company');
 const nodemailer = require("nodemailer")
 const config = require("../config/config");
 const dateNow = require("../global/dateNow")
+const { PDFDocument , rgb  } = require("pdf-lib");
+const { google } = require("googleapis");
+const stream = require("stream");
+const path = require("path");
 
 
 const sendMailMIAM1 = function (companyData, clientData, messageBodyinfo) {
@@ -305,12 +311,242 @@ const notifyCompanytoCall_C2Confused = function (companyData, clientData) {
 }
 
 
+// router.get('/generate-pdf-Invitation-Letter/:id', async (req, res) => {
+//   try {
+//     const caseId = req.params.id;
 
+//     // Fetch case data from MongoDB
+//     const caseData = await Case.findById(caseId).populate('connectionData.companyID');
+
+//     if (!caseData) {
+//       return res.status(404).json({ error: 'Case not found' });
+//     }
+
+//     // Extract companyID and fetch company data
+//     const companyId = caseData.connectionData.companyID;
+//     const companyData = await Company.findById(companyId);
+//     const sharingGmail = companyData.sharingGmail;
+//     const folderID = caseData.folderID;
+
+
+//     if (!companyData) {
+//       return res.status(404).json({ error: 'Company not found' });
+//     }
+
+//     // Read the PDF template
+
+//     const filePath = path.join(__dirname, '../uploads/pdfs/Invitation-Letter-DMS-temp.pdf');
+//     const pdfTemplateBytes = fs.readFileSync(filePath);
+//     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+//     // const defaultFont = await pdfDoc.embedFont(PDFDocument.Font.Helvetica, { size: 12 });
+//     // const defaultFont = await pdfDoc.embedFont({ size: 12 });
+//     const font = await pdfDoc.embedFont('Helvetica');
+//     // const font = await pdfDoc.embedFont('Helvetica', { size: 3 });
+//     //11.97
+//     const page1 = pdfDoc.getPage(0);
+//     const page2 = pdfDoc.getPage(1);
+//     page1.setFont(font);
+//     page1.setFontSize(12);
+//     page2.setFont(font);
+//     page2.setFontSize(12);
+
+    
+//     const nameC1 = `${caseData.MajorDataC1.fName} ${caseData.MajorDataC1.sName} `;
+//     const nameC2 = `${caseData.MajorDataC2.fName} ${caseData.MajorDataC2.sName}`;
+//     const CreatedDate = getCurrentDate();
+//     const addressKnown =caseData.majorDataC2FromM1.otherPartyAddressKnown ;
+   
+//     // Add data to PDF at specific locations (x, y coordinates)
+//     page1.drawText(nameC2, { x: 65, y: 720 });
+
+//     try {
+//       if (addressKnown === 'Yes' || addressKnown === 'yes') {
+//         // Draw text on the page if all variables are defined
+//         page1.drawText(caseData.majorDataC2FromM1.otherPartyStreet, { x: 65, y: 700 });
+//         page1.drawText(caseData.majorDataC2FromM1.otherPartyCity, { x: 65, y: 686 });
+//         page1.drawText(companyData.majorDataC2FromM1.otherPartyPostalCode, { x: 65, y: 670 });
+//       } else {
+//         // Send a response indicating that address data is missing
+//         res.status(400).json({ error: 'Address data is missing' });
+//       }
+//     } catch (error) {
+//       // Handle the error and send an appropriate response
+//       console.error('Error while processing address data:', error);
+//       res.status(500).json({ error: 'Internal Server Error' });
+//     }
+
+//     page1.drawText(CreatedDate, { x: 490, y: 655 });
+//     page1.drawText(nameC2, { x: 90, y: 628 }); 
+//     page1.drawText(nameC1, { x: 410, y: 587 });
+//     page1.drawText(nameC1, { x:  60, y: 532 });
+//     page1.drawText(nameC1, { x: 350, y: 490 }); 
+//     //
+//     page1.drawText(caseData.MajorDataC1.fName, { x: 503, y: 435 });
+//     page1.drawText(`-${caseData.MajorDataC1.sName}`, { x:  60, y: 420 });
+//     page1.drawText(nameC1, { x: 295, y: 352 });
+//     page1.drawText(nameC1, { x: 115, y: 144 }); 
+
+//     page2.drawText('link rshgreytrestsertesrtsert', { x: 215, y: 434 }); 
+
+//     // Save the modified PDF
+//     const modifiedPdfBuffer = await pdfDoc.save();
+
+//     // Save the PDF to the "uploads" folder
+//     const pdfSavePath = path.join(__dirname, '../uploads/logos/InvitationLetter.pdf');
+//     fs.writeFileSync(pdfSavePath, modifiedPdfBuffer);
+    
+
+//     // // Send the modified PDF as a response
+//     // res.setHeader('Content-Type', 'application/pdf');
+//     // res.send(modifiedPdfBuffer);
+//     res.status(200).json('true');
+//   } catch (err) {
+//     console.error(err);
+
+//     if (err.kind === 'ObjectId') {
+//       // Handle invalid ObjectId (MongoDB) error
+//       return res.status(400).json({ error: 'Invalid ID format' });
+//     }
+
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
+router.get('/generate-pdf-Invitation-Letter/:id', async (req, res) => {
+  try {
+    const caseId = req.params.id;
+
+    // Fetch case data from MongoDB
+    const caseData = await Case.findById(caseId).populate('connectionData.companyID');
+
+    if (!caseData) {
+      return res.status(404).json({ error: 'Case not found' });
+    }
+
+    // Extract companyID and fetch company data
+    const companyId = caseData.connectionData.companyID;
+    const companyData = await Company.findById(companyId);
+    const sharingGmail = companyData.sharingGmail;
+    const folderID = caseData.folderID;
+
+    if (!companyData) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+
+    // Read the PDF template
+    const filePath = path.join(__dirname, '../uploads/pdfs/Invitation-Letter-DMS-temp.pdf');
+    const pdfTemplateBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    const font = await pdfDoc.embedFont('Helvetica');
+    const page1 = pdfDoc.getPage(0);
+    const page2 = pdfDoc.getPage(1);
+    page1.setFont(font);
+    page1.setFontSize(12);
+    page2.setFont(font);
+    page2.setFontSize(12);
+
+    const nameC1 = `${caseData.MajorDataC1.fName} ${caseData.MajorDataC1.sName} `;
+    const nameC2 = `${caseData.MajorDataC2.fName} ${caseData.MajorDataC2.sName}`;
+    const CreatedDate = getCurrentDate();
+    const addressKnown = caseData.majorDataC2FromM1.otherPartyAddressKnown;
+
+    // Add data to PDF at specific locations (x, y coordinates)
+    page1.drawText(nameC2, { x: 65, y: 720 });
+    
+    try {
+      if (addressKnown === 'Yes' || addressKnown === 'yes') {
+        // Draw text on the page if all variables are defined
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyStreet, { x: 65, y: 700 });
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyCity, { x: 65, y: 686 });
+        page1.drawText(caseData.majorDataC2FromM1.otherPartyPostalCode, { x: 65, y: 670 });
+      } else {
+        // Send a response indicating that address data is missing
+        return res.status(400).json({ error: 'Address data is missing' });
+      }
+    } catch (error) {
+      // Handle the error and send an appropriate response
+      console.error('Error while processing address data:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    page1.drawText(CreatedDate, { x: 490, y: 655 });
+    page1.drawText(nameC2, { x: 90, y: 628 }); 
+    page1.drawText(nameC1, { x: 410, y: 587 });
+    page1.drawText(nameC1, { x:  60, y: 532 });
+    page1.drawText(nameC1, { x: 350, y: 490 }); 
+    //
+    page1.drawText(caseData.MajorDataC1.fName, { x: 503, y: 435 });
+    page1.drawText(`-${caseData.MajorDataC1.sName}`, { x:  60, y: 420 });
+    page1.drawText(nameC1, { x: 295, y: 352 });
+    page1.drawText(nameC1, { x: 115, y: 144 }); 
+
+    page2.drawText(`https://c2-reply-form.vercel.app/C2_reply/:id`, { x: 215, y: 434 }); 
+
+    // Save the modified PDF
+    const modifiedPdfBuffer = await pdfDoc.save();
+
+    // // Save the PDF to the "uploads" folder
+    // const pdfSavePath = path.join(__dirname, '../uploads/logos/InvitationLetter.pdf');
+    // fs.writeFileSync(pdfSavePath, modifiedPdfBuffer);
+
+    const auth = await google.auth.getClient({
+      
+      keyFile: config.credentialFile1,
+
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+    });
+
+  
+
+    const drive = google.drive({ version: "v3", auth });
+
+
+    // Create a readable stream from the PDF bytes
+    const readableStream = new stream.Readable({
+      read() {
+        this.push(modifiedPdfBuffer);
+        this.push(null);
+      },
+    });
+
+    // Upload the PDF to the created folder
+    const fileMetadata = {
+      name: "Invitation-Letter",
+      parents: [folderID],
+    };
+
+    const media = {
+      mimeType: "application/pdf",
+      body: readableStream,
+    };
+    await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+   await shareWithPersonalAccount(folderID, sharingGmail);
+
+    // Send the modified PDF as a response
+    res.status(200).json('true');
+  } catch (err) {
+    console.error(err);
+
+    if (err.kind === 'ObjectId') {
+      // Handle invalid ObjectId (MongoDB) error
+      return res.status(400).json({ error: 'Invalid ID format' });
+    }
+
+    // Send an appropriate response for other errors
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 
 router.patch("/C2_invitation/:id", async (req, res) => {
   let companyData = {}, clientData = {}, messageBodyinfo = {};
+  let LAtabelObj;
 
   try {
 
@@ -318,6 +554,9 @@ router.patch("/C2_invitation/:id", async (req, res) => {
     let currentCase = await Case.findById(req.params.id);
     let C2invitation = req.body;
     phoneCallAppointment_C2_C2reply = req.body.phoneCallAppointment
+
+
+   await createC2ReplyUpload( C2invitation , currentCase );
 
     let statusRemider = {
       reminderID: `${currentCase._id}-statusRemider`,
@@ -370,12 +609,8 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 
       if (req.body.InvitationAnswer.willingToComeToMediation == "No") {
         notifyCompanytoCall_C2Refused(companyData, clientData);
-
-
-
       }
       else if (req.body.InvitationAccepted.privateOrLegailAid == "Private" || req.body.InvitationAccepted.isStillLikeToMakeAnApplicationForLegalAid === "No") {
-
         await Case.findByIdAndUpdate(req.params.id, {
           caseTypeC2: "Private"
         })
@@ -383,15 +618,35 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         messageBodyinfo.formUrl = `${config.baseUrlMIAM1}/${config.MIAM_PART_1}/C2/${updatedCase._id}`;
         sendMailMIAM1(companyData, clientData, messageBodyinfo);
       }
-
       else if (
         req.body.InvitationAccepted.privateOrLegal == "Legal Aid" &&
         req.body.InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
         req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "No" &&
         req.body.InvitationAccepted.isEntitledToLegalAid == "Yes"
       ) {
+        console.log("📢📢📢📢📢📢")
+        LAtabelObj={
+          clientType:"C2",
+          firstName:C2invitation.InvitationAnswer.firstName,
+          sureName:C2invitation.InvitationAnswer.surname,
+          typeOfApplication:"Low Income / No Income",
+          status:"Application Received",
+          DoB:"",
+          postCode:"",
+          phoneNo:C2invitation.InvitationAccepted.phone,
+          email:C2invitation.InvitationAnswer.email,
+          address:"",
+          howFoundUs:"",
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname,
+          caseAbout:"",
+        }
+        console.log(LAtabelObj)
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2: "Legal Aid - low Income / No Income"
+          caseTypeC2: "Legal Aid - low Income / No Income" ,
+          legalAidTableData: {
+            C2: JSON.stringify(LAtabelObj)
+          },
+          //$set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "low Income / No Income"
         // messageBodyinfo.formUrl = `${config.baseUrllowIncomeForm}/${config.LOWINCOME_NOINCOME}/C2/${updatedCase._id}`;
@@ -402,9 +657,28 @@ router.patch("/C2_invitation/:id", async (req, res) => {
         req.body.InvitationAccepted.willingToMakeLegalAidApplication == "Yes" &&
         req.body.InvitationAccepted.isReceiptOfAnyOfTheseSpecificBenefits == "Yes"
       ) {
+        LAtabelObj={
+          clientType:"C2",
+          firstName:C2invitation.InvitationAnswer.firstName,
+          sureName:C2invitation.InvitationAnswer.surname,
+          typeOfApplication:"Passporting",
+          status:"Application Received",
+          DoB:"",
+          postCode:"",
+          phoneNo:C2invitation.InvitationAccepted.phone,
+          email:C2invitation.InvitationAnswer.email,
+          address:"",
+          howFoundUs:"",
+          surNameOftheOtherPerson:C2invitation.InvitationAnswer.otherPersonSurname,
+          caseAbout:"",
+        }
 
         await Case.findByIdAndUpdate(req.params.id, {
-          caseTypeC2: "Legal Aid - Passporting"
+          caseTypeC2: "Legal Aid - Passporting",
+          legalAidTableData: {
+            C2: JSON.stringify(LAtabelObj)
+          },
+         // $set:{ 'legalAidTableData.C2': JSON.stringify(LAtabelObj),}
         })
         // messageBodyinfo.formType = "Passporting"
         // messageBodyinfo.formUrl = `${config.baseUrlpassportingForm}/${config.PASSPORTING}/C2/${updatedCase._id}`;
@@ -448,14 +722,202 @@ router.patch("/C2_invitation/:id", async (req, res) => {
 })
 
 
+async function createC2ReplyUpload(data, caseID ) {
+  try {
+
+    const pdfDoc = await PDFDocument.create();
+    let pages = pdfDoc.getPages;
+    let pageNumber = 0;
+    const pageHeight = 841.89;
+    pages[pageNumber] = pdfDoc.addPage();
+    // console.log(pages[pageNumber])
+    
+    const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
+    const font = await pdfDoc.embedFont('Helvetica');
+    
+
+  
+    const questionsAndAnswers = [
+      { question: 'Are you willing to come to mediation?', answer: data.InvitationAnswer?.willingToComeToMediation},
+      { question: 'First name', answer: data.InvitationAnswer?.firstName },
+      { question: 'surname/family name', answer: data.InvitationAnswer?.surname },
+      { question: 'Email address', answer: data.InvitationAnswer?.email },
+      { question: 'the other person in the conflict first name', answer: data.InvitationAnswer?.otherPersonFirstName },
+      { question: 'the other person in the conflict surname/family name', answer: data.InvitationAnswer?.otherPersonSurname},
+      { question: 'Are you a private client or you think you might be entitled to legal aid?', answer: data.InvitationAccepted?.privateOrLegal },
+      { question: 'Are you willing to make an application for legal aid for family mediation?', answer: data.InvitationAccepted?.willingToMakeLegalAidApplication },
+      { question: `Are you in receipt of any of these specific benefits? (Universal Credit, Income Support, Employment and Support Allowance Income-Related, Jobseeker's allowance)`, answer: data.InvitationAccepted?.isReceiptOfAnyOfTheseSpecificBenefits },
+      { question: 'Do you think you might be entitled to legal aid because you are on a low income/no income/homeless?', answer: data.InvitationAccepted?.isEntitledToLegalAid },
+      { question: 'Would you still like to make an application for legal aid?', answer: data.InvitationAccepted?.isStillLikeToMakeAnApplicationForLegalAid },
+      { question: `Telephone number`, answer: data.InvitationAccepted?.phone },
+      { question: `the time you would like us to call you back`, answer: data.phoneCallAppointment },
+    
+    ];
+    
+        
+        const startX = 50;
+        let currentY = pageHeight - 50;
+        const questionWidth = 500; // Adjust the width as needed
+  
+  
+
+    
+    for (const { question, answer } of questionsAndAnswers) {
+      const validQuestion = question || '';
+      const validAnswer = answer || '';
+    
+      // Check if the answer is not an empty string before drawing
+      if (validAnswer.trim() !== '') {
+        currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+    
+        // Additional space between Question and Answer
+        const gapBetweenQA = 15;
+        currentY -= gapBetweenQA;
+    
+        currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
+
+        // Additional space between this Q&A and the next
+        const gapBetweenBlocks = 25;
+        currentY -= gapBetweenBlocks;
+      }
+    
+
+    
+      // Move to the next page if necessary
+      if (currentY <= 100) {
+        // Add a new page and reset currentY
+        pageNumber += 1;
+        currentY = pageHeight - 50;
+        pages[pageNumber] = pdfDoc.addPage();
+    
+        currentY -= 20;
+      }
+    }
+    
+
+
+    const pdfBytes = await pdfDoc.save();
+
+    const currentCase = await Case.findById(caseID);
+
+    const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+
+    const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+
+    const folderId = currentCase.folderID;
+
+    // console.log(folderId);
+    // console.log(sharingGmail);
+
+
+    const auth = await google.auth.getClient({
+
+      keyFile: config.credentialFile1,
+
+      scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+    });
+
+
+
+    const drive = google.drive({ version: "v3", auth });
+
+    // Create a readable stream from the PDF bytes
+    const readableStream = new stream.Readable({
+      read() {
+        this.push(pdfBytes);
+        this.push(null);
+      },
+    });
+
+    // Upload the PDF to the created folder
+    const fileMetadata = {
+      name: `"C2Reply.pdf"`,
+      parents: [folderId],
+    };
+
+    const media = {
+      mimeType: "application/pdf",
+      body: readableStream,
+    };
+    await drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: "id",
+    });
+
+
+
+    // Call the function with the folder ID and personal account email
+    await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+   
+    console.log("PDF created and uploaded successfully");
+  } catch (error) {
+    console.error("Error creating PDF and uploading to Google Drive:", error);
+  }
+}
+
+
+
+async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+  try {
+    const authClient = await google.auth.getClient({
+      keyFile: config.credentialFile1,
+      scopes: ['https://www.googleapis.com/auth/drive'],
+    });
+
+    const drive = google.drive({ version: 'v3', auth: authClient });
+
+    const permission = {
+      type: 'user',
+      role: 'writer',
+      emailAddress: personalAccountEmail,
+    };
+
+    await drive.permissions.create({
+      fileId: folderId,
+      requestBody: permission,
+    });
+
+    console.log('Folder shared successfully!');
+  } catch (error) {
+    console.error('Error sharing folder:', error.message);
+  }
+}
+
+
+function getLinesNumber(text) {
+  // Check if 'text' is defined and not null before accessing its 'length' property
+  if (text && typeof text === 'string') {
+    return text.length / 35;
+  } else {
+    // Handle the case where 'text' is undefined or not a string
+    return 0; // Or some default value or error handling logic
+  }
+}
+
+const drawTextBlock = (page, text, startX, startY, font, maxWidth, lineHeight) => {
+  if (typeof text === 'undefined' || text === null) {
+    return startY; // If text is not provided, don't draw and return the original Y-coordinate.
+  }
+  page.drawText(text, {
+    x: startX,
+    y: startY,
+    font,
+    maxWidth,
+    lineHeight,
+  });
+  const numberOfLines = getLinesNumber(text);
+  return startY - (lineHeight * numberOfLines);
+};
 
 
 
 
-
-
-
-
+function getCurrentDate() {
+  const now = new Date();
+  const options = { month: 'short', day: 'numeric', year: 'numeric' };
+  return now.toLocaleDateString('en-US', options);
+}
 
 
 

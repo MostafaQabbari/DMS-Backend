@@ -6,6 +6,9 @@ const config = require("../config/config");
 const mediator = require('../models/mediator');
 const Company = require("../models/company");
 const authMiddleware = require("../middleware/authMiddleware");
+const { PDFDocument } = require("pdf-lib");
+const { google } = require("googleapis");
+const stream = require("stream");
 
 const sendAgreementFormC1 = function (clientDetials, companyDetails, caseID) {
     /*
@@ -330,7 +333,8 @@ router.patch("/addAgreement_C2/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let C2Agreement = req.body
         const StringfyData = JSON.stringify(C2Agreement)
-
+        
+        await createAgreementFormUpload( C2Agreement , currentCase );
 
         //!currentCase.C2AgreementApplied
         if (true) {
@@ -370,7 +374,8 @@ router.patch("/addAgreement_C1/:id", async (req, res) => {
         let currentCase = await Case.findById(req.params.id);
         let C1Agreement = req.body
         const StringfyData = JSON.stringify(C1Agreement)
-
+        
+        await createAgreementFormUpload( C1Agreement , currentCase );
 
         //!currentCase.C1AgreementApplied
         if (true) {
@@ -401,5 +406,219 @@ router.patch("/addAgreement_C1/:id", async (req, res) => {
 
 
 })
+
+
+
+
+async function createAgreementFormUpload(data, caseID ) {
+    try {
+  
+      const pdfDoc = await PDFDocument.create();
+      let pages = pdfDoc.getPages;
+      let pageNumber = 0;
+      const pageHeight = 841.89;
+      pages[pageNumber] = pdfDoc.addPage();
+      // console.log(pages[pageNumber])
+      
+      const BoldFont = await pdfDoc.embedFont('Helvetica-Bold');
+      const font = await pdfDoc.embedFont('Helvetica');
+      
+  
+    
+      const questionsAndAnswers = [
+        { question: 'client Declaration Agreed', answer: data?.clientDeclarationAgreed},
+        { question: 'online Mediation Agreed', answer: data?.onlineMediationAgreed },
+        { question: 'private Or Legal', answer: data?.privateOrLegal },
+        { question: 'legalAid Agreed', answer: data?.legalAidAgreed },
+        { question: 'payment Agreed', answer: data?.paymentAgreed },
+        { question: 'complaints Agreed', answer: data?.complaintsAgreed},
+        { question: 'First name', answer: data?.personalDetails?.firstName },
+        { question: 'Surname', answer: data?.personalDetails?.surname },
+        { question: `contactNumber`, answer: data?.personalDetails?.contactNumber },
+        { question: 'Email Address', answer: data?.emailAddress },
+
+      ];
+      
+          
+          const startX = 50;
+          let currentY = pageHeight - 50;
+          const questionWidth = 500; // Adjust the width as needed
+    
+    
+  
+      
+      for (const { question, answer } of questionsAndAnswers) {
+        const validQuestion = question || '';
+        const validAnswer = answer || '';
+      
+        // Check if the answer is not an empty string before drawing
+        if (validAnswer.trim() !== '') {
+          currentY = drawTextBlock(pages[pageNumber], validQuestion, startX, currentY, BoldFont, questionWidth, 25);
+      
+          // Additional space between Question and Answer
+          const gapBetweenQA = 15;
+          currentY -= gapBetweenQA;
+      
+          currentY = drawTextBlock(pages[pageNumber], validAnswer, startX, currentY, font, questionWidth, 25);
+  
+          // Additional space between this Q&A and the next
+          const gapBetweenBlocks = 25;
+          currentY -= gapBetweenBlocks;
+        }
+      
+  
+      
+        // Move to the next page if necessary
+        if (currentY <= 100) {
+          // Add a new page and reset currentY
+          pageNumber += 1;
+          currentY = pageHeight - 50;
+          pages[pageNumber] = pdfDoc.addPage();
+      
+          currentY -= 20;
+        }
+      }
+
+      
+
+      const base64Signature = data.personalDetails.electronicSignature;
+      const imageBytes = Buffer.from(base64Signature, 'base64');
+      const signaturePage = pdfDoc.getPage(0);
+
+      signaturePage.drawText('client signature', { x: 50, y: 250 });
+
+
+        try {
+          const pdfImage = await pdfDoc.embedPng(imageBytes);
+      
+          const xPosition = 50; 
+          const yPosition = 200; 
+      
+          signaturePage.drawImage(pdfImage, {
+            x: xPosition,
+            y: yPosition,
+            width: 250,
+            height: 40,
+          });
+        } catch (error) {
+          console.error('Error embedding PNG image:', error);
+        }
+      
+  
+  
+      const pdfBytes = await pdfDoc.save();
+  
+      const currentCase = await Case.findById(caseID);
+  
+      const companyData = await Case.findById(currentCase._id).populate('connectionData.companyID');
+  
+      const sharingGmail = companyData.connectionData.companyID.sharingGmail;
+  
+      const folderId = currentCase.folderID;
+  
+      // console.log(folderId);
+      // console.log(sharingGmail);
+  
+  
+      const auth = await google.auth.getClient({
+  
+        keyFile: config.credentialFile1,
+  
+        scopes: ['https://www.googleapis.com/auth/drive'], // Scopes required for accessing Google Drive
+      });
+  
+  
+  
+      const drive = google.drive({ version: "v3", auth });
+  
+      // Create a readable stream from the PDF bytes
+      const readableStream = new stream.Readable({
+        read() {
+          this.push(pdfBytes);
+          this.push(null);
+        },
+      });
+  
+      // Upload the PDF to the created folder
+      const fileMetadata = {
+        name: `"FormAgreement.pdf"`,
+        parents: [folderId],
+      };
+  
+      const media = {
+        mimeType: "application/pdf",
+        body: readableStream,
+      };
+      await drive.files.create({
+        resource: fileMetadata,
+        media: media,
+        fields: "id",
+      });
+  
+  
+  
+      // Call the function with the folder ID and personal account email
+      await shareWithPersonalAccount(folderId, sharingGmail);//the gmail sharing account that belong to the company
+     
+      console.log("PDF created and uploaded successfully");
+    } catch (error) {
+      console.error("Error creating PDF and uploading to Google Drive:", error);
+    }
+  }
+  
+  
+  
+  
+  async function shareWithPersonalAccount(folderId, personalAccountEmail) {
+    try {
+      const authClient = await google.auth.getClient({
+        keyFile: config.credentialFile1,
+        scopes: ['https://www.googleapis.com/auth/drive'],
+      });
+  
+      const drive = google.drive({ version: 'v3', auth: authClient });
+  
+      const permission = {
+        type: 'user',
+        role: 'writer',
+        emailAddress: personalAccountEmail,
+      };
+  
+      await drive.permissions.create({
+        fileId: folderId,
+        requestBody: permission,
+      });
+  
+      console.log('Folder shared successfully!');
+    } catch (error) {
+      console.error('Error sharing folder:', error.message);
+    }
+  }
+  
+  
+  function getLinesNumber(text) {
+    // Check if 'text' is defined and not null before accessing its 'length' property
+    if (text && typeof text === 'string') {
+      return text.length / 35;
+    } else {
+      // Handle the case where 'text' is undefined or not a string
+      return 0; // Or some default value or error handling logic
+    }
+  }
+  
+  const drawTextBlock = (page, text, startX, startY, font, maxWidth, lineHeight) => {
+    if (typeof text === 'undefined' || text === null) {
+      return startY; // If text is not provided, don't draw and return the original Y-coordinate.
+    }
+    page.drawText(text, {
+      x: startX,
+      y: startY,
+      font,
+      maxWidth,
+      lineHeight,
+    });
+    const numberOfLines = getLinesNumber(text);
+    return startY - (lineHeight * numberOfLines);
+  };
 
 module.exports = router

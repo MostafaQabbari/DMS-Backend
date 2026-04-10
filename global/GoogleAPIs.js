@@ -4,7 +4,7 @@ const Case = require('../models/case');
 const config = require("../config/config");
 
 //, client2Email
- async function createEvent(caseId, mediatorEmail, client1Email) {
+ async function createEvent(eventTitle, caseId, mediatorEmail, client1Email) {
   try {
     // // Retrieve the necessary data from the database
     // const currentCase = await Case.findById(caseId);
@@ -35,8 +35,18 @@ const config = require("../config/config");
       
       keyFile: config.credentialFile1,
       subject: 'mkabary8@gmail.com', // User's email on behalf of whom you want to act
-      scopes: ['https://www.googleapis.com/auth/calendar'], // Scopes required for accessing Google Drive
+      scopes: ['https://www.googleapis.com/auth/calendar.events'], // Scopes required for accessing Google Drive
     });
+
+    // const auth = new google.auth.GoogleAuth({
+    //   keyFile: config.credentialFile1,
+    //   scopes: [
+    //     'https://www.googleapis.com/auth/calendar','https://www.googleapis.com/auth/calendar.events','https://www.googleapis.com/auth/admin.directory.resource.calendar'
+    //   ],
+    //   clientOptions: {
+    //     subject: 'mkabary8@gmail.com'
+    //   },
+    // });
 
 
     // Authorize the client
@@ -44,30 +54,31 @@ const config = require("../config/config");
 
     // Prepare the event data
     const event = {
-      summary: 'Meeting',
+      summary: 'Meeting2 geekyair',
+      // summary: eventTitle,
       start: {
-        dateTime: "2023-12-09T01:00:00Z",
+        dateTime: "2023-12-12T06:00:00Z",
         timeZone: 'Africa/Cairo', // Replace with the appropriate time zone (spain or UK)
       },
       end: {
-        dateTime: "2023-12-09T22:00:00Z", // Next day at midnight,
+        dateTime: "2023-12-12T07:00:00Z", // Next day at midnight,
         timeZone: 'Africa/Cairo', // Replace with the appropriate time zone (spain or UK)
       },
       attendees: [
         { email: mediatorEmail },
-        { email: client1Email },
+        // { email: client1Email },
         // { email: client2Email },
       ],
     };
 
     // Create the event
     const createdEvent = await calendar.events.insert({
-      calendarId: 'primary', // Use 'primary' for the authenticated user's primary calendar
+      calendarId: 'mkabary8@gmail.com', // Use 'primary' for the authenticated user's primary calendar
       resource: event,
-      sendUpdates: 'all', // Send invitations to the attendees
+      // sendUpdates: 'all', // Send invitations to the attendees
     });
 
-    console.log('Event created:',/* createdEvent.data*/);
+    console.log('Event created:', createdEvent.data);
 
     return { message: 'Event created successfully' };
   } catch (error) {

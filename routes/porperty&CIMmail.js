@@ -7,8 +7,53 @@ const nodemailer = require("nodemailer");
 const Company = require("../models/company");
 const config = require("../config/config");
 const mediator = require('../models/mediator');
+const CryptoJS = require("crypto-js");
 
 
+const sendSMSwithChangedBody = function (twillioInfo, clientNumber, messageBodyData, res) {
+
+    /*
+      twillioInfo={twillioSID , twillioToken , twillioNumber}
+      clientNumber = {clientNumber}
+      messageBodyData = bodyText
+    */
+    const x = require('twilio')(twillioInfo.twillioSID, twillioInfo.twillioToken);
+    const phoneNumber = twillioInfo.twillioNumber;
+
+
+    x.messages.create({
+        body: messageBodyData,
+        from: phoneNumber,
+        to: clientNumber
+    }).then(message => {
+        console.log({ message: "form message sent succesfully", messageID: message.sid });
+    }
+    ).catch((err) => {
+        console.log(err.message)
+        res.status(200).json({ message: `Actions done but could not send SMS to ${clientNumber} due to ${err.message}` })
+    });
+
+}
+function handleTwillioData(targetComp) {
+
+    const targetCompTwilioData = targetComp.twillioData;
+    const data = CryptoJS.AES.decrypt(targetCompTwilioData, 'ourTwillioEncyptionKey');
+    const decryptedTwillioData = JSON.parse(data.toString(CryptoJS.enc.Utf8))
+    // return = > twillioInfo object by => targetCompany
+    return decryptedTwillioData[0]
+
+}
+
+/*
+    let twillioInfo = handleTwillioData(currentComp);
+                        let clientNumber = CaseFound.MajorDataC1.phoneNumber
+                        let messageBodyData = `Dear ${clientData.clientName},
+                        An email with MIAM1 link was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyData.companyName}
+                        `
+                        sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+*/
 
 const sendCIMMail = function (mediatorData, clientDetials, companyDetails, childNames) {
     /*
@@ -207,16 +252,16 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 clientDetials.c1clientName = `${CaseFound.MajorDataC1.fName} ${CaseFound.MajorDataC1.sName}`;
                 clientDetials.c1email = CaseFound.MajorDataC1.mail
 
-              //  clientDetials.c2email = 'abdo.samir.7719@gmail.com'
-               // clientDetials.c1email = 'abdosamir023023@gmail.com'
+                //  clientDetials.c2email = 'abdo.samir.7719@gmail.com'
+                // clientDetials.c1email = 'abdosamir023023@gmail.com'
 
                 companyDetails.companyName = currentComp.companyName
                 companyDetails.email = currentComp.email;
-            
+
                 childNames = ""
 
                 //JSON.parse()
-                console.log("arr child 📢📢" , CaseFound.client1data)
+                console.log("arr child 📢📢", CaseFound.client1data)
                 let childrensArr = JSON.parse(CaseFound.client1data).children;
                 if (childrensArr) {
                     if (childrensArr[0]) childNames += childrensArr[0]['Child One'].firstChildFirstName
@@ -232,13 +277,27 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
                 else {
                     childNames = " "
                 }
-
-
-
-               
-
-
                 sendCIMMail(mediatorData, clientDetials, companyDetails, childNames);
+
+                let twillioInfo = handleTwillioData(currentComp);
+                let clientNumber1 = CaseFound.MajorDataC1.phoneNumber
+                //   let clientNumber1 ="+447476544877"
+                let messageBodyData1 = `Dear ${clientDetials.c1clientName},
+                        CIM email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber1, messageBodyData1, res)
+
+                let clientNumber2 = CaseFound.MajorDataC2.phoneNumber
+                //  let clientNumber2 ="+447476544877"
+                let messageBodyData2 = `Dear ${clientDetials.c2clientName},
+                        CIM email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber2, messageBodyData2, res)
+
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -271,6 +330,7 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
 
                 companyDetails.companyName = mediatorCompanyData.companyId.companyName
                 companyDetails.email = mediatorCompanyData.companyId.email;
+                console.log("mediatorCompanyData.companyId📢📢", mediatorCompanyData.companyId)
 
                 childNames = ""
 
@@ -294,6 +354,27 @@ router.post('/sendCIM_Mail/:id', authMiddleware, async (req, res, next) => {
 
 
                 sendCIMMail(mediatorData, clientDetials, companyDetails, childNames);
+
+                let twillioInfo = handleTwillioData(mediatorCompanyData.companyId);
+                let clientNumber1 = CaseFound.MajorDataC1.phoneNumber
+                //   let clientNumber1 ="+447476544877"
+                let messageBodyData1 = `Dear ${clientDetials.c1clientName},
+                        CIM email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber1, messageBodyData1, res)
+
+                let clientNumber2 = CaseFound.MajorDataC2.phoneNumber
+                // let clientNumber2 ="+447476544877"
+                let messageBodyData2 = `Dear ${clientDetials.c2clientName},
+                        CIM email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                sendSMSwithChangedBody(twillioInfo, clientNumber2, messageBodyData2, res)
+
+
                 res.status(200).json({ "message": "CIM information mail has been  sent ... " })
             }
             else {
@@ -351,12 +432,33 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
                     clientDetials.c1email = CaseFound.MajorDataC1.mail
                     sendPropertyMail(mediatorData, clientDetials, companyDetails);
 
+
+                    let twillioInfo = handleTwillioData(currentComp);
+                    let clientNumber = CaseFound.MajorDataC1.phoneNumber
+                   // clientNumber ="+447476544877"
+                    let messageBodyData = `Dear ${clientDetials.c1clientName},
+                        Propert&Finance email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
                 }
                 if (targetClient == "C2") {
                     clientDetials.c1clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                     clientDetials.c1email = CaseFound.MajorDataC2.mail
                     sendPropertyMail(mediatorData, clientDetials, companyDetails);
 
+                    let twillioInfo = handleTwillioData(currentComp);
+                    let clientNumber = CaseFound.MajorDataC2.phoneNumber
+                 //  clientNumber ="+447476544877"
+                    let messageBodyData = `Dear ${clientDetials.c1clientName},
+                        Propert&Finance email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
                 }
 
 
@@ -365,7 +467,7 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
 
 
 
-                res.status(200).json({ "message": "CIM information mail has been  sent ... " })
+                res.status(200).json({ "message": "Property mail mail has been  sent ... " })
             }
             else {
                 res.status(400).json({ "message": "no case found ... " })
@@ -394,11 +496,31 @@ router.post('/sendProperty_Mail/:id', authMiddleware, async (req, res, next) => 
                     clientDetials.c1email = CaseFound.MajorDataC1.mail
                     sendPropertyMail(mediatorData, clientDetials, companyDetails);
 
+                    let twillioInfo = handleTwillioData(mediatorCompanyData.companyId);
+                    let clientNumber = CaseFound.MajorDataC1.phoneNumber
+                  //  clientNumber ="+447476544877"
+                    let messageBodyData = `Dear ${clientDetials.c1clientName},
+                        Propert&Finance email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
+
                 }
                 if (targetClient == "C2") {
                     clientDetials.c1clientName = `${CaseFound.MajorDataC2.fName} ${CaseFound.MajorDataC2.sName}`;
                     clientDetials.c1email = CaseFound.MajorDataC2.mail
                     sendPropertyMail(mediatorData, clientDetials, companyDetails);
+
+                    let twillioInfo = handleTwillioData(mediatorCompanyData.companyId);
+                    let clientNumber = CaseFound.MajorDataC2.phoneNumber
+                  //     clientNumber="+447476544877"
+                    let messageBodyData = `Dear ${clientDetials.c1clientName},
+                        Propert&Finance email  was sent to you. You may need to check your SPAM folder.
+                        Thank you.
+                        ${companyDetails.companyName}
+                        `
+                    sendSMSwithChangedBody(twillioInfo, clientNumber, messageBodyData, res)
 
                 }
 
